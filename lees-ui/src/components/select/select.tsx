@@ -52,12 +52,8 @@ export const Select = ({
   required,
 }: SelectProps) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<DataType>();
+  const [selectedValue, setSelectedValue] = useState<DataType>(value);
   const [selectedLabel, setSelectedLabel] = useState<DataType>();
-
-  useEffect(() => {
-    value !== undefined && setSelectedValue(value);
-  }, [value]);
 
   return (
     <SelectContext.Provider
@@ -101,6 +97,7 @@ const Trigger = ({ className, id, children }: DefaultProps) => {
         onClick={() => {
           setOpen(!open);
         }}
+        // required={required}
       >
         {selectedLabel}
         {children}
@@ -115,7 +112,24 @@ const OptionWrapper = ({
 }: {
   children: React.ReactNode;
 } & DefaultProps) => {
-  const { open } = useContext(SelectContext) as SelectContextType;
+  const { open, selectedValue, setSelectedLabel } = useContext(
+    SelectContext
+  ) as SelectContextType;
+
+  useEffect(() => {
+    if (selectedValue) {
+      let defaultLabel;
+      React.Children.toArray(children).forEach((child) => {
+        if (
+          React.isValidElement(child) &&
+          child.props.value === selectedValue
+        ) {
+          defaultLabel = child.props.children;
+        }
+      });
+      setSelectedLabel(defaultLabel);
+    }
+  }, [children, selectedValue, setSelectedLabel]);
 
   return (
     <>
@@ -127,26 +141,14 @@ const OptionWrapper = ({
 };
 
 const Option = ({ value, children, ...props }: OptionProps) => {
-  const {
-    selectedValue,
-    setSelectedValue,
-    setSelectedLabel,
-    setOpen,
-    onChange,
-  } = useContext(SelectContext) as SelectContextType;
-
-  useEffect(() => {
-    if (value === selectedValue) {
-      setSelectedLabel(children);
-    }
-  }, [value, selectedValue, setSelectedLabel, children]);
+  const { setSelectedValue, setOpen, onChange } = useContext(
+    SelectContext
+  ) as SelectContextType;
 
   const onClickOption = () => {
-    if (typeof children === "string" || typeof children === "number") {
-      setSelectedValue(value);
-      onChange(value);
-      setOpen(false);
-    }
+    setSelectedValue(value);
+    onChange && onChange(value);
+    setOpen(false);
   };
 
   return (
