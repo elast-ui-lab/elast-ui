@@ -7,24 +7,25 @@ import React, {
 } from "react";
 import styled from "styled-components";
 
-type DataType = string | number | undefined;
+type DataType = any;
 
 type SelectContextType = {
   open: boolean;
+  onChange: (id: unknown) => void;
   selectedValue: DataType;
-  selectedChild: DataType;
+  selectedLabel: DataType;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedValue: React.Dispatch<React.SetStateAction<DataType>>;
-  setSelectedChild: React.Dispatch<React.SetStateAction<DataType>>;
+  setSelectedLabel: React.Dispatch<React.SetStateAction<DataType>>;
 };
 
 type SelectProps = {
   id?: string;
   className?: string;
-  defaultValue?: DataType; //string | number;
-  defaultChild?: DataType; //string | number;
+  value?: DataType; //string | number;
   onChange?: any;
   children?: React.ReactNode;
+  required?: boolean;
 };
 
 type DefaultProps = {
@@ -45,35 +46,29 @@ const SelectContext = createContext<SelectContextType | undefined>(undefined);
 export const Select = ({
   id,
   className,
-  defaultValue,
-  defaultChild,
+  value,
   children,
   onChange,
+  required,
 }: SelectProps) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<DataType>(defaultValue);
-  const [selectedChild, setSelectedChild] = useState<DataType>(
-    defaultChild || "Select"
-  );
+  const [selectedValue, setSelectedValue] = useState<DataType>();
+  const [selectedLabel, setSelectedLabel] = useState<DataType>();
 
   useEffect(() => {
-    onChange && onChange(selectedValue);
-  }, [selectedValue]);
-
-  useEffect(() => {
-    defaultValue && setSelectedValue(defaultValue);
-    defaultChild && setSelectedChild(defaultChild);
-  }, [defaultValue, defaultChild]);
+    value !== undefined && setSelectedValue(value);
+  }, [value]);
 
   return (
     <SelectContext.Provider
       value={{
-        selectedChild,
-        selectedValue,
-        setSelectedChild,
-        setSelectedValue,
         open,
         setOpen,
+        onChange,
+        selectedValue,
+        selectedLabel,
+        setSelectedValue,
+        setSelectedLabel,
       }}
     >
       <SelectBoxWrapper id={id} className={className}>
@@ -85,7 +80,7 @@ export const Select = ({
 
 const Trigger = ({ className, id, children }: DefaultProps) => {
   const ref = useRef<any>();
-  const { selectedChild, open, setOpen } = useContext(
+  const { selectedLabel, open, setOpen } = useContext(
     SelectContext
   ) as SelectContextType;
 
@@ -107,15 +102,15 @@ const Trigger = ({ className, id, children }: DefaultProps) => {
           setOpen(!open);
         }}
       >
-        {selectedChild}
+        {selectedLabel}
         {children}
       </SelectBox>
     </>
   );
 };
 const OptionWrapper = ({
-  children,
   id,
+  children,
   className,
 }: {
   children: React.ReactNode;
@@ -124,24 +119,32 @@ const OptionWrapper = ({
 
   return (
     <>
-      {/* {open && ( */}
       <SelectOptionWrapper open={open} id={id} className={className}>
         {children}
       </SelectOptionWrapper>
-      {/* )} */}
     </>
   );
 };
 
 const Option = ({ value, children, ...props }: OptionProps) => {
-  const { setSelectedChild, setSelectedValue, setOpen } = useContext(
-    SelectContext
-  ) as SelectContextType;
+  const {
+    selectedValue,
+    setSelectedValue,
+    setSelectedLabel,
+    setOpen,
+    onChange,
+  } = useContext(SelectContext) as SelectContextType;
+
+  useEffect(() => {
+    if (value === selectedValue) {
+      setSelectedLabel(children);
+    }
+  }, [value, selectedValue, setSelectedLabel, children]);
 
   const onClickOption = () => {
     if (typeof children === "string" || typeof children === "number") {
-      setSelectedChild(children);
       setSelectedValue(value);
+      onChange(value);
       setOpen(false);
     }
   };
