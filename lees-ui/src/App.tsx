@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import { Select } from "./components/select/select";
 import styled from "styled-components";
-
+import { Dropdown } from "./components/dropdown/dropdown";
 const selectList = [
   { name: "이은혁", value: "Eunhyeok Lee" },
   { name: "이수연", value: "Sooyeon Lee" },
@@ -31,6 +31,25 @@ function App() {
             ))}
           </Select.OptionWrapper>
         </Select>
+      </div>
+      <div className="w-[200px]">
+        <h3 className="text-xl font-medium">Dropdown</h3>
+        <Dropdown>
+          <Dropdown.Trigger className="inline-flex items-center gap-2 rounded-md bg-gray-800 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-700 data-[open]:bg-gray-700 data-[focus]:outline-1 data-[focus]:outline-white">
+            버튼
+          </Dropdown.Trigger>
+          <Dropdown.ItemWrapper className="w-[52px] text-black">
+            <Dropdown.Item value={"option1"} className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10">
+              옵션1
+            </Dropdown.Item>
+            <Dropdown.Item value={"option2"} className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10">
+              옵션2
+            </Dropdown.Item>
+            <Dropdown.Item value={"option3"} className="group flex w-full items-center gap-2 rounded-lg py-1.5 px-3 data-[focus]:bg-white/10">
+              옵션3
+            </Dropdown.Item>
+          </Dropdown.ItemWrapper>
+        </Dropdown>
       </div>
     </div>
   );
