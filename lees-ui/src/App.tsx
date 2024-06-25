@@ -2,6 +2,7 @@ import React from "react";
 import "./App.css";
 import { Select } from "./components/select/select";
 import styled from "styled-components";
+import { Tabs } from "./components/tabs/tabs";
 
 const selectList = [
   { name: "이은혁", value: "Eunhyeok Lee" },
@@ -31,6 +32,18 @@ function App() {
             ))}
           </Select.OptionWrapper>
         </Select>
+
+        <Tabs>
+          <Tabs.TabsWrapper>
+            <Tabs.Tab className="bg-red-50">1</Tabs.Tab>
+            <Tabs.Tab>2</Tabs.Tab>
+          </Tabs.TabsWrapper>
+          <Tabs.ContentWrapper>
+            <Tabs.Content>11</Tabs.Content>
+            <Tabs.Content>22</Tabs.Content>
+            <Tabs.Content>33</Tabs.Content>
+          </Tabs.ContentWrapper>
+        </Tabs>
       </div>
     </div>
   );
