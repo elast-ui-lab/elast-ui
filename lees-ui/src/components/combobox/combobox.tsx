@@ -49,7 +49,8 @@ type OptionProps = {
   value: string | number;
   id?: string;
   className?: string;
-  children: React.ReactNode;
+  tabIndex?: number;
+  children?: React.ReactNode;
 };
 
 const ComboBoxContext = createContext<ComboBoxContextType | undefined>(
@@ -142,10 +143,11 @@ const Input = ({ className, id }: DefaultProps) => {
 
   const KeyEvent: { [key: string]: () => void } = {
     Enter: () => {
-      console.log("Enter");
+      onClickOutside();
       setSelectedValue(
         React.isValidElement(focusChild) && focusChild.props.value
       );
+      console.log("Enter");
     },
     ArrowUp: () => {
       setFocusIndex(() => Math.max(focusIndex - 1, -1));
@@ -165,6 +167,7 @@ const Input = ({ className, id }: DefaultProps) => {
     if (e === undefined || e.target !== ref.current) {
       setOpen(false);
       setIsTyping(false);
+      setFocusIndex(-1);
       ref.current?.blur();
     }
   }
@@ -251,7 +254,7 @@ const OptionWrapper = ({
   );
 };
 
-const Option = ({ value, children, id, className }: OptionProps) => {
+const Option = ({ value, children, ...props }: OptionProps) => {
   const { setSelectedValue, setOpen, onChange, focusChild } = useContext(
     ComboBoxContext
   ) as ComboBoxContextType;
@@ -273,9 +276,9 @@ const Option = ({ value, children, id, className }: OptionProps) => {
 
   return (
     <ComboOption
-      id={id}
-      className={`${className} ${isFocused ? "focus" : ""}`}
       onClick={onClickOption}
+      {...(isFocused ? { "data-focused": "" } : {})}
+      {...props}
     >
       {children}
     </ComboOption>

@@ -43,8 +43,9 @@ function App() {
           <ComboBox.OptionWrapper className="bg-[white] text-[black] rounded border z-50">
             {selectList.map((option: any, index: number) => (
               <ComboBox.Option
-                className="hover:bg-[#ededed] py-3 px-4"
+                className="hover:bg-[#ededed] py-3 px-4 data-[focused]:bg-[#ededed]"
                 key={`${option.name}-${index}`}
+                tabIndex={index}
                 value={option.value}
               >
                 {option.name}
