@@ -10,6 +10,24 @@ const selectList = [
   { name: "김윤미", value: "Yoonmi Kim" },
 ];
 
+const tabList = [
+  {
+    name: "tab 1",
+    imgSrc:
+      "https://cdn.pixabay.com/photo/2013/05/09/09/06/waves-circles-109964_1280.jpg",
+  },
+  {
+    name: "tab 2",
+    imgSrc:
+      "https://cdn.pixabay.com/photo/2020/04/08/08/08/spring-5016266_1280.jpg",
+  },
+  {
+    name: "tab 3",
+    imgSrc:
+      "https://cdn.pixabay.com/photo/2019/07/06/12/51/palace-4320416_1280.jpg",
+  },
+];
+
 function App() {
   return (
     <div className="App">
@@ -32,16 +50,22 @@ function App() {
             ))}
           </Select.OptionWrapper>
         </Select>
-
-        <Tabs>
-          <Tabs.TabsWrapper>
-            <Tabs.Tab className="bg-red-50">1</Tabs.Tab>
-            <Tabs.Tab>2</Tabs.Tab>
+        <h3 className="text-xl font-medium">Tabs</h3>
+        <Tabs className="mt-4">
+          <Tabs.TabsWrapper className="flex flex-row">
+            {tabList.map((tab) => (
+              <Tabs.Tab className="rounded data-[selected]:bg-black/10 cursor-pointer px-2 py-1 mb-2">
+                {tab.name}
+              </Tabs.Tab>
+            ))}
           </Tabs.TabsWrapper>
           <Tabs.ContentWrapper>
-            <Tabs.Content>11</Tabs.Content>
-            <Tabs.Content>22</Tabs.Content>
-            <Tabs.Content>33</Tabs.Content>
+            {tabList.map(({ imgSrc }) => (
+              <Tabs.Content>
+                <p>첫 번째 탭의 내용입니다.</p>
+                <img src={imgSrc} alt="사진" width={1280} height={905} />
+              </Tabs.Content>
+            ))}
           </Tabs.ContentWrapper>
         </Tabs>
       </div>
