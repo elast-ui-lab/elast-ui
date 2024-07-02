@@ -63,7 +63,6 @@ function App() {
         >
           <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
         </Switch>
-        <h1>{enabled.toString()}</h1>
       </div>
     </div>
   );
