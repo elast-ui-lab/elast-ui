@@ -51,6 +51,13 @@ const Trigger = ({children, className}: DropdownProps) => {
   const { open, setOpen } = useContext(
     DropdownContext
   )
+  const onClickOutside = (e: any) => e.target !== ref.current && setOpen(false);
+
+  useEffect(() => {
+    window.addEventListener("click", onClickOutside);
+    return () => window.removeEventListener("click", onClickOutside);
+  });
+
   return (
     <>
       <DropdownBox
@@ -103,7 +110,6 @@ Dropdown.Item = Item;
 
 
 const DropdownBoxWrapper = styled.div`
-
 `;
 
 const DropdownBox = styled.button<{ open: boolean }>`
