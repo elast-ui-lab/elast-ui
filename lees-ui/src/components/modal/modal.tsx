@@ -12,7 +12,7 @@ export const Modal = ({
 }: {
   open: boolean;
   className?: string;
-  onClose: () => void;
+  onClose?: () => void;
   children?: React.ReactNode;
 }) => {
   useEffect(() => {
