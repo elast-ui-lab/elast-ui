@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { Portal } from "./portal";
 import styled from "styled-components";
 
@@ -15,16 +15,26 @@ export const Modal = ({
   onClose?: () => void;
   children?: React.ReactNode;
 }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const handleKeyboard = (e: any) => e.key === "Escape" && onClose?.();
+
   useEffect(() => {
-    if (!open) {
-      onClose?.();
-    }
-  }, [open, onClose]);
+    if (open) ref.current && ref.current.focus();
+  }, [open]);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyboard);
+    return () => document.removeEventListener("keydown", handleKeyboard);
+  });
 
   return (
     <ModalContext.Provider value={{ open }}>
       <Portal>
-        <ModalWrapper className={className}>{children}</ModalWrapper>
+        {open && (
+          <ModalWrapper ref={ref} className={className} tabIndex={0}>
+            {children}
+          </ModalWrapper>
+        )}
       </Portal>
     </ModalContext.Provider>
   );
