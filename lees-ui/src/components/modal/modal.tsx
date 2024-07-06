@@ -16,13 +16,16 @@ export const Modal = ({
   children?: React.ReactNode;
 }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const handleKeyboard = (e: any) => e.key === "Escape" && onClose?.();
 
   useEffect(() => {
     if (open) ref.current && ref.current.focus();
+    // 모달 오픈 버튼의 포커스를 없애기 위함
   }, [open]);
 
   useEffect(() => {
+    const handleKeyboard = (e: KeyboardEvent) =>
+      e.key === "Escape" && onClose?.();
+
     document.addEventListener("keydown", handleKeyboard);
     return () => document.removeEventListener("keydown", handleKeyboard);
   });
