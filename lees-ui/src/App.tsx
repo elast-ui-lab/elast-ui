@@ -18,25 +18,30 @@ function App() {
       <h1 className="text-4xl font-medium my-10">Lees UI Library</h1>
       <div className="w-[200px]">
         <h3 className="text-xl font-medium">Select</h3>
-        <Select
-          className="mb-3"
-          onChange={(value: string) => console.log(value)}
-        >
-          <Select.Trigger className="hover:bg-[white] focus:bg-[white] hover:text-[black] focus:text-[black] bg-[#f4f4f4] text-[black] rounded border py-3 px-4 h-[50px]">
-            <Arrow />
-          </Select.Trigger>
-          <Select.OptionWrapper className="bg-[white] text-[black] rounded border z-50">
-            {selectList.map((option: any, index: number) => (
-              <Select.Option
-                className="hover:bg-[#ededed] py-3 px-4"
-                key={`${option.name}-${index}`}
-                value={option.value}
-              >
-                {option.name}
-              </Select.Option>
-            ))}
-          </Select.OptionWrapper>
-        </Select>
+        <form action="">
+          <Select
+            // value="Eunhyeok Lee"
+            className="mb-3"
+            required
+          >
+            <Select.Trigger className="hover:bg-[white] focus:bg-[white] hover:text-[black] focus:text-[black] bg-[#f4f4f4] text-[black] rounded border py-3 px-4 h-[3rem]">
+              <Arrow />
+            </Select.Trigger>
+            <Select.OptionWrapper className="bg-[white] text-[black] rounded border z-50">
+              {selectList.map((option: any, index: number) => (
+                <Select.Option
+                  className="hover:bg-[#ededed] py-3 px-4"
+                  key={`${option.name}-${index}`}
+                  value={option.value}
+                >
+                  {option.name}
+                </Select.Option>
+              ))}
+            </Select.OptionWrapper>
+            <Select.Error>필수 입력값입니다.</Select.Error>
+          </Select>
+          <button type="submit">Submit</button>
+        </form>
         <h3 className="text-xl font-medium">ComboBox</h3>
         <ComboBox className="mb-3">
           <ComboBox.Input className="hover:bg-[white] focus:bg-[white] hover:text-[black] focus:text-[black] bg-[#f4f4f4] text-[black] rounded border py-3 px-4 h-[50px]">
