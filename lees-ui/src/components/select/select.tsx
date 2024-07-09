@@ -188,9 +188,8 @@ const OptionWrapper = ({
     useContext(SelectContext) as SelectContextType;
 
   useEffect(() => {
-    console.log(children, focusIndex);
     children && setFocusChild(React.Children.toArray(children)[focusIndex]);
-  }, [focusIndex]);
+  }, [children, focusIndex, setFocusChild]);
 
   useEffect(() => {
     if (selectedValue) {
@@ -226,7 +225,7 @@ const Option = ({ value, children, ...props }: OptionProps) => {
     if (React.isValidElement(focusChild) && focusChild.props.value === value)
       setIsFocused(true);
     else setIsFocused(false);
-  }, [focusChild]);
+  }, [focusChild, value]);
 
   const onClickOption = () => {
     setSelectedValue(value);
