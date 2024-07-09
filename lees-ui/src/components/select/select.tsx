@@ -10,6 +10,7 @@ import styled from "styled-components";
 type DataType = any;
 
 type SelectContextType = {
+  validity: boolean;
   open: boolean;
   onChange: (id: unknown) => void;
   selectedValue: DataType;
@@ -17,6 +18,7 @@ type SelectContextType = {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedValue: React.Dispatch<React.SetStateAction<DataType>>;
   setSelectedLabel: React.Dispatch<React.SetStateAction<DataType>>;
+  required?: boolean;
 };
 
 type SelectProps = {
@@ -52,12 +54,25 @@ export const Select = ({
   required,
 }: SelectProps) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<DataType>();
+  const [selectedValue, setSelectedValue] = useState<DataType>(value || "");
   const [selectedLabel, setSelectedLabel] = useState<DataType>();
+  const [validity, setValidity] = useState<boolean>(false);
+  const selectRef = useRef<HTMLInputElement>(null);
+
+  const validateRequiredField = (e: Event) => {
+    // required가 true인 경우, submit시 이를 만족하는지 검사
+    e.preventDefault();
+    if (required && selectedValue === "") setValidity(true);
+    else setValidity(false);
+  };
 
   useEffect(() => {
-    value !== undefined && setSelectedValue(value);
-  }, [value]);
+    if (selectRef.current) {
+      const form = selectRef.current.closest("form");
+      form?.addEventListener("submit", validateRequiredField);
+      return () => form?.removeEventListener("submit", validateRequiredField);
+    }
+  }, [selectedValue]);
 
   return (
     <SelectContext.Provider
@@ -69,17 +84,25 @@ export const Select = ({
         selectedLabel,
         setSelectedValue,
         setSelectedLabel,
+        validity,
+        required,
       }}
     >
       <SelectBoxWrapper id={id} className={className}>
         {children}
       </SelectBoxWrapper>
+      <input
+        type="hidden"
+        ref={selectRef}
+        value={selectedValue}
+        required={required}
+      />
     </SelectContext.Provider>
   );
 };
 
 const Trigger = ({ className, id, children }: DefaultProps) => {
-  const ref = useRef<any>();
+  const ref = useRef<HTMLDivElement>(null);
   const { selectedLabel, open, setOpen } = useContext(
     SelectContext
   ) as SelectContextType;
@@ -115,7 +138,24 @@ const OptionWrapper = ({
 }: {
   children: React.ReactNode;
 } & DefaultProps) => {
-  const { open } = useContext(SelectContext) as SelectContextType;
+  const { open, selectedValue, setSelectedLabel } = useContext(
+    SelectContext
+  ) as SelectContextType;
+
+  useEffect(() => {
+    if (selectedValue) {
+      let defaultLabel;
+      React.Children.toArray(children).forEach((child) => {
+        if (
+          React.isValidElement(child) &&
+          child.props.value === selectedValue
+        ) {
+          defaultLabel = child.props.children;
+        }
+      });
+      setSelectedLabel(defaultLabel);
+    }
+  }, [children, selectedValue, setSelectedLabel]);
 
   return (
     <>
@@ -127,26 +167,15 @@ const OptionWrapper = ({
 };
 
 const Option = ({ value, children, ...props }: OptionProps) => {
-  const {
-    selectedValue,
-    setSelectedValue,
-    setSelectedLabel,
-    setOpen,
-    onChange,
-  } = useContext(SelectContext) as SelectContextType;
-
-  useEffect(() => {
-    if (value === selectedValue) {
-      setSelectedLabel(children);
-    }
-  }, [value, selectedValue, setSelectedLabel, children]);
+  const { setSelectedValue, setOpen, onChange } = useContext(
+    SelectContext
+  ) as SelectContextType;
 
   const onClickOption = () => {
-    if (typeof children === "string" || typeof children === "number") {
-      setSelectedValue(value);
-      onChange(value);
-      setOpen(false);
-    }
+    setSelectedValue(value);
+    console.log(value);
+    onChange && onChange(value);
+    setOpen(false);
   };
 
   return (
@@ -156,16 +185,22 @@ const Option = ({ value, children, ...props }: OptionProps) => {
   );
 };
 
+const Error = ({ children }: { children: React.ReactNode }) => {
+  const { validity } = useContext(SelectContext) as SelectContextType;
+  return <>{validity && <ErrorMessage>{children}</ErrorMessage>}</>;
+};
+
 Select.Trigger = Trigger;
 Select.OptionWrapper = OptionWrapper;
 Select.Option = Option;
+Select.Error = Error;
 
 const SelectBoxWrapper = styled.div`
   position: relative;
   padding: 0;
   cursor: pointer;
 `;
-const SelectBox = styled.button<{ open: boolean }>`
+const SelectBox = styled.div<{ open: boolean }>`
   width: 100%;
   outline: none;
   cursor: pointer;
@@ -185,3 +220,5 @@ const SelectOptionWrapper = styled.div<{ open: boolean }>`
 const SelectOption = styled.p`
   position: relative;
 `;
+
+const ErrorMessage = styled.p``;
