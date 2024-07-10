@@ -1,7 +1,10 @@
-import React, { useState } from "react";
 import "./App.css";
-import { Select } from "./components/select/select";
+import React, { useState } from "react";
 import styled from "styled-components";
+import { Select } from "./components/select/select";
+import { ComboBox } from "./components/combobox/combobox";
+import { Switch } from "./components/switch/switch";
+import { Modal } from "./components/modal/modal";
 import { Tabs } from "./components/tabs/tabs";
 import { ComboBox } from "./components/combobox/combobox";
 import { Switch } from "./components/switch/switch";
@@ -31,6 +34,7 @@ const tabList = [
 ];
 
 function App() {
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [enabled, setEnabled] = useState(false);
 
   return (
@@ -80,6 +84,38 @@ function App() {
             ))}
           </Select.OptionWrapper>
         </Select>
+        <h3 className="text-xl font-medium">Modal</h3>
+        <button
+          onClick={() => {
+            setModalOpen(!modalOpen);
+            console.log(modalOpen);
+          }}
+        >
+          {modalOpen ? "close" : "open"}
+        </button>
+        <Modal
+          open={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            console.log("closed");
+          }}
+          className="flex flex-col w-full h-full justify-center items-center backdrop-blur-md"
+        >
+          <Modal.Container className="bg-white rounded-lg shadow-lg py-6 px-8">
+            <Modal.Title className="text-[1.5rem] mb-4">HI THERE</Modal.Title>
+            <Modal.Content className="bg-gray-100 h-[200px] w-[500px] rounded-md relative">
+              <div>Here is Content Section</div>
+              <button
+                onClick={() => {
+                  setModalOpen(false);
+                }}
+                className="inline-block bottom-0"
+              >
+                close
+              </button>
+            </Modal.Content>
+          </Modal.Container>
+        </Modal>
         <h3 className="text-xl font-medium">Tabs</h3>
         <Tabs className="mt-4">
           <Tabs.TabsWrapper className="flex flex-row">
