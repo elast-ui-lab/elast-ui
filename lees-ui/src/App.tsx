@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import "./App.css";
 import { Select } from "./components/select/select";
 import styled from "styled-components";
@@ -11,7 +11,7 @@ const selectList = [
 ];
 
 function App() {
-  const [enabled, setEnabled] = useState(false)
+  const [enabled, setEnabled] = useState(false);
 
   return (
     <div className="App">
@@ -30,7 +30,7 @@ function App() {
             <Select.OptionWrapper className="bg-[white] text-[black] rounded border z-50">
               {selectList.map((option: any, index: number) => (
                 <Select.Option
-                  className="hover:bg-[#ededed] py-3 px-4"
+                  className="hover:bg-[#ededed] py-3 px-4 data-[focused]:bg-[#ededed]"
                   key={`${option.name}-${index}`}
                   value={option.value}
                 >
