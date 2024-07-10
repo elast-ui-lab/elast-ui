@@ -6,8 +6,6 @@ import { ComboBox } from "./components/combobox/combobox";
 import { Switch } from "./components/switch/switch";
 import { Modal } from "./components/modal/modal";
 import { Tabs } from "./components/tabs/tabs";
-import { ComboBox } from "./components/combobox/combobox";
-import { Switch } from "./components/switch/switch";
 
 const selectList = [
   { name: "이은혁", value: "Eunhyeok Lee" },
@@ -82,8 +80,8 @@ function App() {
                 {option.name}
               </ComboBox.Option>
             ))}
-          </Select.OptionWrapper>
-        </Select>
+          </ComboBox.OptionWrapper>
+        </ComboBox>
         <h3 className="text-xl font-medium">Modal</h3>
         <button
           onClick={() => {
@@ -134,8 +132,6 @@ function App() {
             ))}
           </Tabs.ContentWrapper>
         </Tabs>
-          </ComboBox.OptionWrapper>
-        </ComboBox>
         <h3 className="text-xl font-medium">Switch</h3>
         <Switch
           checked={enabled}
