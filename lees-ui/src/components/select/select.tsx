@@ -12,10 +12,14 @@ type DataType = any;
 type SelectContextType = {
   validity: boolean;
   open: boolean;
+  focusIndex: number;
+  focusChild: React.ReactNode;
   onChange: (id: unknown) => void;
   selectedValue: DataType;
   selectedLabel: DataType;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setFocusIndex: React.Dispatch<React.SetStateAction<number>>;
+  setFocusChild: React.Dispatch<React.SetStateAction<React.ReactNode>>;
   setSelectedValue: React.Dispatch<React.SetStateAction<DataType>>;
   setSelectedLabel: React.Dispatch<React.SetStateAction<DataType>>;
   required?: boolean;
@@ -56,6 +60,8 @@ export const Select = ({
   const [open, setOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<DataType>(value || "");
   const [selectedLabel, setSelectedLabel] = useState<DataType>();
+  const [focusIndex, setFocusIndex] = useState<number>(-1);
+  const [focusChild, setFocusChild] = useState<React.ReactNode>();
   const [validity, setValidity] = useState<boolean>(false);
   const selectRef = useRef<HTMLInputElement>(null);
 
@@ -79,9 +85,13 @@ export const Select = ({
       value={{
         open,
         setOpen,
+        focusIndex,
+        focusChild,
         onChange,
         selectedValue,
         selectedLabel,
+        setFocusIndex,
+        setFocusChild,
         setSelectedValue,
         setSelectedLabel,
         validity,
@@ -103,11 +113,47 @@ export const Select = ({
 
 const Trigger = ({ className, id, children }: DefaultProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { selectedLabel, open, setOpen } = useContext(
-    SelectContext
-  ) as SelectContextType;
+  const {
+    selectedLabel,
+    open,
+    focusChild,
+    focusIndex,
+    setOpen,
+    setFocusIndex,
+    setSelectedValue,
+  } = useContext(SelectContext) as SelectContextType;
 
-  const onClickOutside = (e: any) => e.target !== ref.current && setOpen(false);
+  const onClickOutside = (e?: MouseEvent) => {
+    if (!e || e.target !== ref.current) setOpen(false);
+  };
+
+  const KeyEvent: { [key: string]: () => void } = {
+    Enter: () => {
+      onClickOutside();
+      setSelectedValue(
+        React.isValidElement(focusChild) && focusChild.props.value
+      );
+    },
+    ArrowUp: () => {
+      setFocusIndex(() => Math.max(focusIndex - 1, -1));
+    },
+    ArrowDown: () => {
+      setFocusIndex(focusIndex + 1);
+    },
+    Escape: () => {
+      onClickOutside();
+    },
+  };
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      e.key in KeyEvent && focusIndex >= -1 && KeyEvent[e.key]();
+    };
+    window.addEventListener("keyup", handleKeyUp);
+    return () => window.removeEventListener("keyup", handleKeyUp);
+  });
 
   useEffect(() => {
     window.addEventListener("click", onClickOutside);
@@ -138,9 +184,12 @@ const OptionWrapper = ({
 }: {
   children: React.ReactNode;
 } & DefaultProps) => {
-  const { open, selectedValue, setSelectedLabel } = useContext(
-    SelectContext
-  ) as SelectContextType;
+  const { open, selectedValue, focusIndex, setSelectedLabel, setFocusChild } =
+    useContext(SelectContext) as SelectContextType;
+
+  useEffect(() => {
+    children && setFocusChild(React.Children.toArray(children)[focusIndex]);
+  }, [children, focusIndex, setFocusChild]);
 
   useEffect(() => {
     if (selectedValue) {
@@ -167,19 +216,29 @@ const OptionWrapper = ({
 };
 
 const Option = ({ value, children, ...props }: OptionProps) => {
-  const { setSelectedValue, setOpen, onChange } = useContext(
+  const { focusChild, setSelectedValue, setOpen, onChange } = useContext(
     SelectContext
   ) as SelectContextType;
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (React.isValidElement(focusChild) && focusChild.props.value === value)
+      setIsFocused(true);
+    else setIsFocused(false);
+  }, [focusChild, value]);
 
   const onClickOption = () => {
     setSelectedValue(value);
-    console.log(value);
     onChange && onChange(value);
     setOpen(false);
   };
 
   return (
-    <SelectOption onClick={onClickOption} {...props}>
+    <SelectOption
+      onClick={onClickOption}
+      {...(isFocused ? { "data-focused": "" } : {})}
+      {...props}
+    >
       {children}
     </SelectOption>
   );
