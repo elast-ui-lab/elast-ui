@@ -6,7 +6,7 @@ import { ComboBox } from "./components/combobox/combobox";
 import { Switch } from "./components/switch/switch";
 import { Modal } from "./components/modal/modal";
 import { Tabs } from "./components/tabs/tabs";
-
+import { Dropdown } from "./components/dropdown/dropdown";
 const selectList = [
   { name: "이은혁", value: "Eunhyeok Lee" },
   { name: "이수연", value: "Sooyeon Lee" },
@@ -34,7 +34,7 @@ const tabList = [
 function App() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [enabled, setEnabled] = useState(false);
-
+  const [dropdownSelectedValue, setDropdownSelectedValue] = useState('')
   return (
     <div className="App">
       <h1 className="text-4xl font-medium my-10">Lees UI Library</h1>
@@ -140,6 +140,23 @@ function App() {
         >
           <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
         </Switch>
+        <h3 className="text-xl font-medium">Dropdown</h3>
+        <p>현재값: {dropdownSelectedValue}</p>
+          <Dropdown onChange={setDropdownSelectedValue}  className="mb-3">
+          <Dropdown.Trigger className="hover:bg-[white] focus:bg-[white] hover:text-[black] focus:text-[black] bg-[#f4f4f4] text-[black] rounded border py-3 px-4 h-[3rem]">
+            버튼
+          </Dropdown.Trigger>
+          <Dropdown.ItemWrapper className="bg-[white] text-[black] rounded border z-50">
+            {selectList.map((option: any, index: number) => (
+              <Dropdown.Item 
+              key={`${option.name}-${index}`}
+              value={option.value} 
+              className="hover:bg-[#ededed] py-3 px-4 data-[focused]:bg-[#ededed]">
+                {option.name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.ItemWrapper>
+        </Dropdown>
       </div>
     </div>
   );
