@@ -1,0 +1,9 @@
+/node_modules
+src
+public/
+README.md
+tsconfig.json
+postcss.config.js
+tailwind.config.js
+example
+playground
