@@ -252,11 +252,17 @@ const OptionWrapper = ({
 };
 
 const Option = ({ value, children, ...props }: OptionProps) => {
-  const { setSelectedValue, setOpen, onChange, focusChild } = useContext(
-    ComboBoxContext
-  ) as ComboBoxContextType;
+  const {
+    selectedValue,
+    selectedLabel,
+    setSelectedValue,
+    setOpen,
+    onChange,
+    focusChild,
+  } = useContext(ComboBoxContext) as ComboBoxContextType;
 
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
 
   const onClickOption = () => {
     setSelectedValue(value);
@@ -269,12 +275,19 @@ const Option = ({ value, children, ...props }: OptionProps) => {
     if (React.isValidElement(focusChild) && focusChild.props.value === value)
       setIsFocused(true);
     else setIsFocused(false);
-  }, [focusChild]);
+  }, [focusChild, value]);
+
+  useEffect(() => {
+    if (selectedValue === value && selectedLabel === children)
+      setIsSelected(true);
+    else setIsSelected(false);
+  }, [selectedValue, selectedLabel, value, children]);
 
   return (
     <ComboOption
       onClick={onClickOption}
       {...(isFocused ? { "data-focused": "" } : {})}
+      {...(isSelected ? { "data-selected": "" } : {})}
       {...props}
     >
       {children}
