@@ -173,16 +173,28 @@ const ItemWrapper = ({ children, className }: ItemWrapperProps) => {
 };
 
 const Item = ({ value, children, className }: ItemProps) => {
-  const { setSelectedValue, setOpen, onChange, focusChild } = useContext(
-    DropdownContext
-  ) as DropdownContextType;
+  const {
+    selectedValue,
+    selectedLabel,
+    setSelectedValue,
+    setOpen,
+    onChange,
+    focusChild,
+  } = useContext(DropdownContext) as DropdownContextType;
   const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
 
   useEffect(() => {
     if (React.isValidElement(focusChild) && focusChild.props.value === value)
       setIsFocused(true);
     else setIsFocused(false);
   }, [focusChild, value]);
+
+  useEffect(() => {
+    if (selectedValue === value && selectedLabel === children)
+      setIsSelected(true);
+    else setIsSelected(false);
+  }, [selectedValue, selectedLabel, value, children]);
 
   const onClickOption = () => {
     setSelectedValue(value);
@@ -195,6 +207,7 @@ const Item = ({ value, children, className }: ItemProps) => {
       onClick={onClickOption}
       className={className}
       {...(isFocused ? { "data-focused": "" } : {})}
+      {...(isSelected ? { "data-selected": "" } : {})}
     >
       {children}
     </DropdownItem>
