@@ -255,6 +255,7 @@ const Option = ({ value, children, className, ...props }: OptionProps) => {
       onClick={onClickOption}
       {...(isFocused ? { "data-focused": "" } : {})}
       {...(isSelected ? { "data-selected": "" } : {})}
+      className={className}
       {...props}
     >
       {children}
