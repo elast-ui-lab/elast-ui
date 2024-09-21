@@ -186,7 +186,14 @@ const Input = ({
   };
 
   return (
-    <div className={className} {...props} onClick={() => setOpen(true)}>
+    <div
+      className={className}
+      {...props}
+      onClick={(e) => {
+        setOpen(true);
+        e.stopPropagation();
+      }}
+    >
       <ComboInput
         ref={ref}
         open={open}
