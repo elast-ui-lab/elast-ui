@@ -1,4 +1,4 @@
-# six_pointed_star elast-ui
+# :six_pointed_star: elast-ui
 
 <br/>
 :thought_balloon: "커스텀이 쉬운 UI 어디 없을까?"<br/>
