@@ -40,9 +40,9 @@ type ComboBoxProps = {
 };
 
 type DefaultProps = {
-  id?: string;
   className?: string;
   children?: React.ReactNode;
+  [key: string]: unknown;
 };
 
 type OptionProps = {
@@ -125,7 +125,7 @@ const ComboBox = ({
   );
 };
 
-const Input = ({ className, id }: DefaultProps) => {
+const Input = ({ className, ...props }: DefaultProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const {
     open,
@@ -184,7 +184,6 @@ const Input = ({ className, id }: DefaultProps) => {
     <>
       <ComboInput
         ref={ref}
-        id={id}
         className={className}
         open={open}
         onFocus={() => setOpen(true)}
@@ -196,14 +195,15 @@ const Input = ({ className, id }: DefaultProps) => {
           setInputValue(e.target.value);
           setTypedKeyword(e.target.value);
         }}
+        {...props}
       />
     </>
   );
 };
 const OptionWrapper = ({
-  id,
   children,
   className,
+  ...props
 }: {
   children: React.ReactNode;
 } & DefaultProps) => {
@@ -244,7 +244,7 @@ const OptionWrapper = ({
 
   return (
     <>
-      <ComboOptionWrapper open={open} id={id} className={className}>
+      <ComboOptionWrapper open={open} className={className} {...props}>
         {filteredChildren}
       </ComboOptionWrapper>
     </>
@@ -295,9 +295,17 @@ const Option = ({ value, children, ...props }: OptionProps) => {
   );
 };
 
-const Error = ({ children }: { children: React.ReactNode }) => {
+const Error = ({ children, className, ...props }: DefaultProps) => {
   const { validity } = useContext(ComboBoxContext) as ComboBoxContextType;
-  return <>{validity && <ErrorMessage>{children}</ErrorMessage>}</>;
+  return (
+    <>
+      {validity && (
+        <ErrorMessage {...props} className={className}>
+          {children}
+        </ErrorMessage>
+      )}
+    </>
+  );
 };
 
 ComboBox.Input = Input;

@@ -35,9 +35,9 @@ type SelectProps = {
 };
 
 type DefaultProps = {
-  id?: string;
   className?: string;
   children?: React.ReactNode;
+  [key: string]: unknown;
 };
 
 type OptionProps = {
@@ -45,6 +45,7 @@ type OptionProps = {
   id?: string;
   className?: string;
   children: React.ReactNode;
+  [key: string]: unknown;
 };
 
 const SelectContext = createContext<SelectContextType | undefined>(undefined);
@@ -111,7 +112,7 @@ const Select = ({
   );
 };
 
-const Trigger = ({ className, id, children }: DefaultProps) => {
+const Trigger = ({ className, children, ...props }: DefaultProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const {
     selectedLabel,
@@ -168,12 +169,12 @@ const Trigger = ({ className, id, children }: DefaultProps) => {
     <>
       <SelectBox
         ref={ref}
-        id={id}
         className={className}
         open={open}
         onClick={() => {
           setOpen(!open);
         }}
+        {...props}
       >
         {selectedLabel}
         {children}
@@ -182,9 +183,9 @@ const Trigger = ({ className, id, children }: DefaultProps) => {
   );
 };
 const OptionWrapper = ({
-  id,
   children,
   className,
+  ...props
 }: {
   children: React.ReactNode;
 } & DefaultProps) => {
@@ -212,14 +213,14 @@ const OptionWrapper = ({
 
   return (
     <>
-      <SelectOptionWrapper open={open} id={id} className={className}>
+      <SelectOptionWrapper {...props} open={open} className={className}>
         {children}
       </SelectOptionWrapper>
     </>
   );
 };
 
-const Option = ({ value, children, ...props }: OptionProps) => {
+const Option = ({ value, children, className, ...props }: OptionProps) => {
   const {
     selectedValue,
     selectedLabel,
@@ -261,9 +262,17 @@ const Option = ({ value, children, ...props }: OptionProps) => {
   );
 };
 
-const Error = ({ children }: { children: React.ReactNode }) => {
+const Error = ({ children, className, ...props }: DefaultProps) => {
   const { validity } = useContext(SelectContext) as SelectContextType;
-  return <>{validity && <ErrorMessage>{children}</ErrorMessage>}</>;
+  return (
+    <>
+      {validity && (
+        <ErrorMessage {...props} className={className}>
+          {children}
+        </ErrorMessage>
+      )}
+    </>
+  );
 };
 
 Select.Trigger = Trigger;
