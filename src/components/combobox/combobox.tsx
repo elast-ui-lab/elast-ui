@@ -125,7 +125,12 @@ const ComboBox = ({
   );
 };
 
-const Input = ({ className, children, ...props }: DefaultProps) => {
+const Input = ({
+  className,
+  children,
+  placeholder,
+  ...props
+}: { placeholder: string } & DefaultProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const {
     open,
@@ -187,6 +192,7 @@ const Input = ({ className, children, ...props }: DefaultProps) => {
         open={open}
         onFocus={() => setOpen(true)}
         onKeyUp={handleKeyUp}
+        placeholder={placeholder}
         value={isTyping ? inputValue : selectedLabel}
         onChange={(e) => {
           setIsTyping(true);
