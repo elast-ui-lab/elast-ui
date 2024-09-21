@@ -83,7 +83,7 @@ Modal.Content = Content;
 export default Modal;
 
 const ModalWrapper = styled.div`
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
 `;
