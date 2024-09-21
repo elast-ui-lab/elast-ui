@@ -130,7 +130,7 @@ const Input = ({
   children,
   placeholder,
   ...props
-}: { placeholder: string } & DefaultProps) => {
+}: { placeholder?: string } & DefaultProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const {
     open,
@@ -186,7 +186,7 @@ const Input = ({
   };
 
   return (
-    <div className={className} {...props}>
+    <div className={className} {...props} onClick={() => setOpen(true)}>
       <ComboInput
         ref={ref}
         open={open}
