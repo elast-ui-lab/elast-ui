@@ -1,9 +1,9 @@
-# elast-ui
+# six_pointed_star elast-ui
 
+<br/>
 :thought_balloon: "커스텀이 쉬운 UI 어디 없을까?"<br/>
 :thought_balloon: "유지보수가 간편한 UI가 있었으면 좋겠어."<br/>
-:thought_balloon: "UI 라이브러리도 공부를 해야 하다니..."<br/>
-
+:thought_balloon: "UI 라이브러리도 공부를 해야 하다니..."<br/><br/>
 elast-ui는 이런 고민에서 시작했습니다.
 직관적이지 않은 UI 컴포넌트와 복잡한 유지보수 작업은 개발자에게 큰 부담이었습니다.
 
