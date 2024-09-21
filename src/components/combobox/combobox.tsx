@@ -125,7 +125,13 @@ const ComboBox = ({
   );
 };
 
-const Input = ({ className, ...props }: DefaultProps) => {
+const Input = ({
+  className,
+  ...props
+}: {
+  className: string;
+  [key: string]: unknown;
+}) => {
   const ref = useRef<HTMLInputElement>(null);
   const {
     open,
