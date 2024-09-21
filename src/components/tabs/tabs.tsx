@@ -6,7 +6,6 @@ interface ChildProps {
   "data-tabindex"?: number;
 }
 interface CommonProps {
-  id?: string;
   className?: string;
   children?: React.ReactNode;
 }
@@ -14,11 +13,11 @@ interface CommonProps {
 const TabsContext = createContext<any>(undefined);
 
 const Tabs = ({
-  id,
   className,
   defaultIndex,
   children,
   onChange,
+  ...props
 }: {
   defaultIndex?: number;
   onChange?: (prop?: unknown) => void;
@@ -26,13 +25,14 @@ const Tabs = ({
   const [tabIndex, setTabIndex] = useState<number>(defaultIndex || 0);
 
   useEffect(() => {
-    console.log(tabIndex);
     onChange?.(tabIndex);
   }, [onChange, tabIndex]);
 
   return (
     <TabsContext.Provider value={{ tabIndex, setTabIndex }}>
-      {children}
+      <div className={className} {...props}>
+        {children}
+      </div>
     </TabsContext.Provider>
   );
 };
