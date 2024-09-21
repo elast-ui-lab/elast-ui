@@ -125,7 +125,7 @@ const ComboBox = ({
   );
 };
 
-const Input = ({ className, id }: { className?: string; id?: string }) => {
+const Input = ({ className, children, ...props }: DefaultProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const {
     open,
@@ -181,11 +181,9 @@ const Input = ({ className, id }: { className?: string; id?: string }) => {
   };
 
   return (
-    <>
+    <div className={className} {...props}>
       <ComboInput
         ref={ref}
-        id={id}
-        className={className}
         open={open}
         onFocus={() => setOpen(true)}
         onKeyUp={handleKeyUp}
@@ -197,7 +195,8 @@ const Input = ({ className, id }: { className?: string; id?: string }) => {
           setTypedKeyword(e.target.value);
         }}
       />
-    </>
+      {children}
+    </div>
   );
 };
 const OptionWrapper = ({
@@ -322,9 +321,10 @@ const ComboWrapper = styled.div`
 `;
 const ComboInput = styled.input<{ open: boolean }>`
   width: 100%;
+  height: 100%;
   outline: none;
   cursor: pointer;
-  text-align: left;
+  background: transparent;
 `;
 
 const ComboOptionWrapper = styled.div<{ open: boolean }>`
