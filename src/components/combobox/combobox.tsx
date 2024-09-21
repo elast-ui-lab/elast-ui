@@ -125,13 +125,7 @@ const ComboBox = ({
   );
 };
 
-const Input = ({
-  className,
-  ...props
-}: {
-  className: string;
-  [key: string]: unknown;
-}) => {
+const Input = ({ className, id }: { className?: string; id?: string }) => {
   const ref = useRef<HTMLInputElement>(null);
   const {
     open,
@@ -190,6 +184,7 @@ const Input = ({
     <>
       <ComboInput
         ref={ref}
+        id={id}
         className={className}
         open={open}
         onFocus={() => setOpen(true)}
@@ -201,7 +196,6 @@ const Input = ({
           setInputValue(e.target.value);
           setTypedKeyword(e.target.value);
         }}
-        {...props}
       />
     </>
   );
