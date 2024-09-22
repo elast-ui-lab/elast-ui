@@ -220,30 +220,16 @@ Dropdown.Item = Item;
 
 export default Dropdown;
 
-const DropdownBoxWrapper = styled.div`
-  position: relative;
-  padding: 0;
-  cursor: pointer;
-`;
+const DropdownBoxWrapper = styled.div``;
 
 const DropdownBox = styled.div<{ open: boolean }>`
-  width: 100%;
   outline: none;
-  cursor: pointer;
-  text-align: left;
 `;
 
 const DropdownItemWrapper = styled.div<{ open: boolean }>`
   visibility: ${(props) => (props.open ? "visible" : "hidden")};
   opacity: ${(props) => (props.open ? "1" : "0")};
   transition: all 0.1s;
-  margin-top: 0.2rem;
-  position: absolute;
-  width: 100%;
-  overflow: hidden;
 `;
 
-const DropdownItem = styled.p`
-  cursor: pointer;
-  position: relative;
-`;
+const DropdownItem = styled.p``;

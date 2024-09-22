@@ -327,11 +327,7 @@ ComboBox.Error = Error;
 
 export default ComboBox;
 
-const ComboWrapper = styled.div`
-  position: relative;
-  padding: 0;
-  cursor: pointer;
-`;
+const ComboWrapper = styled.div``;
 const ComboInput = styled.input<{ open: boolean }>`
   width: 100%;
   height: 100%;
@@ -341,17 +337,11 @@ const ComboInput = styled.input<{ open: boolean }>`
 `;
 
 const ComboOptionWrapper = styled.div<{ open: boolean }>`
-  margin-top: 0.2rem;
-  position: absolute;
-  width: 100%;
-  overflow: hidden;
   visibility: ${(props) => (props.open ? "visible" : "hidden")};
   opacity: ${(props) => (props.open ? "1" : "0")};
   transition: all 0.1s;
 `;
 
-const ComboOption = styled.p`
-  position: relative;
-`;
+const ComboOption = styled.p``;
 
 const ErrorMessage = styled.p``;

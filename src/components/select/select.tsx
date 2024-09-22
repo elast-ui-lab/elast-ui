@@ -283,30 +283,17 @@ Select.Error = Error;
 
 export default Select;
 
-const SelectBoxWrapper = styled.div`
-  position: relative;
-  padding: 0;
-  cursor: pointer;
-`;
+const SelectBoxWrapper = styled.div``;
 const SelectBox = styled.div<{ open: boolean }>`
-  width: 100%;
   outline: none;
-  cursor: pointer;
-  text-align: left;
 `;
 
 const SelectOptionWrapper = styled.div<{ open: boolean }>`
-  margin-top: 0.2rem;
-  position: absolute;
-  width: 100%;
-  overflow: hidden;
   visibility: ${(props) => (props.open ? "visible" : "hidden")};
   opacity: ${(props) => (props.open ? "1" : "0")};
   transition: all 0.1s;
 `;
 
-const SelectOption = styled.p`
-  position: relative;
-`;
+const SelectOption = styled.p``;
 
 const ErrorMessage = styled.p``;
