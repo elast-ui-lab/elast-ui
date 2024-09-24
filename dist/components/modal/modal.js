@@ -43,5 +43,5 @@ Modal.Container = Container;
 Modal.Title = Title;
 Modal.Content = Content;
 export default Modal;
-var ModalWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  position: absolute;\n  top: 0;\n  left: 0;\n"], ["\n  position: absolute;\n  top: 0;\n  left: 0;\n"])));
+var ModalWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  position: fixed;\n  top: 0;\n  left: 0;\n"], ["\n  position: fixed;\n  top: 0;\n  left: 0;\n"])));
 var templateObject_1;

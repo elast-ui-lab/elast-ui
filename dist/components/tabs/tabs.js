@@ -24,13 +24,13 @@ import React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 var TabsContext = createContext(undefined);
 var Tabs = function (_a) {
-    var id = _a.id, className = _a.className, defaultIndex = _a.defaultIndex, children = _a.children, onChange = _a.onChange;
+    var className = _a.className, defaultIndex = _a.defaultIndex, children = _a.children, onChange = _a.onChange, props = __rest(_a, ["className", "defaultIndex", "children", "onChange"]);
     var _b = useState(defaultIndex || 0), tabIndex = _b[0], setTabIndex = _b[1];
     useEffect(function () {
-        console.log(tabIndex);
         onChange === null || onChange === void 0 ? void 0 : onChange(tabIndex);
     }, [onChange, tabIndex]);
-    return (React.createElement(TabsContext.Provider, { value: { tabIndex: tabIndex, setTabIndex: setTabIndex } }, children));
+    return (React.createElement(TabsContext.Provider, { value: { tabIndex: tabIndex, setTabIndex: setTabIndex } },
+        React.createElement("div", __assign({ className: className }, props), children)));
 };
 var TabsWrapper = function (_a) {
     var children = _a.children, props = __rest(_a, ["children"]);

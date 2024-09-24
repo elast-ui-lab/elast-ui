@@ -70,10 +70,11 @@ var Select = function (_a) {
         React.createElement("input", { type: "hidden", ref: selectRef, value: selectedValue, required: required })));
 };
 var Trigger = function (_a) {
-    var className = _a.className, id = _a.id, children = _a.children;
+    var className = _a.className, children = _a.children, props = __rest(_a, ["className", "children"]);
     var ref = useRef(null);
     var _b = useContext(SelectContext), selectedLabel = _b.selectedLabel, open = _b.open, focusChild = _b.focusChild, focusIndex = _b.focusIndex, onChange = _b.onChange, setOpen = _b.setOpen, setFocusIndex = _b.setFocusIndex, setSelectedValue = _b.setSelectedValue;
     var onClickOutside = function (e) {
+        console.log("select outside clicked");
         if (!e || e.target !== ref.current)
             setOpen(false);
     };
@@ -111,14 +112,14 @@ var Trigger = function (_a) {
         return function () { return window.removeEventListener("click", onClickOutside); };
     });
     return (React.createElement(React.Fragment, null,
-        React.createElement(SelectBox, { ref: ref, id: id, className: className, open: open, onClick: function () {
+        React.createElement(SelectBox, __assign({ ref: ref, className: className, open: open, onClick: function () {
                 setOpen(!open);
-            } },
+            } }, props),
             selectedLabel,
             children)));
 };
 var OptionWrapper = function (_a) {
-    var id = _a.id, children = _a.children, className = _a.className;
+    var children = _a.children, className = _a.className, props = __rest(_a, ["children", "className"]);
     var _b = useContext(SelectContext), open = _b.open, selectedValue = _b.selectedValue, focusIndex = _b.focusIndex, setSelectedLabel = _b.setSelectedLabel, setFocusChild = _b.setFocusChild;
     useEffect(function () {
         children && setFocusChild(React.Children.toArray(children)[focusIndex]);
@@ -136,10 +137,10 @@ var OptionWrapper = function (_a) {
         }
     }, [children, selectedValue, setSelectedLabel]);
     return (React.createElement(React.Fragment, null,
-        React.createElement(SelectOptionWrapper, { open: open, id: id, className: className }, children)));
+        React.createElement(SelectOptionWrapper, __assign({}, props, { open: open, className: className }), children)));
 };
 var Option = function (_a) {
-    var value = _a.value, children = _a.children, props = __rest(_a, ["value", "children"]);
+    var value = _a.value, children = _a.children, className = _a.className, props = __rest(_a, ["value", "children", "className"]);
     var _b = useContext(SelectContext), selectedValue = _b.selectedValue, selectedLabel = _b.selectedLabel, focusChild = _b.focusChild, setSelectedValue = _b.setSelectedValue, setOpen = _b.setOpen, onChange = _b.onChange;
     var _c = useState(false), isFocused = _c[0], setIsFocused = _c[1];
     var _d = useState(false), isSelected = _d[0], setIsSelected = _d[1];
@@ -160,21 +161,21 @@ var Option = function (_a) {
         onChange && onChange(value);
         setOpen(false);
     };
-    return (React.createElement(SelectOption, __assign({ onClick: onClickOption }, (isFocused ? { "data-focused": "" } : {}), (isSelected ? { "data-selected": "" } : {}), props), children));
+    return (React.createElement(SelectOption, __assign({ onClick: onClickOption }, (isFocused ? { "data-focused": "" } : {}), (isSelected ? { "data-selected": "" } : {}), { className: className }, props), children));
 };
 var Error = function (_a) {
-    var children = _a.children;
+    var children = _a.children, className = _a.className, props = __rest(_a, ["children", "className"]);
     var validity = useContext(SelectContext).validity;
-    return React.createElement(React.Fragment, null, validity && React.createElement(ErrorMessage, null, children));
+    return (React.createElement(React.Fragment, null, validity && (React.createElement(ErrorMessage, __assign({}, props, { className: className }), children))));
 };
 Select.Trigger = Trigger;
 Select.OptionWrapper = OptionWrapper;
 Select.Option = Option;
 Select.Error = Error;
 export default Select;
-var SelectBoxWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  position: relative;\n  padding: 0;\n  cursor: pointer;\n"], ["\n  position: relative;\n  padding: 0;\n  cursor: pointer;\n"])));
-var SelectBox = styled.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  width: 100%;\n  outline: none;\n  cursor: pointer;\n  text-align: left;\n"], ["\n  width: 100%;\n  outline: none;\n  cursor: pointer;\n  text-align: left;\n"])));
-var SelectOptionWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  margin-top: 0.2rem;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"], ["\n  margin-top: 0.2rem;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
-var SelectOption = styled.p(templateObject_4 || (templateObject_4 = __makeTemplateObject(["\n  position: relative;\n"], ["\n  position: relative;\n"])));
+var SelectBoxWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject([""], [""])));
+var SelectBox = styled.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  outline: none;\n"], ["\n  outline: none;\n"])));
+var SelectOptionWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"], ["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
+var SelectOption = styled.p(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
 var ErrorMessage = styled.p(templateObject_5 || (templateObject_5 = __makeTemplateObject([""], [""])));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5;

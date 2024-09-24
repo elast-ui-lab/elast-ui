@@ -43,7 +43,9 @@ var Trigger = function (_a) {
     var ref = useRef();
     var _b = useContext(DropdownContext), open = _b.open, setOpen = _b.setOpen, setSelectedValue = _b.setSelectedValue, onChange = _b.onChange, focusIndex = _b.focusIndex, focusChild = _b.focusChild, setFocusIndex = _b.setFocusIndex;
     var onClickOutside = function (e) {
-        return (e === null || e === void 0 ? void 0 : e.target) !== ref.current && setOpen(false);
+        console.log("drop outside clicked");
+        if (!e || e.target !== ref.current)
+            setOpen(false);
     };
     var KeyEvent = {
         Enter: function () {
@@ -108,27 +110,34 @@ var ItemWrapper = function (_a) {
 };
 var Item = function (_a) {
     var value = _a.value, children = _a.children, className = _a.className;
-    var _b = useContext(DropdownContext), setSelectedValue = _b.setSelectedValue, setOpen = _b.setOpen, onChange = _b.onChange, focusChild = _b.focusChild;
+    var _b = useContext(DropdownContext), selectedValue = _b.selectedValue, selectedLabel = _b.selectedLabel, setSelectedValue = _b.setSelectedValue, setOpen = _b.setOpen, onChange = _b.onChange, focusChild = _b.focusChild;
     var _c = useState(false), isFocused = _c[0], setIsFocused = _c[1];
+    var _d = useState(false), isSelected = _d[0], setIsSelected = _d[1];
     useEffect(function () {
         if (React.isValidElement(focusChild) && focusChild.props.value === value)
             setIsFocused(true);
         else
             setIsFocused(false);
     }, [focusChild, value]);
+    useEffect(function () {
+        if (selectedValue === value && selectedLabel === children)
+            setIsSelected(true);
+        else
+            setIsSelected(false);
+    }, [selectedValue, selectedLabel, value, children]);
     var onClickOption = function () {
         setSelectedValue(value);
         onChange && onChange(value);
         setOpen(false);
     };
-    return (React.createElement(DropdownItem, __assign({ onClick: onClickOption, className: className }, (isFocused ? { "data-focused": "" } : {})), children));
+    return (React.createElement(DropdownItem, __assign({ onClick: onClickOption, className: className }, (isFocused ? { "data-focused": "" } : {}), (isSelected ? { "data-selected": "" } : {})), children));
 };
 Dropdown.Trigger = Trigger;
 Dropdown.ItemWrapper = ItemWrapper;
 Dropdown.Item = Item;
 export default Dropdown;
-var DropdownBoxWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  position: relative;\n  padding: 0;\n  cursor: pointer;\n"], ["\n  position: relative;\n  padding: 0;\n  cursor: pointer;\n"])));
-var DropdownBox = styled.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  width: 100%;\n  outline: none;\n  cursor: pointer;\n  text-align: left;\n"], ["\n  width: 100%;\n  outline: none;\n  cursor: pointer;\n  text-align: left;\n"])));
-var DropdownItemWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n  margin-top: 0.2rem;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n"], ["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n  margin-top: 0.2rem;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
-var DropdownItem = styled.p(templateObject_4 || (templateObject_4 = __makeTemplateObject(["\n  cursor: pointer;\n  position: relative;\n"], ["\n  cursor: pointer;\n  position: relative;\n"])));
+var DropdownBoxWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject([""], [""])));
+var DropdownBox = styled.div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  outline: none;\n"], ["\n  outline: none;\n"])));
+var DropdownItemWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"], ["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
+var DropdownItem = styled.p(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4;

@@ -76,7 +76,7 @@ var ComboBox = function (_a) {
         React.createElement("input", { type: "hidden", ref: selectRef, value: selectedValue, required: required })));
 };
 var Input = function (_a) {
-    var className = _a.className, id = _a.id;
+    var className = _a.className, children = _a.children, placeholder = _a.placeholder, props = __rest(_a, ["className", "children", "placeholder"]);
     var ref = useRef(null);
     var _b = useContext(ComboBoxContext), open = _b.open, isTyping = _b.isTyping, focusIndex = _b.focusIndex, selectedLabel = _b.selectedLabel, focusChild = _b.focusChild, onChange = _b.onChange, setOpen = _b.setOpen, setIsTyping = _b.setIsTyping, setFocusIndex = _b.setFocusIndex, setSelectedValue = _b.setSelectedValue, setTypedKeyword = _b.setTypedKeyword;
     var _c = useState(""), inputValue = _c[0], setInputValue = _c[1];
@@ -97,16 +97,18 @@ var Input = function (_a) {
             onClickOutside();
         },
     };
-    function onClickOutside(e) {
+    var onClickOutside = function (e) {
         var _a;
-        if (e === undefined || e.target !== ref.current) {
+        console.log("combo outside clicked");
+        if (!e || e.target !== ref.current) {
             setOpen(false);
             setIsTyping(false);
             setFocusIndex(-1);
             (_a = ref.current) === null || _a === void 0 ? void 0 : _a.blur();
         }
-    }
+    };
     useEffect(function () {
+        console.log("combo useeffect");
         window.addEventListener("click", onClickOutside);
         return function () { return window.removeEventListener("click", onClickOutside); };
     });
@@ -118,16 +120,20 @@ var Input = function (_a) {
         else
             KeyEvent[e.key]();
     };
-    return (React.createElement(React.Fragment, null,
-        React.createElement(ComboInput, { ref: ref, id: id, className: className, open: open, onFocus: function () { return setOpen(true); }, onKeyUp: handleKeyUp, value: isTyping ? inputValue : selectedLabel, onChange: function (e) {
+    return (React.createElement("div", null,
+        React.createElement(ComboInput, __assign({ ref: ref, className: className, open: open, onFocus: function () { return setOpen(true); }, onKeyUp: handleKeyUp, placeholder: placeholder, value: isTyping ? inputValue : selectedLabel, onChange: function (e) {
                 setIsTyping(true);
                 setFocusIndex(-1);
                 setInputValue(e.target.value);
                 setTypedKeyword(e.target.value);
-            } })));
+            }, onClick: function (e) {
+                setOpen(true);
+                // e.stopPropagation();
+            } }, props)),
+        children));
 };
 var OptionWrapper = function (_a) {
-    var id = _a.id, children = _a.children, className = _a.className;
+    var children = _a.children, className = _a.className, props = __rest(_a, ["children", "className"]);
     var _b = useContext(ComboBoxContext), open = _b.open, typedKeyword = _b.typedKeyword, selectedValue = _b.selectedValue, setSelectedLabel = _b.setSelectedLabel, focusIndex = _b.focusIndex, setFocusChild = _b.setFocusChild;
     var filteredChildren = React.Children.toArray(children).filter(function (child) {
         return React.isValidElement(child) &&
@@ -150,12 +156,13 @@ var OptionWrapper = function (_a) {
         }
     }, [children, selectedValue, setSelectedLabel]);
     return (React.createElement(React.Fragment, null,
-        React.createElement(ComboOptionWrapper, { open: open, id: id, className: className }, filteredChildren)));
+        React.createElement(ComboOptionWrapper, __assign({ open: open, className: className }, props), filteredChildren)));
 };
 var Option = function (_a) {
     var value = _a.value, children = _a.children, props = __rest(_a, ["value", "children"]);
-    var _b = useContext(ComboBoxContext), setSelectedValue = _b.setSelectedValue, setOpen = _b.setOpen, onChange = _b.onChange, focusChild = _b.focusChild;
+    var _b = useContext(ComboBoxContext), selectedValue = _b.selectedValue, selectedLabel = _b.selectedLabel, setSelectedValue = _b.setSelectedValue, setOpen = _b.setOpen, onChange = _b.onChange, focusChild = _b.focusChild;
     var _c = useState(false), isFocused = _c[0], setIsFocused = _c[1];
+    var _d = useState(false), isSelected = _d[0], setIsSelected = _d[1];
     var onClickOption = function () {
         setSelectedValue(value);
         onChange === null || onChange === void 0 ? void 0 : onChange(value);
@@ -167,22 +174,28 @@ var Option = function (_a) {
             setIsFocused(true);
         else
             setIsFocused(false);
-    }, [focusChild]);
-    return (React.createElement(ComboOption, __assign({ onClick: onClickOption }, (isFocused ? { "data-focused": "" } : {}), props), children));
+    }, [focusChild, value]);
+    useEffect(function () {
+        if (selectedValue === value && selectedLabel === children)
+            setIsSelected(true);
+        else
+            setIsSelected(false);
+    }, [selectedValue, selectedLabel, value, children]);
+    return (React.createElement(ComboOption, __assign({ onClick: onClickOption }, (isFocused ? { "data-focused": "" } : {}), (isSelected ? { "data-selected": "" } : {}), props), children));
 };
 var Error = function (_a) {
-    var children = _a.children;
+    var children = _a.children, className = _a.className, props = __rest(_a, ["children", "className"]);
     var validity = useContext(ComboBoxContext).validity;
-    return React.createElement(React.Fragment, null, validity && React.createElement(ErrorMessage, null, children));
+    return (React.createElement(React.Fragment, null, validity && (React.createElement(ErrorMessage, __assign({}, props, { className: className }), children))));
 };
 ComboBox.Input = Input;
 ComboBox.OptionWrapper = OptionWrapper;
 ComboBox.Option = Option;
 ComboBox.Error = Error;
 export default ComboBox;
-var ComboWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  position: relative;\n  padding: 0;\n  cursor: pointer;\n"], ["\n  position: relative;\n  padding: 0;\n  cursor: pointer;\n"])));
-var ComboInput = styled.input(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  width: 100%;\n  outline: none;\n  cursor: pointer;\n  text-align: left;\n"], ["\n  width: 100%;\n  outline: none;\n  cursor: pointer;\n  text-align: left;\n"])));
-var ComboOptionWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  margin-top: 0.2rem;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"], ["\n  margin-top: 0.2rem;\n  position: absolute;\n  width: 100%;\n  overflow: hidden;\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
-var ComboOption = styled.p(templateObject_4 || (templateObject_4 = __makeTemplateObject(["\n  position: relative;\n"], ["\n  position: relative;\n"])));
+var ComboWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject([""], [""])));
+var ComboInput = styled.input(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  cursor: pointer;\n"], ["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  cursor: pointer;\n"])));
+var ComboOptionWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"], ["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
+var ComboOption = styled.p(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
 var ErrorMessage = styled.p(templateObject_5 || (templateObject_5 = __makeTemplateObject([""], [""])));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5;

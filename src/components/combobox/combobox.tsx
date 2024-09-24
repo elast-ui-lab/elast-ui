@@ -165,16 +165,18 @@ const Input = ({
     },
   };
 
-  function onClickOutside(e?: any) {
-    if (e === undefined || e.target !== ref.current) {
+  const onClickOutside = (e?: MouseEvent) => {
+    console.log("combo outside clicked");
+    if (!e || e.target !== ref.current) {
       setOpen(false);
       setIsTyping(false);
       setFocusIndex(-1);
       ref.current?.blur();
     }
-  }
+  };
 
   useEffect(() => {
+    console.log("combo useeffect");
     window.addEventListener("click", onClickOutside);
     return () => window.removeEventListener("click", onClickOutside);
   });
@@ -186,16 +188,10 @@ const Input = ({
   };
 
   return (
-    <div
-      className={className}
-      {...props}
-      onClick={(e) => {
-        setOpen(true);
-        e.stopPropagation();
-      }}
-    >
+    <div>
       <ComboInput
         ref={ref}
+        className={className}
         open={open}
         onFocus={() => setOpen(true)}
         onKeyUp={handleKeyUp}
@@ -207,6 +203,10 @@ const Input = ({
           setInputValue(e.target.value);
           setTypedKeyword(e.target.value);
         }}
+        onClick={(e) => {
+          setOpen(true);
+        }}
+        {...props}
       />
       {children}
     </div>
@@ -333,7 +333,6 @@ const ComboInput = styled.input<{ open: boolean }>`
   height: 100%;
   outline: none;
   cursor: pointer;
-  background: transparent;
 `;
 
 const ComboOptionWrapper = styled.div<{ open: boolean }>`

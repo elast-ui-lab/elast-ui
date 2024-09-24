@@ -9,9 +9,9 @@ type ComboBoxProps = {
     required?: boolean;
 };
 type DefaultProps = {
-    id?: string;
     className?: string;
     children?: React.ReactNode;
+    [key: string]: unknown;
 };
 type OptionProps = {
     value: string | number;
@@ -22,13 +22,13 @@ type OptionProps = {
 };
 declare const ComboBox: {
     ({ id, className, value, children, onChange, required, }: ComboBoxProps): React.JSX.Element;
-    Input: ({ className, id }: DefaultProps) => React.JSX.Element;
-    OptionWrapper: ({ id, children, className, }: {
+    Input: ({ className, children, placeholder, ...props }: {
+        placeholder?: string | undefined;
+    } & DefaultProps) => React.JSX.Element;
+    OptionWrapper: ({ children, className, ...props }: {
         children: React.ReactNode;
     } & DefaultProps) => React.JSX.Element;
     Option: ({ value, children, ...props }: OptionProps) => React.JSX.Element;
-    Error: ({ children }: {
-        children: React.ReactNode;
-    }) => React.JSX.Element;
+    Error: ({ children, className, ...props }: DefaultProps) => React.JSX.Element;
 };
 export default ComboBox;

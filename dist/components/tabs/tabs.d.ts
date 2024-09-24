@@ -1,11 +1,10 @@
 import React from "react";
 interface CommonProps {
-    id?: string;
     className?: string;
     children?: React.ReactNode;
 }
 declare const Tabs: {
-    ({ id, className, defaultIndex, children, onChange, }: {
+    ({ className, defaultIndex, children, onChange, ...props }: {
         defaultIndex?: number | undefined;
         onChange?: ((prop?: unknown) => void) | undefined;
     } & CommonProps): React.JSX.Element;

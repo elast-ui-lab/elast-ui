@@ -38,7 +38,7 @@ function App() {
   return (
     <div className="App">
       <h1 className="text-4xl font-medium my-10">elast UI Library</h1>
-      <div className="w-[200px]">
+      <div className="w-[300px] mx-auto">
         <h3 className="text-xl font-medium">Select</h3>
         <form action="">
           <Select className="mb-3" required>

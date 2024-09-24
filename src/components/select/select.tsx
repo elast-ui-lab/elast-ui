@@ -126,6 +126,7 @@ const Trigger = ({ className, children, ...props }: DefaultProps) => {
   } = useContext(SelectContext) as SelectContextType;
 
   const onClickOutside = (e?: MouseEvent) => {
+    console.log("select outside clicked");
     if (!e || e.target !== ref.current) setOpen(false);
   };
 

@@ -84,8 +84,10 @@ const Trigger = ({ children, className }: DropdownProps) => {
     setFocusIndex,
   } = useContext(DropdownContext) as DropdownContextType;
 
-  const onClickOutside = (e?: MouseEvent) =>
-    e?.target !== ref.current && setOpen(false);
+  const onClickOutside = (e?: MouseEvent) => {
+    console.log("drop outside clicked");
+    if (!e || e.target !== ref.current) setOpen(false);
+  };
 
   const KeyEvent: { [key: string]: () => void } = {
     Enter: () => {
