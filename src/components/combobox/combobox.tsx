@@ -166,7 +166,6 @@ const Input = ({
   };
 
   const onClickOutside = (e?: MouseEvent) => {
-    console.log("combo outside clicked");
     if (!e || e.target !== ref.current) {
       setOpen(false);
       setIsTyping(false);
@@ -176,7 +175,6 @@ const Input = ({
   };
 
   useEffect(() => {
-    console.log("combo useeffect");
     window.addEventListener("click", onClickOutside);
     return () => window.removeEventListener("click", onClickOutside);
   });
@@ -280,7 +278,6 @@ const Option = ({ value, children, ...props }: OptionProps) => {
     setSelectedValue(value);
     onChange?.(value);
     setOpen(false);
-    console.log(value);
   };
 
   useEffect(() => {

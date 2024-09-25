@@ -85,7 +85,6 @@ const Trigger = ({ children, className }: DropdownProps) => {
   } = useContext(DropdownContext) as DropdownContextType;
 
   const onClickOutside = (e?: MouseEvent) => {
-    console.log("drop outside clicked");
     if (!e || e.target !== ref.current) setOpen(false);
   };
 

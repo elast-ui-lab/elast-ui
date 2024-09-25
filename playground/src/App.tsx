@@ -82,7 +82,6 @@ function App() {
         <button
           onClick={() => {
             setModalOpen(!modalOpen);
-            console.log(modalOpen);
           }}
         >
           {modalOpen ? "close" : "open"}
@@ -91,7 +90,6 @@ function App() {
           open={modalOpen}
           onClose={() => {
             setModalOpen(false);
-            console.log("closed");
           }}
           className="flex flex-col w-full h-full justify-center items-center backdrop-blur-md"
         >
