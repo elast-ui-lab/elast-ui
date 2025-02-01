@@ -43,7 +43,6 @@ var Trigger = function (_a) {
     var ref = useRef();
     var _b = useContext(DropdownContext), open = _b.open, setOpen = _b.setOpen, setSelectedValue = _b.setSelectedValue, onChange = _b.onChange, focusIndex = _b.focusIndex, focusChild = _b.focusChild, setFocusIndex = _b.setFocusIndex;
     var onClickOutside = function (e) {
-        console.log("drop outside clicked");
         if (!e || e.target !== ref.current)
             setOpen(false);
     };

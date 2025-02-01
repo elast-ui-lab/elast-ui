@@ -99,7 +99,6 @@ var Input = function (_a) {
     };
     var onClickOutside = function (e) {
         var _a;
-        console.log("combo outside clicked");
         if (!e || e.target !== ref.current) {
             setOpen(false);
             setIsTyping(false);
@@ -108,7 +107,6 @@ var Input = function (_a) {
         }
     };
     useEffect(function () {
-        console.log("combo useeffect");
         window.addEventListener("click", onClickOutside);
         return function () { return window.removeEventListener("click", onClickOutside); };
     });
@@ -128,7 +126,6 @@ var Input = function (_a) {
                 setTypedKeyword(e.target.value);
             }, onClick: function (e) {
                 setOpen(true);
-                // e.stopPropagation();
             } }, props)),
         children));
 };
@@ -167,7 +164,6 @@ var Option = function (_a) {
         setSelectedValue(value);
         onChange === null || onChange === void 0 ? void 0 : onChange(value);
         setOpen(false);
-        console.log(value);
     };
     useEffect(function () {
         if (React.isValidElement(focusChild) && focusChild.props.value === value)

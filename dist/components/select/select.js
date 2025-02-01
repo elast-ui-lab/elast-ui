@@ -74,7 +74,6 @@ var Trigger = function (_a) {
     var ref = useRef(null);
     var _b = useContext(SelectContext), selectedLabel = _b.selectedLabel, open = _b.open, focusChild = _b.focusChild, focusIndex = _b.focusIndex, onChange = _b.onChange, setOpen = _b.setOpen, setFocusIndex = _b.setFocusIndex, setSelectedValue = _b.setSelectedValue;
     var onClickOutside = function (e) {
-        console.log("select outside clicked");
         if (!e || e.target !== ref.current)
             setOpen(false);
     };
