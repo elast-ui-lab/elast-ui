@@ -4,34 +4,37 @@ import React, {
   useEffect,
   useContext,
   createContext,
+  useCallback,
+  memo,
 } from "react";
 import styled from "styled-components";
 
-type DataType = any;
+type DataType<T = string | number> = T;
 
-type SelectContextType = {
+type SelectContextType<T = string | number> = {
   validity: boolean;
   open: boolean;
   focusIndex: number;
   focusChild: React.ReactNode;
-  onChange: (id: unknown) => void;
-  selectedValue: DataType;
-  selectedLabel: DataType;
+  onChange: (value: T) => void;
+  selectedValue: DataType<T>;
+  selectedLabel: React.ReactNode;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setFocusIndex: React.Dispatch<React.SetStateAction<number>>;
   setFocusChild: React.Dispatch<React.SetStateAction<React.ReactNode>>;
-  setSelectedValue: React.Dispatch<React.SetStateAction<DataType>>;
-  setSelectedLabel: React.Dispatch<React.SetStateAction<DataType>>;
+  setSelectedValue: React.Dispatch<React.SetStateAction<DataType<T>>>;
+  setSelectedLabel: React.Dispatch<React.SetStateAction<React.ReactNode>>;
   required?: boolean;
 };
 
-type SelectProps = {
+type SelectProps<T = string | number> = {
   id?: string;
   className?: string;
-  value?: DataType; //string | number;
-  onChange?: any;
+  value?: DataType<T>;
+  onChange?: (value: T) => void;
   children?: React.ReactNode;
   required?: boolean;
+  ariaLabel?: string;
 };
 
 type DefaultProps = {
@@ -48,30 +51,34 @@ type OptionProps = {
   [key: string]: unknown;
 };
 
-const SelectContext = createContext<SelectContextType | undefined>(undefined);
+const SelectContext = createContext<SelectContextType<any> | undefined>(undefined);
 
-const Select = ({
+const Select = <T extends string | number>({
   id,
   className,
   value,
   children,
   onChange,
   required,
-}: SelectProps) => {
+  ariaLabel,
+}: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<DataType>(value || "");
-  const [selectedLabel, setSelectedLabel] = useState<DataType>();
+  const [selectedValue, setSelectedValue] = useState<T>(value as T || "" as T);
+  const [selectedLabel, setSelectedLabel] = useState<React.ReactNode>();
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const [focusChild, setFocusChild] = useState<React.ReactNode>();
   const [validity, setValidity] = useState<boolean>(false);
   const selectRef = useRef<HTMLInputElement>(null);
 
-  const validateRequiredField = (e: Event) => {
-    // required가 true인 경우, submit시 이를 만족하는지 검사
+  const validateRequiredField = useCallback((e: Event) => {
     e.preventDefault();
-    if (required && selectedValue === "") setValidity(true);
-    else setValidity(false);
-  };
+    if (required && selectedValue === "") {
+      setValidity(true);
+      return false;
+    }
+    setValidity(false);
+    return true;
+  }, [required, selectedValue]);
 
   useEffect(() => {
     if (selectRef.current) {
@@ -79,7 +86,7 @@ const Select = ({
       form?.addEventListener("submit", validateRequiredField);
       return () => form?.removeEventListener("submit", validateRequiredField);
     }
-  }, [selectedValue]);
+  }, [validateRequiredField]);
 
   return (
     <SelectContext.Provider
@@ -88,18 +95,28 @@ const Select = ({
         setOpen,
         focusIndex,
         focusChild,
-        onChange,
+        onChange: onChange as (value: any) => void,
         selectedValue,
         selectedLabel,
         setFocusIndex,
         setFocusChild,
-        setSelectedValue,
+        setSelectedValue: setSelectedValue as React.Dispatch<React.SetStateAction<any>>,
         setSelectedLabel,
         validity,
         required,
       }}
     >
-      <SelectBoxWrapper id={id} className={className}>
+      <SelectBoxWrapper
+        id={id}
+        className={className}
+        role="combobox"
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-controls={`${id}-listbox`}
+        aria-required={required}
+        aria-invalid={validity}
+      >
         {children}
       </SelectBoxWrapper>
       <input
@@ -107,82 +124,92 @@ const Select = ({
         ref={selectRef}
         value={selectedValue}
         required={required}
+        aria-hidden="true"
       />
     </SelectContext.Provider>
   );
 };
 
-const Trigger = ({ className, children, ...props }: DefaultProps) => {
+const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const {
     selectedLabel,
     open,
     focusChild,
-    focusIndex,
     onChange,
     setOpen,
     setFocusIndex,
     setSelectedValue,
   } = useContext(SelectContext) as SelectContextType;
 
-  const onClickOutside = (e?: MouseEvent) => {
-    if (!e || e.target !== ref.current) setOpen(false);
-  };
-
-  const KeyEvent: { [key: string]: () => void } = {
-    Enter: () => {
-      const value = React.isValidElement(focusChild) && focusChild.props.value;
-      onClickOutside();
-      setSelectedValue(value);
-      onChange?.(value);
-    },
-    ArrowUp: () => {
-      setFocusIndex(() => Math.max(focusIndex - 1, -1));
-    },
-    ArrowDown: () => {
-      setFocusIndex(focusIndex + 1);
-    },
-    Escape: () => {
-      onClickOutside();
-    },
-  };
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key in KeyEvent && focusIndex >= -1) {
-        e.preventDefault(); // 화살표 키보드 눌렀을 때, 스크롤되는 것을 막기 위함
-        KeyEvent[e.key]();
-      }
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const KeyEvent: { [key: string]: () => void } = {
+      Enter: () => {
+        if (!open) {
+          setOpen(true);
+          return;
+        }
+        const value = React.isValidElement(focusChild) && focusChild.props.value;
+        if (value) {
+          setSelectedValue(value);
+          onChange?.(value);
+        }
+        setOpen(false);
+      },
+      ArrowUp: () => {
+        if (!open) return;
+        setFocusIndex((prev) => Math.max(prev - 1, -1));
+      },
+      ArrowDown: () => {
+        if (!open) return;
+        setFocusIndex((prev) => prev + 1);
+      },
+      Escape: () => {
+        setOpen(false);
+        ref.current?.blur();
+      },
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  });
+
+    if (e.key in KeyEvent) {
+      e.preventDefault();
+      KeyEvent[e.key]();
+    }
+  }, [open, focusChild, onChange, setOpen, setFocusIndex, setSelectedValue]);
+
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (ref.current && !ref.current.contains(e.target as Node)) {
+      setOpen(false);
+    }
+  }, [setOpen]);
 
   useEffect(() => {
-    window.addEventListener("click", onClickOutside);
-    return () => window.removeEventListener("click", onClickOutside);
-  });
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, [handleClickOutside]);
 
   return (
-    <>
-      <SelectBox
-        ref={ref}
-        className={className}
-        open={open}
-        onClick={() => {
-          setOpen(!open);
-        }}
-        {...props}
-      >
-        {selectedLabel}
-        {children}
-      </SelectBox>
-    </>
+    <SelectBox
+      ref={ref}
+      className={className}
+      open={open}
+      onClick={() => setOpen(!open)}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      onFocus={() => ref.current?.setAttribute('data-focus', 'true')}
+      onBlur={() => ref.current?.setAttribute('data-focus', 'false')}
+      role="combobox"
+      aria-expanded={open}
+      aria-haspopup="listbox"
+      aria-controls={`${props.id}-listbox`}
+      {...props}
+    >
+      {selectedLabel}
+      {children}
+    </SelectBox>
   );
-};
-const OptionWrapper = ({
+});
+
+const OptionWrapper = memo(({
   children,
   className,
   ...props
@@ -212,15 +239,20 @@ const OptionWrapper = ({
   }, [children, selectedValue, setSelectedLabel]);
 
   return (
-    <>
-      <SelectOptionWrapper {...props} open={open} className={className}>
-        {children}
-      </SelectOptionWrapper>
-    </>
+    <SelectOptionWrapper
+      {...props}
+      open={open}
+      className={className}
+      role="listbox"
+      aria-orientation="vertical"
+      id={`${props.id}-listbox`}
+    >
+      {children}
+    </SelectOptionWrapper>
   );
-};
+});
 
-const Option = ({ value, children, className, ...props }: OptionProps) => {
+const Option = memo(({ value, children, className, ...props }: OptionProps) => {
   const {
     selectedValue,
     selectedLabel,
@@ -244,11 +276,11 @@ const Option = ({ value, children, className, ...props }: OptionProps) => {
     else setIsSelected(false);
   }, [selectedValue, selectedLabel, value, children]);
 
-  const onClickOption = () => {
+  const onClickOption = useCallback(() => {
     setSelectedValue(value);
-    onChange && onChange(value);
+    onChange?.(value);
     setOpen(false);
-  };
+  }, [value, onChange, setSelectedValue, setOpen]);
 
   return (
     <SelectOption
@@ -256,14 +288,17 @@ const Option = ({ value, children, className, ...props }: OptionProps) => {
       {...(isFocused ? { "data-focused": "" } : {})}
       {...(isSelected ? { "data-selected": "" } : {})}
       className={className}
+      role="option"
+      aria-selected={isSelected}
+      tabIndex={-1}
       {...props}
     >
       {children}
     </SelectOption>
   );
-};
+});
 
-const Error = ({ children, className, ...props }: DefaultProps) => {
+const Error = memo(({ children, className, ...props }: DefaultProps) => {
   const { validity } = useContext(SelectContext) as SelectContextType;
   return (
     <>
@@ -274,7 +309,7 @@ const Error = ({ children, className, ...props }: DefaultProps) => {
       )}
     </>
   );
-};
+});
 
 Select.Trigger = Trigger;
 Select.OptionWrapper = OptionWrapper;
@@ -284,8 +319,12 @@ Select.Error = Error;
 export default Select;
 
 const SelectBoxWrapper = styled.div``;
+
 const SelectBox = styled.div<{ open: boolean }>`
   outline: none;
+  &[data-focus="true"] {
+    outline: 2px solid #000;
+  }
 `;
 
 const SelectOptionWrapper = styled.div<{ open: boolean }>`
