@@ -49,7 +49,7 @@ function App() {
               {selectList.map((option: any, index: number) => (
                 <Select.Option
                   className="hover:bg-[#ededed] py-3 px-4 data-[focused]:bg-[#ededed] data-[selected]:bg-blue-100"
-                  key={`${option.name}-${index}`}
+                  key={index}
                   value={option.value}
                 >
                   {option.name}
@@ -69,7 +69,7 @@ function App() {
             {selectList.map((option: any, index: number) => (
               <ComboBox.Option
                 className="hover:bg-[#ededed] py-3 px-4 data-[focused]:bg-[#ededed]"
-                key={`${option.name}-${index}`}
+                key={index}
                 tabIndex={index}
                 value={option.value}
               >
@@ -111,15 +111,15 @@ function App() {
         <h3 className="text-xl font-medium">Tabs</h3>
         <Tabs className="mt-4">
           <Tabs.TabsWrapper className="flex flex-row">
-            {tabList.map((tab) => (
-              <Tabs.Tab className="rounded data-[selected]:bg-black/10 cursor-pointer px-2 py-1 mb-2">
+            {tabList.map((tab, index) => (
+              <Tabs.Tab key={index} className="rounded data-[selected]:bg-black/10 cursor-pointer px-2 py-1 mb-2">
                 {tab.name}
               </Tabs.Tab>
             ))}
           </Tabs.TabsWrapper>
           <Tabs.ContentWrapper>
-            {tabList.map(({ imgSrc }) => (
-              <Tabs.Content>
+            {tabList.map(({ imgSrc }, index) => (
+              <Tabs.Content key={index}>
                 <p>첫 번째 탭의 내용입니다.</p>
                 <img src={imgSrc} alt="사진" width={1280} height={905} />
               </Tabs.Content>
@@ -146,7 +146,7 @@ function App() {
           <Dropdown.ItemWrapper className="bg-[white] text-[black] rounded border z-50">
             {selectList.map((option: any, index: number) => (
               <Dropdown.Item
-                key={`${option.name}-${index}`}
+                key={index}
                 value={option.value}
                 className="hover:bg-[#ededed] py-3 px-4 data-[focused]:bg-[#ededed]"
               >
