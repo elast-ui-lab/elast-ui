@@ -1,27 +1,11 @@
-import React, { useRef, useState, useEffect, useCallback, Children, isValidElement, } from "react";
-import { SelectContext } from "./context";
-import { SelectBoxWrapper } from "./styles";
+import React, { useEffect, useRef, useState } from "react";
 import Trigger from "./Trigger";
 import Option from "./Option";
 import OptionWrapper from "./OptionWrapper";
 import Error from "./Error";
-var findComponentWithDisplayName = function (children, targetDisplayName) {
-    var queue = [children];
-    while (queue.length > 0) {
-        var current = queue.shift();
-        var childrenArray = Children.toArray(current);
-        for (var _i = 0, childrenArray_1 = childrenArray; _i < childrenArray_1.length; _i++) {
-            var child = childrenArray_1[_i];
-            if (!isValidElement(child) || !child.props || !child.props.children)
-                continue;
-            var componentType = child.type;
-            if (componentType.displayName === targetDisplayName)
-                return child;
-            queue.push(child.props.children);
-        }
-    }
-    return null;
-};
+import { SelectContext } from "./context";
+import { SelectBoxWrapper } from "./styles";
+import { findComponentWithDisplayName } from "../../utils/common";
 var Select = function (_a) {
     var id = _a.id, className = _a.className, value = _a.value, children = _a.children, onValueChange = _a.onValueChange, required = _a.required, ariaLabel = _a.ariaLabel;
     var _b = useState(false), open = _b[0], setOpen = _b[1];
@@ -35,20 +19,17 @@ var Select = function (_a) {
         var _a;
         var optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
         if ((_a = optionWrapper === null || optionWrapper === void 0 ? void 0 : optionWrapper.props) === null || _a === void 0 ? void 0 : _a.children) {
-            var validOptions = Children.toArray(optionWrapper.props.children).filter(function (child) { var _a; return isValidElement(child) && ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Option'; });
+            var validOptions = React.Children.toArray(optionWrapper.props.children).filter(function (child) { var _a; return React.isValidElement(child) && ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Option'; });
             setOptionElements(validOptions);
         }
-        else {
-            setOptionElements([]);
-        }
     }, [children]);
-    var getSelectedLabel = useCallback(function () {
+    var getSelectedLabel = React.useCallback(function () {
         if (optionElements.length === 0 || selectedValue === null)
             return null;
         var selectedOption = optionElements.find(function (option) { return option.props.value === selectedValue; });
         return (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.props.children) || null;
     }, [selectedValue, optionElements]);
-    var validateRequiredField = useCallback(function (e) {
+    var validateRequiredField = React.useCallback(function (e) {
         e.preventDefault();
         var isValid = !(required && selectedValue === null);
         setValidity(!isValid);

@@ -1,43 +1,12 @@
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  useCallback,
-  Children,
-  isValidElement,
-  ReactNode,
-  ReactElement,
-} from "react";
-
-import { SelectProps, SelectContextType } from "./types";
-import { SelectContext } from "./context";
-import { SelectBoxWrapper } from "./styles";
-
+import React, { useEffect, useRef, useState } from "react";
 import Trigger from "./Trigger";
 import Option from "./Option";
 import OptionWrapper from "./OptionWrapper";
 import Error from "./Error";
-
-const findComponentWithDisplayName = (
-  children: ReactNode,
-  targetDisplayName: string
-): ReactElement | null => {
-  const queue: ReactNode[] = [children];
-
-  while (queue.length > 0) {
-      const current = queue.shift();
-      const childrenArray = Children.toArray(current);
-
-      for (const child of childrenArray) {
-        if (!isValidElement(child) || !child.props || !child.props.children) continue;
-
-        const componentType = child.type as React.FunctionComponent | React.ComponentClass
-        if (componentType.displayName === targetDisplayName) return child;
-        queue.push(child.props.children)
-      }
-  }
-  return null
-}
+import { SelectProps, SelectContextType } from "./types";
+import { SelectContext } from "./context";
+import { SelectBoxWrapper } from "./styles";
+import { findComponentWithDisplayName } from "../../utils/common";
 
 
 const Select = <T extends string | number>({
@@ -52,30 +21,28 @@ const Select = <T extends string | number>({
   const [open, setOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<T | null>(value as T || null);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const [focusChild, setFocusChild] = useState<ReactNode>();
+  const [focusChild, setFocusChild] = useState<React.ReactNode>();
   const [validity, setValidity] = useState<boolean>(false);
-  const [optionElements, setOptionElements] = useState<ReactElement[]>([]);
+  const [optionElements, setOptionElements] = useState<React.ReactElement[]>([]);
   const selectRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
       const optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
       if (optionWrapper?.props?.children) {
-          const validOptions = Children.toArray(optionWrapper.props.children).filter(
-              (child): child is ReactElement => isValidElement(child) && (child.type as React.FunctionComponent)?.displayName === 'Option'
+          const validOptions = React.Children.toArray(optionWrapper.props.children).filter(
+              (child): child is React.ReactElement => React.isValidElement(child) && (child.type as React.FunctionComponent)?.displayName === 'Option'
           );
           setOptionElements(validOptions);
-      } else {
-          setOptionElements([]);
       }
   }, [children]);
 
-  const getSelectedLabel = useCallback((): ReactNode => {
+  const getSelectedLabel = React.useCallback((): React.ReactNode => {
       if (optionElements.length === 0 || selectedValue === null) return null;
       const selectedOption = optionElements.find(option => option.props.value === selectedValue);
       return selectedOption?.props.children || null;
   }, [selectedValue, optionElements]);
 
-  const validateRequiredField = useCallback((e: Event) => {
+  const validateRequiredField = React.useCallback((e: Event) => {
       e.preventDefault();
       const isValid = !(required && selectedValue === null);
       setValidity(!isValid);
