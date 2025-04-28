@@ -2,77 +2,77 @@ import React, {
   useRef,
   useState,
   useEffect,
-  useContext,
-  createContext,
   useCallback,
-  memo,
+  Children,
+  isValidElement,
+  ReactNode,
+  ReactElement,
+  FunctionComponent,
+  ComponentClass,
 } from "react";
-import styled from "styled-components";
 
-type DataType<T = string | number> = T;
+import { SelectProps, SelectContextType } from "./types";
+import { SelectContext } from "./context";
+import { SelectBoxWrapper } from "./styles";
 
-type SelectContextType<T = string | number> = {
-  validity: boolean;
-  open: boolean;
-  focusIndex: number;
-  focusChild: React.ReactNode;
-  onChange: (value: T) => void;
-  selectedValue: DataType<T>;
-  selectedLabel: React.ReactNode;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setFocusIndex: React.Dispatch<React.SetStateAction<number>>;
-  setFocusChild: React.Dispatch<React.SetStateAction<React.ReactNode>>;
-  setSelectedValue: React.Dispatch<React.SetStateAction<DataType<T>>>;
-  setSelectedLabel: React.Dispatch<React.SetStateAction<React.ReactNode>>;
-  required?: boolean;
-};
-
-type SelectProps<T = string | number> = {
-  id?: string;
-  className?: string;
-  value?: DataType<T>;
-  onChange?: (value: T) => void;
-  children?: React.ReactNode;
-  required?: boolean;
-  ariaLabel?: string;
-};
-
-type DefaultProps = {
-  className?: string;
-  children?: React.ReactNode;
-  [key: string]: unknown;
-};
-
-type OptionProps = {
-  value: string | number;
-  id?: string;
-  className?: string;
-  children: React.ReactNode;
-  [key: string]: unknown;
-};
-
-const SelectContext = createContext<SelectContextType<any> | undefined>(undefined);
+import Trigger from "./Trigger";
+import Option from "./Option";
+import OptionWrapper from "./OptionWrapper";
+import Error from "./Error";
 
 const Select = <T extends string | number>({
   id,
   className,
   value,
   children,
-  onChange,
+  onValueChange,
   required,
   ariaLabel,
 }: SelectProps<T>) => {
+  // 상태 관리
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<T>(value as T || "" as T);
-  const [selectedLabel, setSelectedLabel] = useState<React.ReactNode>();
+  const [selectedValue, setSelectedValue] = useState<T | null>(value as T || null);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const [focusChild, setFocusChild] = useState<React.ReactNode>();
+  const [focusChild, setFocusChild] = useState<ReactNode>();
+  const [optionElements, setOptionElements] = useState<ReactElement[]>([])
   const [validity, setValidity] = useState<boolean>(false);
   const selectRef = useRef<HTMLInputElement>(null);
 
+  // 옵션 요소들 추출 - Option 컴포넌트만 필터링
+  useEffect(() => {
+    const filtered = Children.toArray(children)
+    .reduce((acc: ReactElement[], child) => {
+      if (isValidElement(child) && child.type === Select.OptionWrapper) {
+        // OptionWrapper 내부의 children을 순회하며 Option 컴포넌트 필터링
+        Children.toArray(child.props.children).forEach(optionChild => {
+          if (!isValidElement(optionChild)) return
+          const validChild = optionChild.type as FunctionComponent | ComponentClass
+          if (validChild.displayName === 'Option')
+            acc.push(optionChild as ReactElement);
+        });
+      }
+      return acc;
+    }, []);
+    setOptionElements(filtered)
+  }, [children])
+
+
+
+  //선택된 옵션의 라벨을 찾는 함수
+  const getSelectedLabel = useCallback((): ReactNode => {
+    if (optionElements.length === 0 || selectedValue === null) return null;
+
+    const selectedOption = optionElements.find(
+      option => option.props.value === selectedValue
+    );
+
+    return selectedOption?.props.children || null;
+  }, [selectedValue, optionElements]);
+
+  // 필수 필드 유효성 검사
   const validateRequiredField = useCallback((e: Event) => {
     e.preventDefault();
-    if (required && selectedValue === "") {
+    if (required && selectedValue === null) {
       setValidity(true);
       return false;
     }
@@ -80,32 +80,40 @@ const Select = <T extends string | number>({
     return true;
   }, [required, selectedValue]);
 
+  // 폼 제출 시 유효성 검사 이벤트 연결
   useEffect(() => {
-    if (selectRef.current) {
-      const form = selectRef.current.closest("form");
-      form?.addEventListener("submit", validateRequiredField);
-      return () => form?.removeEventListener("submit", validateRequiredField);
-    }
+    const form = selectRef.current?.closest("form");
+    if (!form) return;
+
+    form.addEventListener("submit", validateRequiredField);
+    return () => form.removeEventListener("submit", validateRequiredField);
   }, [validateRequiredField]);
 
+  // 외부에서 value가 변경될 경우 상태 업데이트
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedValue(value as T);
+    }
+  }, [value]);
+
+  const contextValue: SelectContextType<T> = {
+    open,
+    setOpen,
+    focusIndex,
+    focusChild,
+    selectedValue,
+    onValueChange: onValueChange as (value: any) => void,
+    setFocusIndex,
+    setFocusChild,
+    setSelectedValue,
+    validity,
+    required,
+    getSelectedLabel,
+    optionElements,
+  };
+
   return (
-    <SelectContext.Provider
-      value={{
-        open,
-        setOpen,
-        focusIndex,
-        focusChild,
-        onChange: onChange as (value: any) => void,
-        selectedValue,
-        selectedLabel,
-        setFocusIndex,
-        setFocusChild,
-        setSelectedValue: setSelectedValue as React.Dispatch<React.SetStateAction<any>>,
-        setSelectedLabel,
-        validity,
-        required,
-      }}
-    >
+    <SelectContext.Provider value={contextValue}>
       <SelectBoxWrapper
         id={id}
         className={className}
@@ -122,7 +130,7 @@ const Select = <T extends string | number>({
       <input
         type="hidden"
         ref={selectRef}
-        value={selectedValue}
+        value={selectedValue ?? ""}
         required={required}
         aria-hidden="true"
       />
@@ -130,210 +138,9 @@ const Select = <T extends string | number>({
   );
 };
 
-const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const {
-    selectedLabel,
-    open,
-    focusChild,
-    onChange,
-    setOpen,
-    setFocusIndex,
-    setSelectedValue,
-  } = useContext(SelectContext) as SelectContextType;
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    const KeyEvent: { [key: string]: () => void } = {
-      Enter: () => {
-        if (!open) {
-          setOpen(true);
-          return;
-        }
-        const value = React.isValidElement(focusChild) && focusChild.props.value;
-        if (value) {
-          setSelectedValue(value);
-          onChange?.(value);
-        }
-        setOpen(false);
-      },
-      ArrowUp: () => {
-        if (!open) return;
-        setFocusIndex((prev) => Math.max(prev - 1, -1));
-      },
-      ArrowDown: () => {
-        if (!open) return;
-        setFocusIndex((prev) => prev + 1);
-      },
-      Escape: () => {
-        setOpen(false);
-        ref.current?.blur();
-      },
-    };
-
-    if (e.key in KeyEvent) {
-      e.preventDefault();
-      KeyEvent[e.key]();
-    }
-  }, [open, focusChild, onChange, setOpen, setFocusIndex, setSelectedValue]);
-
-  const handleClickOutside = useCallback((e: MouseEvent) => {
-    if (ref.current && !ref.current.contains(e.target as Node)) {
-      setOpen(false);
-    }
-  }, [setOpen]);
-
-  useEffect(() => {
-    window.addEventListener("click", handleClickOutside);
-    return () => window.removeEventListener("click", handleClickOutside);
-  }, [handleClickOutside]);
-
-  return (
-    <SelectBox
-      ref={ref}
-      className={className}
-      open={open}
-      onClick={() => setOpen(!open)}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      onFocus={() => ref.current?.setAttribute('data-focus', 'true')}
-      onBlur={() => ref.current?.setAttribute('data-focus', 'false')}
-      role="combobox"
-      aria-expanded={open}
-      aria-haspopup="listbox"
-      aria-controls={`${props.id}-listbox`}
-      {...props}
-    >
-      {selectedLabel}
-      {children}
-    </SelectBox>
-  );
-});
-
-const OptionWrapper = memo(({
-  children,
-  className,
-  ...props
-}: {
-  children: React.ReactNode;
-} & DefaultProps) => {
-  const { open, selectedValue, focusIndex, setSelectedLabel, setFocusChild } =
-    useContext(SelectContext) as SelectContextType;
-
-  useEffect(() => {
-    children && setFocusChild(React.Children.toArray(children)[focusIndex]);
-  }, [children, focusIndex, setFocusChild]);
-
-  useEffect(() => {
-    if (selectedValue) {
-      let defaultLabel;
-      React.Children.toArray(children).forEach((child) => {
-        if (
-          React.isValidElement(child) &&
-          child.props.value === selectedValue
-        ) {
-          defaultLabel = child.props.children;
-        }
-      });
-      setSelectedLabel(defaultLabel);
-    }
-  }, [children, selectedValue, setSelectedLabel]);
-
-  return (
-    <SelectOptionWrapper
-      {...props}
-      open={open}
-      className={className}
-      role="listbox"
-      aria-orientation="vertical"
-      id={`${props.id}-listbox`}
-    >
-      {children}
-    </SelectOptionWrapper>
-  );
-});
-
-const Option = memo(({ value, children, className, ...props }: OptionProps) => {
-  const {
-    selectedValue,
-    selectedLabel,
-    focusChild,
-    setSelectedValue,
-    setOpen,
-    onChange,
-  } = useContext(SelectContext) as SelectContextType;
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [isSelected, setIsSelected] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (React.isValidElement(focusChild) && focusChild.props.value === value)
-      setIsFocused(true);
-    else setIsFocused(false);
-  }, [focusChild, value]);
-
-  useEffect(() => {
-    if (selectedValue === value && selectedLabel === children)
-      setIsSelected(true);
-    else setIsSelected(false);
-  }, [selectedValue, selectedLabel, value, children]);
-
-  const onClickOption = useCallback(() => {
-    setSelectedValue(value);
-    onChange?.(value);
-    setOpen(false);
-  }, [value, onChange, setSelectedValue, setOpen]);
-
-  return (
-    <SelectOption
-      onClick={onClickOption}
-      {...(isFocused ? { "data-focused": "" } : {})}
-      {...(isSelected ? { "data-selected": "" } : {})}
-      className={className}
-      role="option"
-      aria-selected={isSelected}
-      tabIndex={-1}
-      {...props}
-    >
-      {children}
-    </SelectOption>
-  );
-});
-
-const Error = memo(({ children, className, ...props }: DefaultProps) => {
-  const { validity } = useContext(SelectContext) as SelectContextType;
-  return (
-    <>
-      {validity && (
-        <ErrorMessage {...props} className={className}>
-          {children}
-        </ErrorMessage>
-      )}
-    </>
-  );
-});
-
 Select.Trigger = Trigger;
 Select.OptionWrapper = OptionWrapper;
 Select.Option = Option;
 Select.Error = Error;
 
 export default Select;
-
-const SelectBoxWrapper = styled.div``;
-
-const SelectBox = styled.div<{ open: boolean }>`
-  outline: none;
-  &[data-focus="true"] {
-    outline: 2px solid #000;
-  }
-`;
-
-const SelectOptionWrapper = styled.div<{ open: boolean }>`
-  visibility: ${(props) => (props.open ? "visible" : "hidden")};
-  opacity: ${(props) => (props.open ? "1" : "0")};
-  transition: all 0.1s;
-  position: absolute;
-`;
-
-const SelectOption = styled.p``;
-
-const ErrorMessage = styled.p``;
