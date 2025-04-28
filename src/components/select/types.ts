@@ -21,25 +21,25 @@ export interface SelectProps<T = string | number> {
   className?: string;
   value?: T;
   onValueChange?: (value: T) => void;
-  children?: ReactElement;
+  children?: ReactNode;
   required?: boolean;
   ariaLabel?: string;
 }
 
 export interface DefaultProps {
   className?: string;
-  children?: ReactElement;
+  children?: ReactNode;
   [key: string]: unknown;
 }
 
 export interface OptionWrapperProps extends DefaultProps {
-  children: ReactElement;
+  children: ReactNode;
 }
 
 export interface OptionProps {
   value: string | number;
   id?: string;
   className?: string;
-  children: ReactElement;
+  children: ReactNode;
   [key: string]: unknown;
 }

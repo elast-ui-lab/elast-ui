@@ -18,9 +18,6 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
   // 선택된 라벨 가져오기
   const selectedLabel = getSelectedLabel();
 
-  /**
-   * 키보드 이벤트 핸들러
-   */
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     const keyHandlers = {
       Enter: () => {
@@ -31,11 +28,9 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
 
         if (isValidElement(focusChild) && focusChild.props.value) {
           const value = focusChild.props.value;
-          console.log("wow,",value)
           setSelectedValue(value);
           onValueChange?.(value);
         }
-        console.log("무시된듯",focusChild)
         setOpen(false);
       },
       ArrowUp: () => {
@@ -44,7 +39,6 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
       },
       ArrowDown: () => {
         if (!open) return;
-        console.log("down")
         setFocusIndex((prev) => prev + 1);
       },
       Escape: () => {
@@ -54,28 +48,23 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
     };
 
     if (e.key in keyHandlers) {
-      console.log("???", e.key, open)
       e.preventDefault();
       keyHandlers[e.key as keyof typeof keyHandlers]();
     }
   }, [open, focusChild, onValueChange, setOpen, setFocusIndex, setSelectedValue]);
 
-  /**
-   * 외부 클릭 감지 핸들러
-   */
+
   const handleClickOutside = useCallback((e: MouseEvent) => {
     if (ref.current && !ref.current.contains(e.target as Node)) {
       setOpen(false);
     }
   }, [setOpen]);
 
-  // 외부 클릭 이벤트 연결
   useEffect(() => {
     window.addEventListener("click", handleClickOutside);
     return () => window.removeEventListener("click", handleClickOutside);
   }, [handleClickOutside]);
 
-  // 포커스 상태 관리 함수
   const handleFocus = () => ref.current?.setAttribute('data-focus', 'true');
   const handleBlur = () => ref.current?.setAttribute('data-focus', 'false');
 
@@ -100,7 +89,6 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
   );
 });
 
-// displayName 설정
 Trigger.displayName = 'Trigger';
 
 export default Trigger;

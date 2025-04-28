@@ -5,61 +5,64 @@ import Trigger from "./Trigger";
 import Option from "./Option";
 import OptionWrapper from "./OptionWrapper";
 import Error from "./Error";
+var findComponentWithDisplayName = function (children, targetDisplayName) {
+    var queue = [children];
+    while (queue.length > 0) {
+        var current = queue.shift();
+        var childrenArray = Children.toArray(current);
+        for (var _i = 0, childrenArray_1 = childrenArray; _i < childrenArray_1.length; _i++) {
+            var child = childrenArray_1[_i];
+            if (!isValidElement(child) || !child.props || !child.props.children)
+                continue;
+            var componentType = child.type;
+            if (componentType.displayName === targetDisplayName)
+                return child;
+            queue.push(child.props.children);
+        }
+    }
+    return null;
+};
 var Select = function (_a) {
     var id = _a.id, className = _a.className, value = _a.value, children = _a.children, onValueChange = _a.onValueChange, required = _a.required, ariaLabel = _a.ariaLabel;
-    // 상태 관리
     var _b = useState(false), open = _b[0], setOpen = _b[1];
     var _c = useState(value || null), selectedValue = _c[0], setSelectedValue = _c[1];
     var _d = useState(-1), focusIndex = _d[0], setFocusIndex = _d[1];
     var _e = useState(), focusChild = _e[0], setFocusChild = _e[1];
-    var _f = useState([]), optionElements = _f[0], setOptionElements = _f[1];
-    var _g = useState(false), validity = _g[0], setValidity = _g[1];
+    var _f = useState(false), validity = _f[0], setValidity = _f[1];
+    var _g = useState([]), optionElements = _g[0], setOptionElements = _g[1];
     var selectRef = useRef(null);
-    // 옵션 요소들 추출 - Option 컴포넌트만 필터링
     useEffect(function () {
-        var filtered = Children.toArray(children)
-            .reduce(function (acc, child) {
-            if (isValidElement(child) && child.type === Select.OptionWrapper) {
-                // OptionWrapper 내부의 children을 순회하며 Option 컴포넌트 필터링
-                Children.toArray(child.props.children).forEach(function (optionChild) {
-                    if (!isValidElement(optionChild))
-                        return;
-                    var validChild = optionChild.type;
-                    if (validChild.displayName === 'Option')
-                        acc.push(optionChild);
-                });
-            }
-            return acc;
-        }, []);
-        setOptionElements(filtered);
+        var _a;
+        var optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
+        if ((_a = optionWrapper === null || optionWrapper === void 0 ? void 0 : optionWrapper.props) === null || _a === void 0 ? void 0 : _a.children) {
+            var validOptions = Children.toArray(optionWrapper.props.children).filter(function (child) { var _a; return isValidElement(child) && ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Option'; });
+            setOptionElements(validOptions);
+        }
+        else {
+            setOptionElements([]);
+        }
     }, [children]);
-    //선택된 옵션의 라벨을 찾는 함수
     var getSelectedLabel = useCallback(function () {
         if (optionElements.length === 0 || selectedValue === null)
             return null;
         var selectedOption = optionElements.find(function (option) { return option.props.value === selectedValue; });
         return (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.props.children) || null;
     }, [selectedValue, optionElements]);
-    // 필수 필드 유효성 검사
     var validateRequiredField = useCallback(function (e) {
         e.preventDefault();
-        if (required && selectedValue === null) {
-            setValidity(true);
-            return false;
-        }
-        setValidity(false);
-        return true;
+        var isValid = !(required && selectedValue === null);
+        setValidity(!isValid);
+        return isValid;
     }, [required, selectedValue]);
-    // 폼 제출 시 유효성 검사 이벤트 연결
     useEffect(function () {
         var _a;
         var form = (_a = selectRef.current) === null || _a === void 0 ? void 0 : _a.closest("form");
-        if (!form)
-            return;
-        form.addEventListener("submit", validateRequiredField);
-        return function () { return form.removeEventListener("submit", validateRequiredField); };
+        if (form) {
+            form.addEventListener("submit", validateRequiredField);
+            return function () { return form.removeEventListener("submit", validateRequiredField); };
+        }
+        return undefined;
     }, [validateRequiredField]);
-    // 외부에서 value가 변경될 경우 상태 업데이트
     useEffect(function () {
         if (value !== undefined) {
             setSelectedValue(value);
