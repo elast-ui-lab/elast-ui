@@ -34,7 +34,7 @@ const tabList = [
 function App() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [enabled, setEnabled] = useState(false);
-  const [dropdownSelectedValue, setDropdownSelectedValue] = useState("");
+  const [dropdownSelectedValue, setDropdownSelectedValue] = useState<string | number>("");
   return (
     <div className="App">
       <h1 className="text-4xl font-medium my-10">elast UI Library</h1>
@@ -136,7 +136,10 @@ function App() {
         </Switch>
         <h3 className="text-xl font-medium">Dropdown</h3>
         <p>현재값: {dropdownSelectedValue}</p>
-        <Dropdown onChange={setDropdownSelectedValue} className="mb-3">
+        <Dropdown
+          onChange={setDropdownSelectedValue}
+          className="mb-3"
+        >
           <Dropdown.Trigger className="hover:bg-[white] focus:bg-[white] hover:text-[black] focus:text-[black] bg-[#f4f4f4] text-[black] rounded border py-3 px-4 h-[3rem]">
             버튼
           </Dropdown.Trigger>

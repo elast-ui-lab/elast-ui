@@ -1,23 +1,26 @@
 import React from "react";
-type DataType = any;
 type DropdownProps = {
     children?: React.ReactNode;
     className?: string;
-    onChange?: DataType;
+    onChange?: (value: string | number) => void;
+    ariaLabel?: string;
+    id?: string;
 };
 type ItemWrapperProps = {
     children: React.ReactNode;
     className?: string;
+    id?: string;
 };
 type ItemProps = {
     value: string | number;
     children: React.ReactNode;
     className?: string;
+    id?: string;
 };
 declare const Dropdown: {
-    ({ children, className, onChange }: DropdownProps): React.JSX.Element;
-    Trigger: ({ children, className }: DropdownProps) => React.JSX.Element;
-    ItemWrapper: ({ children, className }: ItemWrapperProps) => React.JSX.Element;
-    Item: ({ value, children, className }: ItemProps) => React.JSX.Element;
+    ({ children, className, onChange, ariaLabel, id, }: DropdownProps): React.JSX.Element;
+    Trigger: React.MemoExoticComponent<({ children, className, id }: DropdownProps) => React.JSX.Element>;
+    ItemWrapper: React.MemoExoticComponent<({ children, className, id }: ItemWrapperProps) => React.JSX.Element>;
+    Item: React.MemoExoticComponent<({ value, children, className, id }: ItemProps) => React.JSX.Element>;
 };
 export default Dropdown;

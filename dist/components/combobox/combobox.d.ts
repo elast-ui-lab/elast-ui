@@ -7,6 +7,7 @@ type ComboBoxProps = {
     onChange?: (value: DataType) => void;
     children?: React.ReactNode;
     required?: boolean;
+    ariaLabel?: string;
 };
 type DefaultProps = {
     className?: string;
@@ -21,10 +22,10 @@ type OptionProps = {
     children?: React.ReactNode;
 };
 declare const ComboBox: {
-    ({ id, className, value, children, onChange, required, }: ComboBoxProps): React.JSX.Element;
-    Input: ({ className, children, placeholder, ...props }: {
+    ({ id, className, value, children, onChange, required, ariaLabel }: ComboBoxProps): React.JSX.Element;
+    Input: React.MemoExoticComponent<({ className, children, placeholder, ...props }: {
         placeholder?: string | undefined;
-    } & DefaultProps) => React.JSX.Element;
+    } & DefaultProps) => React.JSX.Element>;
     OptionWrapper: ({ children, className, ...props }: {
         children: React.ReactNode;
     } & DefaultProps) => React.JSX.Element;

@@ -5,6 +5,7 @@ import React, {
   useContext,
   createContext,
   ReactElement,
+  memo,
 } from "react";
 import styled from "styled-components";
 
@@ -37,6 +38,7 @@ type ComboBoxProps = {
   onChange?: (value: DataType) => void;
   children?: React.ReactNode;
   required?: boolean;
+  ariaLabel?: string;
 };
 
 type DefaultProps = {
@@ -64,6 +66,7 @@ const ComboBox = ({
   children,
   onChange,
   required,
+  ariaLabel
 }: ComboBoxProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -112,7 +115,17 @@ const ComboBox = ({
         setSelectedLabel,
       }}
     >
-      <ComboWrapper id={id} className={className}>
+      <ComboWrapper
+        id={id}
+        className={className}
+        role="combobox"
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-controls={`${id}-listbox`}
+        aria-required={required}
+        aria-invalid={validity}
+      >
         {children}
       </ComboWrapper>
       <input
@@ -120,12 +133,13 @@ const ComboBox = ({
         ref={selectRef}
         value={selectedValue}
         required={required}
+        aria-hidden="true"
       />
     </ComboBoxContext.Provider>
   );
 };
 
-const Input = ({
+const Input = memo(({
   className,
   children,
   placeholder,
@@ -209,7 +223,8 @@ const Input = ({
       {children}
     </div>
   );
-};
+});
+
 const OptionWrapper = ({
   children,
   className,
@@ -253,11 +268,9 @@ const OptionWrapper = ({
   }, [children, selectedValue, setSelectedLabel]);
 
   return (
-    <>
-      <ComboOptionWrapper open={open} className={className} {...props}>
-        {filteredChildren}
-      </ComboOptionWrapper>
-    </>
+    <ComboOptionWrapper open={open} className={className} {...props}>
+      {filteredChildren}
+    </ComboOptionWrapper>
   );
 };
 
@@ -336,6 +349,7 @@ const ComboOptionWrapper = styled.div<{ open: boolean }>`
   visibility: ${(props) => (props.open ? "visible" : "hidden")};
   opacity: ${(props) => (props.open ? "1" : "0")};
   transition: all 0.1s;
+  position: absolute;
 `;
 
 const ComboOption = styled.p``;

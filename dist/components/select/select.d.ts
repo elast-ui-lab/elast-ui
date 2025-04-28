@@ -1,12 +1,13 @@
 import React from "react";
-type DataType = any;
-type SelectProps = {
+type DataType<T = string | number> = T;
+type SelectProps<T = string | number> = {
     id?: string;
     className?: string;
-    value?: DataType;
-    onChange?: any;
+    value?: DataType<T>;
+    onChange?: (value: T) => void;
     children?: React.ReactNode;
     required?: boolean;
+    ariaLabel?: string;
 };
 type DefaultProps = {
     className?: string;
@@ -21,12 +22,12 @@ type OptionProps = {
     [key: string]: unknown;
 };
 declare const Select: {
-    ({ id, className, value, children, onChange, required, }: SelectProps): React.JSX.Element;
-    Trigger: ({ className, children, ...props }: DefaultProps) => React.JSX.Element;
-    OptionWrapper: ({ children, className, ...props }: {
+    <T extends string | number>({ id, className, value, children, onChange, required, ariaLabel, }: SelectProps<T>): React.JSX.Element;
+    Trigger: React.MemoExoticComponent<({ className, children, ...props }: DefaultProps) => React.JSX.Element>;
+    OptionWrapper: React.MemoExoticComponent<({ children, className, ...props }: {
         children: React.ReactNode;
-    } & DefaultProps) => React.JSX.Element;
-    Option: ({ value, children, className, ...props }: OptionProps) => React.JSX.Element;
-    Error: ({ children, className, ...props }: DefaultProps) => React.JSX.Element;
+    } & DefaultProps) => React.JSX.Element>;
+    Option: React.MemoExoticComponent<({ value, children, className, ...props }: OptionProps) => React.JSX.Element>;
+    Error: React.MemoExoticComponent<({ children, className, ...props }: DefaultProps) => React.JSX.Element>;
 };
 export default Select;

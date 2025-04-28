@@ -331,6 +331,7 @@ const SelectOptionWrapper = styled.div<{ open: boolean }>`
   visibility: ${(props) => (props.open ? "visible" : "hidden")};
   opacity: ${(props) => (props.open ? "1" : "0")};
   transition: all 0.1s;
+  position: absolute;
 `;
 
 const SelectOption = styled.p``;

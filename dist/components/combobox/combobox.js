@@ -24,11 +24,11 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-import React, { useRef, useState, useEffect, useContext, createContext, } from "react";
+import React, { useRef, useState, useEffect, useContext, createContext, memo, } from "react";
 import styled from "styled-components";
 var ComboBoxContext = createContext(undefined);
 var ComboBox = function (_a) {
-    var id = _a.id, className = _a.className, value = _a.value, children = _a.children, onChange = _a.onChange, required = _a.required;
+    var id = _a.id, className = _a.className, value = _a.value, children = _a.children, onChange = _a.onChange, required = _a.required, ariaLabel = _a.ariaLabel;
     var _b = useState(false), open = _b[0], setOpen = _b[1];
     var _c = useState(false), isTyping = _c[0], setIsTyping = _c[1];
     var _d = useState(""), typedKeyword = _d[0], setTypedKeyword = _d[1];
@@ -72,10 +72,10 @@ var ComboBox = function (_a) {
             setSelectedValue: setSelectedValue,
             setSelectedLabel: setSelectedLabel,
         } },
-        React.createElement(ComboWrapper, { id: id, className: className }, children),
-        React.createElement("input", { type: "hidden", ref: selectRef, value: selectedValue, required: required })));
+        React.createElement(ComboWrapper, { id: id, className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
+        React.createElement("input", { type: "hidden", ref: selectRef, value: selectedValue, required: required, "aria-hidden": "true" })));
 };
-var Input = function (_a) {
+var Input = memo(function (_a) {
     var className = _a.className, children = _a.children, placeholder = _a.placeholder, props = __rest(_a, ["className", "children", "placeholder"]);
     var ref = useRef(null);
     var _b = useContext(ComboBoxContext), open = _b.open, isTyping = _b.isTyping, focusIndex = _b.focusIndex, selectedLabel = _b.selectedLabel, focusChild = _b.focusChild, onChange = _b.onChange, setOpen = _b.setOpen, setIsTyping = _b.setIsTyping, setFocusIndex = _b.setFocusIndex, setSelectedValue = _b.setSelectedValue, setTypedKeyword = _b.setTypedKeyword;
@@ -128,7 +128,7 @@ var Input = function (_a) {
                 setOpen(true);
             } }, props)),
         children));
-};
+});
 var OptionWrapper = function (_a) {
     var children = _a.children, className = _a.className, props = __rest(_a, ["children", "className"]);
     var _b = useContext(ComboBoxContext), open = _b.open, typedKeyword = _b.typedKeyword, selectedValue = _b.selectedValue, setSelectedLabel = _b.setSelectedLabel, focusIndex = _b.focusIndex, setFocusChild = _b.setFocusChild;
@@ -152,8 +152,7 @@ var OptionWrapper = function (_a) {
             }
         }
     }, [children, selectedValue, setSelectedLabel]);
-    return (React.createElement(React.Fragment, null,
-        React.createElement(ComboOptionWrapper, __assign({ open: open, className: className }, props), filteredChildren)));
+    return (React.createElement(ComboOptionWrapper, __assign({ open: open, className: className }, props), filteredChildren));
 };
 var Option = function (_a) {
     var value = _a.value, children = _a.children, props = __rest(_a, ["value", "children"]);
@@ -191,7 +190,7 @@ ComboBox.Error = Error;
 export default ComboBox;
 var ComboWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject([""], [""])));
 var ComboInput = styled.input(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  cursor: pointer;\n"], ["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  cursor: pointer;\n"])));
-var ComboOptionWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"], ["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
+var ComboOptionWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n  position: absolute;\n"], ["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n  position: absolute;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
 var ComboOption = styled.p(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
 var ErrorMessage = styled.p(templateObject_5 || (templateObject_5 = __makeTemplateObject([""], [""])));
 var templateObject_1, templateObject_2, templateObject_3, templateObject_4, templateObject_5;

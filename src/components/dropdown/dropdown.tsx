@@ -4,52 +4,60 @@ import React, {
   useEffect,
   useContext,
   createContext,
+  useCallback,
+  memo,
 } from "react";
 import styled from "styled-components";
-
-type DataType = any;
 
 type DropdownProps = {
   children?: React.ReactNode;
   className?: string;
-  onChange?: DataType;
+  onChange?: (value: string | number) => void;
+  ariaLabel?: string;
+  id?: string;
 };
 
 type ItemWrapperProps = {
   children: React.ReactNode;
   className?: string;
+  id?: string;
 };
 
 type ItemProps = {
   value: string | number;
   children: React.ReactNode;
   className?: string;
+  id?: string;
 };
 
 type DropdownContextType = {
-  selectedValue: DataType;
-  setSelectedValue: React.Dispatch<React.SetStateAction<DataType>>;
-  selectedLabel: DataType;
-  setSelectedLabel: React.Dispatch<React.SetStateAction<DataType>>;
+  selectedValue: string | number;
+  setSelectedValue: React.Dispatch<React.SetStateAction<string | number>>;
+  selectedLabel: React.ReactNode;
+  setSelectedLabel: React.Dispatch<React.SetStateAction<React.ReactNode>>;
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onChange: (id: unknown) => void;
+  onChange: (value: string | number) => void;
   focusChild: React.ReactNode;
   focusIndex: number;
   setFocusIndex: React.Dispatch<React.SetStateAction<number>>;
   setFocusChild: React.Dispatch<React.SetStateAction<React.ReactNode>>;
 };
 
-const DropdownContext = createContext<DropdownContextType | undefined>(
-  undefined
-);
+const DropdownContext = createContext<DropdownContextType | undefined>(undefined);
 
-const Dropdown = ({ children, className, onChange }: DropdownProps) => {
-  const [open, setOpen] = useState<DataType>(false);
-  const [selectedValue, setSelectedValue] = useState<DataType>("");
+const Dropdown = ({
+  children,
+  className,
+  onChange,
+  ariaLabel,
+  id,
+}: DropdownProps) => {
+  const [open, setOpen] = useState<boolean>(false);
+  const [selectedValue, setSelectedValue] = useState<string | number>("");
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const [focusChild, setFocusChild] = useState<React.ReactNode>();
-  const [selectedLabel, setSelectedLabel] = useState<DataType>();
+  const [selectedLabel, setSelectedLabel] = useState<React.ReactNode>();
 
   return (
     <DropdownContext.Provider
@@ -60,88 +68,104 @@ const Dropdown = ({ children, className, onChange }: DropdownProps) => {
         setSelectedLabel,
         open,
         setOpen,
-        onChange,
+        onChange: onChange || (() => {}),
         focusChild,
         focusIndex,
         setFocusIndex,
         setFocusChild,
       }}
     >
-      <DropdownBoxWrapper className={className}>{children}</DropdownBoxWrapper>
+      <DropdownBoxWrapper
+        className={className}
+        role="combobox"
+        aria-label={ariaLabel}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        aria-controls={`${ariaLabel}-listbox`}
+      >
+        {children}
+      </DropdownBoxWrapper>
     </DropdownContext.Provider>
   );
 };
 
-const Trigger = ({ children, className }: DropdownProps) => {
-  const ref = useRef<any>();
+const Trigger = memo(({ children, className, id }: DropdownProps) => {
+  const ref = useRef<HTMLDivElement>(null);
   const {
     open,
     setOpen,
     setSelectedValue,
     onChange,
-    focusIndex,
     focusChild,
     setFocusIndex,
   } = useContext(DropdownContext) as DropdownContextType;
 
-  const onClickOutside = (e?: MouseEvent) => {
-    if (!e || e.target !== ref.current) setOpen(false);
-  };
-
-  const KeyEvent: { [key: string]: () => void } = {
-    Enter: () => {
-      onClickOutside();
-      if (React.isValidElement(focusChild)) {
-        const newValue = focusChild.props.value;
-        setSelectedValue(newValue);
-        onChange?.(newValue);
-      }
-    },
-    ArrowUp: () => {
-      setFocusIndex((prevIndex) => Math.max(prevIndex - 1, -1));
-    },
-    ArrowDown: () => {
-      setFocusIndex((prevIndex) => prevIndex + 1);
-    },
-    Escape: () => {
-      onClickOutside();
-    },
-  };
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key in KeyEvent && focusIndex >= -1) {
-        e.preventDefault(); // 화살표 키보드 눌렀을 때, 스크롤되는 것을 막기 위함
-        KeyEvent[e.key]();
-      }
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const KeyEvent: { [key: string]: () => void } = {
+      Enter: () => {
+        if (!open) {
+          setOpen(true);
+          return;
+        }
+        if (React.isValidElement(focusChild)) {
+          const newValue = focusChild.props.value;
+          setSelectedValue(newValue);
+          onChange?.(newValue);
+          setOpen(false);
+        }
+      },
+      ArrowUp: () => {
+        if (!open) return;
+        setFocusIndex((prevIndex) => Math.max(prevIndex - 1, -1));
+      },
+      ArrowDown: () => {
+        if (!open) return;
+        setFocusIndex((prevIndex) => prevIndex + 1);
+      },
+      Escape: () => {
+        setOpen(false);
+        ref.current?.blur();
+      },
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  });
+
+    if (e.key in KeyEvent) {
+      e.preventDefault();
+      KeyEvent[e.key]();
+    }
+  }, [open, focusChild, onChange, setOpen, setFocusIndex, setSelectedValue]);
+
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (ref.current && !ref.current.contains(e.target as Node)) {
+      setOpen(false);
+    }
+  }, [setOpen]);
 
   useEffect(() => {
-    window.addEventListener("click", onClickOutside);
-    return () => window.removeEventListener("click", onClickOutside);
-  });
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, [handleClickOutside]);
 
   return (
-    <>
-      <DropdownBox
-        ref={ref}
-        open={open}
-        className={className}
-        onClick={() => {
-          setOpen(!open);
-        }}
-      >
-        {children}
-      </DropdownBox>
-    </>
+    <DropdownBox
+      ref={ref}
+      open={open}
+      className={className}
+      onClick={() => setOpen(!open)}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      onFocus={() => ref.current?.setAttribute('data-focus', 'true')}
+      onBlur={() => ref.current?.setAttribute('data-focus', 'false')}
+      role="combobox"
+      aria-expanded={open}
+      aria-haspopup="listbox"
+      aria-controls={`${id}-listbox`}
+    >
+      {children}
+    </DropdownBox>
   );
-};
+});
 
-const ItemWrapper = ({ children, className }: ItemWrapperProps) => {
+const ItemWrapper = memo(({ children, className, id }: ItemWrapperProps) => {
   const { open, setFocusChild, focusIndex, selectedValue, setSelectedLabel } =
     useContext(DropdownContext) as DropdownContextType;
 
@@ -165,15 +189,19 @@ const ItemWrapper = ({ children, className }: ItemWrapperProps) => {
   }, [children, selectedValue, setSelectedLabel]);
 
   return (
-    <>
-      <DropdownItemWrapper open={open} className={className}>
-        {children}
-      </DropdownItemWrapper>
-    </>
+    <DropdownItemWrapper
+      open={open}
+      className={className}
+      role="listbox"
+      aria-orientation="vertical"
+      id={`${id}-listbox`}
+    >
+      {children}
+    </DropdownItemWrapper>
   );
-};
+});
 
-const Item = ({ value, children, className }: ItemProps) => {
+const Item = memo(({ value, children, className, id }: ItemProps) => {
   const {
     selectedValue,
     selectedLabel,
@@ -197,11 +225,11 @@ const Item = ({ value, children, className }: ItemProps) => {
     else setIsSelected(false);
   }, [selectedValue, selectedLabel, value, children]);
 
-  const onClickOption = () => {
+  const onClickOption = useCallback(() => {
     setSelectedValue(value);
-    onChange && onChange(value);
+    onChange?.(value);
     setOpen(false);
-  };
+  }, [value, onChange, setSelectedValue, setOpen]);
 
   return (
     <DropdownItem
@@ -209,11 +237,15 @@ const Item = ({ value, children, className }: ItemProps) => {
       className={className}
       {...(isFocused ? { "data-focused": "" } : {})}
       {...(isSelected ? { "data-selected": "" } : {})}
+      role="option"
+      aria-selected={isSelected}
+      tabIndex={-1}
+      id={id}
     >
       {children}
     </DropdownItem>
   );
-};
+});
 
 Dropdown.Trigger = Trigger;
 Dropdown.ItemWrapper = ItemWrapper;
@@ -225,12 +257,16 @@ const DropdownBoxWrapper = styled.div``;
 
 const DropdownBox = styled.div<{ open: boolean }>`
   outline: none;
+  &[data-focus="true"] {
+    outline: 2px solid #000;
+  }
 `;
 
 const DropdownItemWrapper = styled.div<{ open: boolean }>`
   visibility: ${(props) => (props.open ? "visible" : "hidden")};
   opacity: ${(props) => (props.open ? "1" : "0")};
   transition: all 0.1s;
+  position: absolute;
 `;
 
 const DropdownItem = styled.p``;
