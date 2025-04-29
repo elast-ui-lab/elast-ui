@@ -6,6 +6,6 @@ export interface SwitchProps {
   id?: string;
   className?: string;
   checked?: DataType;
-  onValueChange?: (value: boolean) => void;
+  onCheckedChange?: (value: boolean) => void;
   children?: ReactNode;
 }

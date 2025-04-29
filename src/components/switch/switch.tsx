@@ -7,7 +7,7 @@ const Switch = ({
   className,
   checked,
   children,
-  onValueChange,
+  onCheckedChange,
 }: SwitchProps) => {
   return (
     <>
@@ -16,7 +16,7 @@ const Switch = ({
         className={className}
         {...(checked ? { "data-checked": true } : {})}
         onClick={() => {
-          onValueChange && onValueChange(!checked);
+          onCheckedChange?.(!checked);
         }}
       >
         {children}
