@@ -1,17 +1,14 @@
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  useContext,
-  ReactElement,
-  memo,
-  useCallback,
-  isValidElement,
-} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ComboBoxContext } from "./context";
-import { ComboBoxProps, ComboBoxContextType, InputProps, OptionWrapperProps, OptionProps, DefaultProps, DataType } from "./types";
-import styled from "styled-components";
+import { ComboBoxProps, ComboBoxContextType, DataType } from "./types";
+import { ComboWrapper } from "./styles";
 import { findComponentWithDisplayName } from "../../utils/common";
+import Input from "./Input";
+import OptionWrapper from "./OptionWrapper";
+import Option from "./Option";
+import Error from "./Error";
+import { ReactElement, isValidElement } from "react";
+import { OptionProps } from "./types";
 
 const ComboBox = <T extends DataType>({
   id,
@@ -104,17 +101,17 @@ const ComboBox = <T extends DataType>({
     selectedValue,
     validity,
     required,
-    optionElements,
-    filteredOptions,
     onValueChange: onValueChange as ((value: T) => void) | undefined,
     setOpen,
     setIsTyping,
     setFocusIndex,
     setTypedKeyword,
     setSelectedValue,
+    filteredOptions,
     getFilteredOptions,
     getSelectedLabel,
     getFocusedOption,
+    optionElements,
   };
 
   return (
@@ -143,232 +140,9 @@ const ComboBox = <T extends DataType>({
   );
 };
 
-const Input = memo(({
-  className,
-  children,
-  placeholder,
-  ...props
-}: InputProps) => {
-  const ref = useRef<HTMLInputElement>(null);
-  const {
-    open,
-    isTyping,
-    onValueChange,
-    setOpen,
-    setIsTyping,
-    setFocusIndex,
-    setSelectedValue,
-    setTypedKeyword,
-    getSelectedLabel,
-    getFocusedOption,
-  } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
-  const [inputValue, setInputValue] = useState("");
-
-  const selectedLabel = getSelectedLabel();
-
-  const handleClickOutside = useCallback((e?: MouseEvent) => {
-    if (!e || e.target !== ref.current) {
-      setOpen(false);
-      setIsTyping(false);
-      setFocusIndex(-1);
-      ref.current?.blur();
-    }
-  }, [setFocusIndex, setIsTyping, setOpen]);
-
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!open) setOpen(true)
-
-    const keyHandlers: Record<string, () => void> = {
-      Enter: () => {
-        const focusedOption = getFocusedOption();
-        if (focusedOption) {
-          const optionValue = focusedOption.props.value;
-          if (optionValue) {
-            handleClickOutside();
-            setSelectedValue(optionValue);
-            onValueChange?.(optionValue);
-          }
-        }
-      },
-      ArrowUp: () => {
-        setFocusIndex((prev) => Math.max(prev - 1, -1));
-      },
-      ArrowDown: () => {
-        setFocusIndex((prev) => prev + 1);
-      },
-      Escape: () => {
-        handleClickOutside();
-      },
-    };
-
-    if (e.key in keyHandlers) {
-      e.preventDefault();
-      keyHandlers[e.key]();
-    }
-  }, [handleClickOutside, onValueChange, open, setFocusIndex, setOpen, setSelectedValue, getFocusedOption]);
-
-  useEffect(() => {
-    window.addEventListener("click", handleClickOutside);
-    return () => window.removeEventListener("click", handleClickOutside);
-  }, [handleClickOutside]);
-
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsTyping(true);
-    setFocusIndex(-1);
-    setInputValue(e.target.value);
-    setTypedKeyword(e.target.value);
-  }, [setFocusIndex, setIsTyping, setTypedKeyword]);
-
-
-  const handleFocus = () => ref.current?.setAttribute('data-focus', 'true');
-  const handleBlur = () => ref.current?.setAttribute('data-focus', 'false');
-
-  return (
-    <div>
-      <ComboInput
-        ref={ref}
-        className={className}
-        open={open}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        value={isTyping ? inputValue : selectedLabel as string || ""}
-        onChange={handleInputChange}
-        onClick={() => setOpen(true)}
-        aria-autocomplete="list"
-        {...props}
-      />
-      {children}
-    </div>
-  );
-});
-
-Input.displayName = 'Input';
-
-const OptionWrapper = memo(({
-  children,
-  className,
-  id,
-  ...props
-}: OptionWrapperProps) => {
-  const {
-    open,
-    filteredOptions,
-    isTyping,
-    optionElements
-  } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
-
-  const displayOptions = isTyping ? filteredOptions : optionElements;
-
-  return (
-    <ComboOptionWrapper
-      open={open}
-      className={className}
-      role="listbox"
-      aria-orientation="vertical"
-      id={`${id}-listbox`}
-      {...props}
-    >
-      {displayOptions}
-    </ComboOptionWrapper>
-  );
-});
-
-OptionWrapper.displayName = 'OptionWrapper';
-
-const Option = memo(({
-  value,
-  children,
-  className,
-  id,
-  ...props
-}: OptionProps) => {
-  const {
-    selectedValue,
-    setSelectedValue,
-    setOpen,
-    onValueChange,
-    getFocusedOption
-  } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
-
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const isSelected = selectedValue === value;
-
-  useEffect(() => {
-    const focusedOption = getFocusedOption();
-    const focused = focusedOption?.props.value === value;
-    setIsFocused(focused);
-  }, [getFocusedOption, value]);
-
-  const handleOptionClick = useCallback(() => {
-    setOpen(false);
-    onValueChange?.(value);
-    setSelectedValue(value);
-  }, [onValueChange, setOpen, setSelectedValue, value]);
-
-  const optionProps = {
-    ...(isFocused ? { "data-focused": "" } : {}),
-    ...(isSelected ? { "data-selected": "" } : {}),
-    className,
-    role: "option",
-    "aria-selected": isSelected,
-    tabIndex: -1,
-    id,
-    ...props
-  };
-
-  return (
-    <ComboOption
-      onClick={handleOptionClick}
-      {...optionProps}
-    >
-      {children}
-    </ComboOption>
-  );
-});
-
-Option.displayName = 'Option';
-
-const Error = memo(({ children, className, ...props }: DefaultProps) => {
-  const { validity } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
-
-  if (!validity) return null;
-
-  return (
-    <ErrorMessage {...props} className={className}>
-      {children}
-    </ErrorMessage>
-  );
-});
-
-Error.displayName = 'Error';
-
 ComboBox.Input = Input;
 ComboBox.OptionWrapper = OptionWrapper;
 ComboBox.Option = Option;
 ComboBox.Error = Error;
 
 export default ComboBox;
-
-const ComboWrapper = styled.div``;
-
-const ComboInput = styled.input<{ open: boolean }>`
-  width: 100%;
-  height: 100%;
-  outline: none;
-  &[data-focus="true"] {
-    outline: 2px solid #000;
-  }
-`;
-
-const ComboOptionWrapper = styled.div<{ open: boolean }>`
-  visibility: ${(props) => (props.open ? "visible" : "hidden")};
-  opacity: ${(props) => (props.open ? "1" : "0")};
-  transition: all 0.1s;
-  position: absolute;
-`;
-
-const ComboOption = styled.p``;
-
-const ErrorMessage = styled.p``;
