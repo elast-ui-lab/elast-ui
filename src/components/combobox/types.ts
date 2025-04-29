@@ -7,21 +7,20 @@ export interface ComboBoxContextType<T = DataType> {
   isTyping: boolean;
   typedKeyword: string;
   focusIndex: number;
-  focusChild: ReactNode;
   selectedValue: T;
   validity: boolean;
   required?: boolean;
   filteredOptions: ReactElement<OptionProps>[];
   optionElements: ReactElement<OptionProps>[];
-  onChange?: (value: T) => void;
+  onValueChange?: (value: T) => void;
   setOpen: Dispatch<SetStateAction<boolean>>;
   setIsTyping: Dispatch<SetStateAction<boolean>>;
   setFocusIndex: Dispatch<SetStateAction<number>>;
-  setFocusChild: Dispatch<SetStateAction<ReactNode>>;
   setTypedKeyword: Dispatch<SetStateAction<string>>;
   setSelectedValue: Dispatch<SetStateAction<T>>;
   getFilteredOptions: (keyword: string) => ReactElement<OptionProps>[];
   getSelectedLabel: () => ReactNode;
+  getFocusedOption: () => ReactElement<OptionProps> | undefined;
 }
 
 export interface ComboBoxProps<T = DataType> {
@@ -31,7 +30,7 @@ export interface ComboBoxProps<T = DataType> {
   children?: ReactNode;
   required?: boolean;
   ariaLabel?: string;
-  onChange?: (value: T) => void;
+  onValueChange?: (value: T) => void;
 }
 
 export interface DefaultProps {

@@ -29,16 +29,15 @@ import { ComboBoxContext } from "./context";
 import styled from "styled-components";
 import { findComponentWithDisplayName } from "../../utils/common";
 var ComboBox = function (_a) {
-    var id = _a.id, className = _a.className, value = _a.value, children = _a.children, onChange = _a.onChange, required = _a.required, ariaLabel = _a.ariaLabel;
+    var id = _a.id, className = _a.className, value = _a.value, children = _a.children, required = _a.required, ariaLabel = _a.ariaLabel, onValueChange = _a.onValueChange;
     var _b = useState(false), open = _b[0], setOpen = _b[1];
     var _c = useState(false), isTyping = _c[0], setIsTyping = _c[1];
     var _d = useState(""), typedKeyword = _d[0], setTypedKeyword = _d[1];
     var _e = useState(value || ""), selectedValue = _e[0], setSelectedValue = _e[1];
     var _f = useState(false), validity = _f[0], setValidity = _f[1];
     var _g = useState(-1), focusIndex = _g[0], setFocusIndex = _g[1];
-    var _h = useState(), focusChild = _h[0], setFocusChild = _h[1];
-    var _j = useState([]), filteredOptions = _j[0], setFilteredOptions = _j[1];
-    var _k = useState([]), optionElements = _k[0], setOptionElements = _k[1];
+    var _h = useState([]), filteredOptions = _h[0], setFilteredOptions = _h[1];
+    var _j = useState([]), optionElements = _j[0], setOptionElements = _j[1];
     var selectRef = useRef(null);
     useEffect(function () {
         var _a;
@@ -66,6 +65,13 @@ var ComboBox = function (_a) {
         var selectedOption = optionElements.find(function (option) { return option.props.value === selectedValue; });
         return (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.props.children) || null;
     }, [selectedValue, optionElements]);
+    var getFocusedOption = useCallback(function () {
+        var options = isTyping ? filteredOptions : optionElements;
+        if (focusIndex >= 0 && focusIndex < options.length) {
+            return options[focusIndex];
+        }
+        return undefined;
+    }, [focusIndex, filteredOptions, optionElements, isTyping]);
     useEffect(function () {
         setFilteredOptions(getFilteredOptions(typedKeyword));
     }, [typedKeyword, getFilteredOptions, optionElements]);
@@ -94,32 +100,30 @@ var ComboBox = function (_a) {
         open: open,
         isTyping: isTyping,
         focusIndex: focusIndex,
-        focusChild: focusChild,
         typedKeyword: typedKeyword,
         selectedValue: selectedValue,
         validity: validity,
         required: required,
-        onChange: onChange,
+        optionElements: optionElements,
+        filteredOptions: filteredOptions,
+        onValueChange: onValueChange,
         setOpen: setOpen,
         setIsTyping: setIsTyping,
         setFocusIndex: setFocusIndex,
-        setFocusChild: setFocusChild,
         setTypedKeyword: setTypedKeyword,
         setSelectedValue: setSelectedValue,
-        filteredOptions: filteredOptions,
         getFilteredOptions: getFilteredOptions,
         getSelectedLabel: getSelectedLabel,
-        optionElements: optionElements,
+        getFocusedOption: getFocusedOption,
     };
     return (React.createElement(ComboBoxContext.Provider, { value: contextValue },
         React.createElement(ComboWrapper, { id: id, className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
         React.createElement("input", { type: "hidden", ref: selectRef, value: String(selectedValue), required: required, "aria-hidden": "true" })));
 };
-// Input 컴포넌트
 var Input = memo(function (_a) {
     var className = _a.className, children = _a.children, placeholder = _a.placeholder, props = __rest(_a, ["className", "children", "placeholder"]);
     var ref = useRef(null);
-    var _b = useContext(ComboBoxContext), open = _b.open, isTyping = _b.isTyping, focusChild = _b.focusChild, onChange = _b.onChange, setOpen = _b.setOpen, setIsTyping = _b.setIsTyping, setFocusIndex = _b.setFocusIndex, setSelectedValue = _b.setSelectedValue, setTypedKeyword = _b.setTypedKeyword, getSelectedLabel = _b.getSelectedLabel;
+    var _b = useContext(ComboBoxContext), open = _b.open, isTyping = _b.isTyping, onValueChange = _b.onValueChange, setOpen = _b.setOpen, setIsTyping = _b.setIsTyping, setFocusIndex = _b.setFocusIndex, setSelectedValue = _b.setSelectedValue, setTypedKeyword = _b.setTypedKeyword, getSelectedLabel = _b.getSelectedLabel, getFocusedOption = _b.getFocusedOption;
     var _c = useState(""), inputValue = _c[0], setInputValue = _c[1];
     var selectedLabel = getSelectedLabel();
     var handleClickOutside = useCallback(function (e) {
@@ -136,12 +140,13 @@ var Input = memo(function (_a) {
             setOpen(true);
         var keyHandlers = {
             Enter: function () {
-                if (isValidElement(focusChild)) {
-                    var optionElement = focusChild;
-                    if (optionElement.props.value) {
+                var focusedOption = getFocusedOption();
+                if (focusedOption) {
+                    var optionValue = focusedOption.props.value;
+                    if (optionValue) {
                         handleClickOutside();
-                        setSelectedValue(optionElement.props.value);
-                        onChange === null || onChange === void 0 ? void 0 : onChange(optionElement.props.value);
+                        setSelectedValue(optionValue);
+                        onValueChange === null || onValueChange === void 0 ? void 0 : onValueChange(optionValue);
                     }
                 }
             },
@@ -159,7 +164,7 @@ var Input = memo(function (_a) {
             e.preventDefault();
             keyHandlers[e.key]();
         }
-    }, [focusChild, handleClickOutside, onChange, open, setFocusIndex, setOpen, setSelectedValue]);
+    }, [handleClickOutside, onValueChange, open, setFocusIndex, setOpen, setSelectedValue, getFocusedOption]);
     useEffect(function () {
         window.addEventListener("click", handleClickOutside);
         return function () { return window.removeEventListener("click", handleClickOutside); };
@@ -176,48 +181,33 @@ var Input = memo(function (_a) {
         React.createElement(ComboInput, __assign({ ref: ref, className: className, open: open, onFocus: handleFocus, onBlur: handleBlur, onKeyDown: handleKeyDown, placeholder: placeholder, value: isTyping ? inputValue : selectedLabel || "", onChange: handleInputChange, onClick: function () { return setOpen(true); }, "aria-autocomplete": "list" }, props)),
         children));
 });
-// Input displayName 설정
 Input.displayName = 'Input';
-// OptionWrapper 컴포넌트
 var OptionWrapper = memo(function (_a) {
     var children = _a.children, className = _a.className, id = _a.id, props = __rest(_a, ["children", "className", "id"]);
-    var _b = useContext(ComboBoxContext), open = _b.open, focusIndex = _b.focusIndex, setFocusChild = _b.setFocusChild, filteredOptions = _b.filteredOptions, isTyping = _b.isTyping, optionElements = _b.optionElements;
-    useEffect(function () {
-        var options = isTyping ? filteredOptions : optionElements;
-        if (focusIndex >= 0 && focusIndex < options.length) {
-            setFocusChild(options[focusIndex]);
-        }
-    }, [filteredOptions, optionElements, focusIndex, setFocusChild, isTyping]);
+    var _b = useContext(ComboBoxContext), open = _b.open, filteredOptions = _b.filteredOptions, isTyping = _b.isTyping, optionElements = _b.optionElements;
     var displayOptions = isTyping ? filteredOptions : optionElements;
     return (React.createElement(ComboOptionWrapper, __assign({ open: open, className: className, role: "listbox", "aria-orientation": "vertical", id: "".concat(id, "-listbox") }, props), displayOptions));
 });
-// OptionWrapper displayName 설정
 OptionWrapper.displayName = 'OptionWrapper';
-// Option 컴포넌트
 var Option = memo(function (_a) {
     var value = _a.value, children = _a.children, className = _a.className, id = _a.id, props = __rest(_a, ["value", "children", "className", "id"]);
-    var _b = useContext(ComboBoxContext), selectedValue = _b.selectedValue, setSelectedValue = _b.setSelectedValue, setOpen = _b.setOpen, onChange = _b.onChange, focusChild = _b.focusChild;
+    var _b = useContext(ComboBoxContext), selectedValue = _b.selectedValue, setSelectedValue = _b.setSelectedValue, setOpen = _b.setOpen, onValueChange = _b.onValueChange, getFocusedOption = _b.getFocusedOption;
     var _c = useState(false), isFocused = _c[0], setIsFocused = _c[1];
     var isSelected = selectedValue === value;
     useEffect(function () {
-        var focused = false;
-        if (isValidElement(focusChild)) {
-            var optionElement = focusChild;
-            focused = optionElement.props.value === value;
-        }
+        var focusedOption = getFocusedOption();
+        var focused = (focusedOption === null || focusedOption === void 0 ? void 0 : focusedOption.props.value) === value;
         setIsFocused(focused);
-    }, [focusChild, value]);
+    }, [getFocusedOption, value]);
     var handleOptionClick = useCallback(function () {
-        setSelectedValue(value);
-        onChange === null || onChange === void 0 ? void 0 : onChange(value);
         setOpen(false);
-    }, [onChange, setOpen, setSelectedValue, value]);
+        onValueChange === null || onValueChange === void 0 ? void 0 : onValueChange(value);
+        setSelectedValue(value);
+    }, [onValueChange, setOpen, setSelectedValue, value]);
     var optionProps = __assign(__assign(__assign(__assign({}, (isFocused ? { "data-focused": "" } : {})), (isSelected ? { "data-selected": "" } : {})), { className: className, role: "option", "aria-selected": isSelected, tabIndex: -1, id: id }), props);
     return (React.createElement(ComboOption, __assign({ onClick: handleOptionClick }, optionProps), children));
 });
-// Option displayName 설정
 Option.displayName = 'Option';
-// Error 컴포넌트
 var Error = memo(function (_a) {
     var children = _a.children, className = _a.className, props = __rest(_a, ["children", "className"]);
     var validity = useContext(ComboBoxContext).validity;
@@ -225,15 +215,12 @@ var Error = memo(function (_a) {
         return null;
     return (React.createElement(ErrorMessage, __assign({}, props, { className: className }), children));
 });
-// Error displayName 설정
 Error.displayName = 'Error';
-// 컴포넌트 등록
 ComboBox.Input = Input;
 ComboBox.OptionWrapper = OptionWrapper;
 ComboBox.Option = Option;
 ComboBox.Error = Error;
 export default ComboBox;
-// 스타일 컴포넌트
 var ComboWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject([""], [""])));
 var ComboInput = styled.input(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  &[data-focus=\"true\"] {\n    outline: 2px solid #000;\n  }\n"], ["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  &[data-focus=\"true\"] {\n    outline: 2px solid #000;\n  }\n"])));
 var ComboOptionWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n  position: absolute;\n"], ["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n  position: absolute;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });

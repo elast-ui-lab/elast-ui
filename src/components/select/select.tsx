@@ -21,7 +21,6 @@ const Select = <T extends string | number>({
   const [open, setOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<T | null>(value as T || null);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const [focusChild, setFocusChild] = useState<React.ReactNode>();
   const [validity, setValidity] = useState<boolean>(false);
   const [optionElements, setOptionElements] = useState<React.ReactElement[]>([]);
   const selectRef = useRef<HTMLInputElement>(null);
@@ -41,6 +40,13 @@ const Select = <T extends string | number>({
       const selectedOption = optionElements.find(option => option.props.value === selectedValue);
       return selectedOption?.props.children || null;
   }, [selectedValue, optionElements]);
+
+  const getFocusedOption = useCallback((): React.ReactElement | undefined => {
+    if (focusIndex >= 0 && focusIndex < optionElements.length) {
+      return optionElements[focusIndex];
+    }
+    return undefined;
+  }, [focusIndex, optionElements]);
 
   const validateRequiredField = useCallback((e: Event) => {
       e.preventDefault();
@@ -68,16 +74,15 @@ const Select = <T extends string | number>({
           open,
           setOpen,
           focusIndex,
-          focusChild,
           selectedValue,
           onValueChange: onValueChange as (value: any) => void,
           setFocusIndex,
-          setFocusChild,
           setSelectedValue,
           validity,
           required,
           getSelectedLabel,
           optionElements,
+          getFocusedOption,
   };
 
   return (

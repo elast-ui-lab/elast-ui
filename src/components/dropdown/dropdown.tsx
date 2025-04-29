@@ -11,7 +11,7 @@ import { findComponentWithDisplayName } from "../../utils/common";
 const Dropdown = <T extends string | number>({
   children,
   className,
-  onChange,
+  onValueChange,
   ariaLabel,
   id,
   value,
@@ -20,11 +20,9 @@ const Dropdown = <T extends string | number>({
   const [open, setOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<T | null>(value as T || null);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const [focusChild, setFocusChild] = useState<React.ReactNode>();
   const [optionElements, setOptionElements] = useState<ReactElement[]>([]);
   const dropdownRef = useRef<HTMLInputElement>(null);
 
-  // 자식 옵션 요소들을 찾아서 저장
   useEffect(() => {
     const itemWrapper = findComponentWithDisplayName(children, 'ItemWrapper')
 
@@ -38,7 +36,6 @@ const Dropdown = <T extends string | number>({
     }
   }, [children]);
 
-  // 선택된 라벨 표시를 위한 함수
   const getSelectedLabel = useCallback((): React.ReactNode => {
     if (optionElements.length === 0 || selectedValue === null) return null;
     const selectedOption = optionElements.find(
@@ -47,27 +44,31 @@ const Dropdown = <T extends string | number>({
     return selectedOption?.props.children || null;
   }, [selectedValue, optionElements]);
 
-  // value prop 변경 감지
+  const getFocusedOption = useCallback((): React.ReactElement | undefined => {
+    if (focusIndex >= 0 && focusIndex < optionElements.length) {
+      return optionElements[focusIndex];
+    }
+    return undefined;
+  }, [focusIndex, optionElements]);
+
   useEffect(() => {
     if (value !== undefined) {
       setSelectedValue(value as T);
     }
   }, [value]);
 
-  // 컨텍스트 값 설정
   const contextValue: DropdownContextType<T> = {
     selectedValue,
     setSelectedValue,
     open,
     setOpen,
-    onChange: onChange as ((value: T) => void) | undefined,
-    focusChild,
+    onValueChange: onValueChange as ((value: T) => void) | undefined,
     focusIndex,
     setFocusIndex,
-    setFocusChild,
     getSelectedLabel,
     optionElements,
     required,
+    getFocusedOption,
   };
 
   return (
@@ -97,7 +98,6 @@ const Dropdown = <T extends string | number>({
   );
 };
 
-// 복합 컴포넌트 구성
 Dropdown.Trigger = Trigger;
 Dropdown.ItemWrapper = ItemWrapper;
 Dropdown.Item = Item;

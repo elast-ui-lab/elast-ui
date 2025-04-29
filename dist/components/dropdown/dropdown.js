@@ -7,14 +7,12 @@ import Item from "./Item";
 import Error from "./Error";
 import { findComponentWithDisplayName } from "../../utils/common";
 var Dropdown = function (_a) {
-    var children = _a.children, className = _a.className, onChange = _a.onChange, ariaLabel = _a.ariaLabel, id = _a.id, value = _a.value, required = _a.required;
+    var children = _a.children, className = _a.className, onValueChange = _a.onValueChange, ariaLabel = _a.ariaLabel, id = _a.id, value = _a.value, required = _a.required;
     var _b = useState(false), open = _b[0], setOpen = _b[1];
     var _c = useState(value || null), selectedValue = _c[0], setSelectedValue = _c[1];
     var _d = useState(-1), focusIndex = _d[0], setFocusIndex = _d[1];
-    var _e = useState(), focusChild = _e[0], setFocusChild = _e[1];
-    var _f = useState([]), optionElements = _f[0], setOptionElements = _f[1];
+    var _e = useState([]), optionElements = _e[0], setOptionElements = _e[1];
     var dropdownRef = useRef(null);
-    // 자식 옵션 요소들을 찾아서 저장
     useEffect(function () {
         var _a;
         var itemWrapper = findComponentWithDisplayName(children, 'ItemWrapper');
@@ -27,39 +25,40 @@ var Dropdown = function (_a) {
             setOptionElements(validOptions);
         }
     }, [children]);
-    // 선택된 라벨 표시를 위한 함수
     var getSelectedLabel = useCallback(function () {
         if (optionElements.length === 0 || selectedValue === null)
             return null;
         var selectedOption = optionElements.find(function (option) { return option.props.value === selectedValue; });
         return (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.props.children) || null;
     }, [selectedValue, optionElements]);
-    // value prop 변경 감지
+    var getFocusedOption = useCallback(function () {
+        if (focusIndex >= 0 && focusIndex < optionElements.length) {
+            return optionElements[focusIndex];
+        }
+        return undefined;
+    }, [focusIndex, optionElements]);
     useEffect(function () {
         if (value !== undefined) {
             setSelectedValue(value);
         }
     }, [value]);
-    // 컨텍스트 값 설정
     var contextValue = {
         selectedValue: selectedValue,
         setSelectedValue: setSelectedValue,
         open: open,
         setOpen: setOpen,
-        onChange: onChange,
-        focusChild: focusChild,
+        onValueChange: onValueChange,
         focusIndex: focusIndex,
         setFocusIndex: setFocusIndex,
-        setFocusChild: setFocusChild,
         getSelectedLabel: getSelectedLabel,
         optionElements: optionElements,
         required: required,
+        getFocusedOption: getFocusedOption,
     };
     return (React.createElement(DropdownContext.Provider, { value: contextValue },
         React.createElement(DropdownBoxWrapper, { className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id || ariaLabel, "-listbox"), "aria-required": required, id: id }, children),
         required && (React.createElement("input", { type: "hidden", ref: dropdownRef, value: selectedValue !== null && selectedValue !== void 0 ? selectedValue : "", required: required, "aria-hidden": "true" }))));
 };
-// 복합 컴포넌트 구성
 Dropdown.Trigger = Trigger;
 Dropdown.ItemWrapper = ItemWrapper;
 Dropdown.Item = Item;

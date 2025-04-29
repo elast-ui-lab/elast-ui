@@ -11,9 +11,8 @@ var Select = function (_a) {
     var _b = useState(false), open = _b[0], setOpen = _b[1];
     var _c = useState(value || null), selectedValue = _c[0], setSelectedValue = _c[1];
     var _d = useState(-1), focusIndex = _d[0], setFocusIndex = _d[1];
-    var _e = useState(), focusChild = _e[0], setFocusChild = _e[1];
-    var _f = useState(false), validity = _f[0], setValidity = _f[1];
-    var _g = useState([]), optionElements = _g[0], setOptionElements = _g[1];
+    var _e = useState(false), validity = _e[0], setValidity = _e[1];
+    var _f = useState([]), optionElements = _f[0], setOptionElements = _f[1];
     var selectRef = useRef(null);
     useEffect(function () {
         var _a;
@@ -29,6 +28,12 @@ var Select = function (_a) {
         var selectedOption = optionElements.find(function (option) { return option.props.value === selectedValue; });
         return (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.props.children) || null;
     }, [selectedValue, optionElements]);
+    var getFocusedOption = useCallback(function () {
+        if (focusIndex >= 0 && focusIndex < optionElements.length) {
+            return optionElements[focusIndex];
+        }
+        return undefined;
+    }, [focusIndex, optionElements]);
     var validateRequiredField = useCallback(function (e) {
         e.preventDefault();
         var isValid = !(required && selectedValue === null);
@@ -53,16 +58,15 @@ var Select = function (_a) {
         open: open,
         setOpen: setOpen,
         focusIndex: focusIndex,
-        focusChild: focusChild,
         selectedValue: selectedValue,
         onValueChange: onValueChange,
         setFocusIndex: setFocusIndex,
-        setFocusChild: setFocusChild,
         setSelectedValue: setSelectedValue,
         validity: validity,
         required: required,
         getSelectedLabel: getSelectedLabel,
         optionElements: optionElements,
+        getFocusedOption: getFocusedOption,
     };
     return (React.createElement(SelectContext.Provider, { value: contextValue },
         React.createElement(SelectBoxWrapper, { id: id, className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),

@@ -4,7 +4,6 @@ import React, {
   useEffect,
   useContext,
   ReactElement,
-  ReactNode,
   memo,
   useCallback,
   isValidElement,
@@ -19,9 +18,9 @@ const ComboBox = <T extends DataType>({
   className,
   value,
   children,
-  onChange,
   required,
-  ariaLabel
+  ariaLabel,
+  onValueChange,
 }: ComboBoxProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
@@ -29,7 +28,6 @@ const ComboBox = <T extends DataType>({
   const [selectedValue, setSelectedValue] = useState<T>(value || "" as T);
   const [validity, setValidity] = useState<boolean>(false);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const [focusChild, setFocusChild] = useState<ReactNode>();
   const [filteredOptions, setFilteredOptions] = useState<ReactElement<OptionProps>[]>([]);
   const [optionElements, setOptionElements] = useState<ReactElement<OptionProps>[]>([]);
   const selectRef = useRef<HTMLInputElement>(null);
@@ -61,6 +59,14 @@ const ComboBox = <T extends DataType>({
 
     return selectedOption?.props.children || null;
   }, [selectedValue, optionElements]);
+
+  const getFocusedOption = useCallback((): ReactElement<OptionProps> | undefined => {
+    const options = isTyping ? filteredOptions : optionElements;
+    if (focusIndex >= 0 && focusIndex < options.length) {
+      return options[focusIndex];
+    }
+    return undefined;
+  }, [focusIndex, filteredOptions, optionElements, isTyping]);
 
   useEffect(() => {
     setFilteredOptions(getFilteredOptions(typedKeyword));
@@ -94,22 +100,21 @@ const ComboBox = <T extends DataType>({
     open,
     isTyping,
     focusIndex,
-    focusChild,
     typedKeyword,
     selectedValue,
     validity,
     required,
-    onChange: onChange as ((value: T) => void) | undefined,
+    optionElements,
+    filteredOptions,
+    onValueChange: onValueChange as ((value: T) => void) | undefined,
     setOpen,
     setIsTyping,
     setFocusIndex,
-    setFocusChild,
     setTypedKeyword,
     setSelectedValue,
-    filteredOptions,
     getFilteredOptions,
     getSelectedLabel,
-    optionElements,
+    getFocusedOption,
   };
 
   return (
@@ -138,7 +143,6 @@ const ComboBox = <T extends DataType>({
   );
 };
 
-// Input 컴포넌트
 const Input = memo(({
   className,
   children,
@@ -149,14 +153,14 @@ const Input = memo(({
   const {
     open,
     isTyping,
-    focusChild,
-    onChange,
+    onValueChange,
     setOpen,
     setIsTyping,
     setFocusIndex,
     setSelectedValue,
     setTypedKeyword,
     getSelectedLabel,
+    getFocusedOption,
   } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
   const [inputValue, setInputValue] = useState("");
 
@@ -176,12 +180,13 @@ const Input = memo(({
 
     const keyHandlers: Record<string, () => void> = {
       Enter: () => {
-        if (isValidElement(focusChild)) {
-          const optionElement = focusChild as ReactElement<OptionProps>;
-          if (optionElement.props.value) {
+        const focusedOption = getFocusedOption();
+        if (focusedOption) {
+          const optionValue = focusedOption.props.value;
+          if (optionValue) {
             handleClickOutside();
-            setSelectedValue(optionElement.props.value);
-            onChange?.(optionElement.props.value);
+            setSelectedValue(optionValue);
+            onValueChange?.(optionValue);
           }
         }
       },
@@ -200,7 +205,7 @@ const Input = memo(({
       e.preventDefault();
       keyHandlers[e.key]();
     }
-  }, [focusChild, handleClickOutside, onChange, open, setFocusIndex, setOpen, setSelectedValue]);
+  }, [handleClickOutside, onValueChange, open, setFocusIndex, setOpen, setSelectedValue, getFocusedOption]);
 
   useEffect(() => {
     window.addEventListener("click", handleClickOutside);
@@ -239,10 +244,8 @@ const Input = memo(({
   );
 });
 
-// Input displayName 설정
 Input.displayName = 'Input';
 
-// OptionWrapper 컴포넌트
 const OptionWrapper = memo(({
   children,
   className,
@@ -251,19 +254,10 @@ const OptionWrapper = memo(({
 }: OptionWrapperProps) => {
   const {
     open,
-    focusIndex,
-    setFocusChild,
     filteredOptions,
     isTyping,
     optionElements
   } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
-
-  useEffect(() => {
-    const options = isTyping ? filteredOptions : optionElements;
-    if (focusIndex >= 0 && focusIndex < options.length) {
-      setFocusChild(options[focusIndex]);
-    }
-  }, [filteredOptions, optionElements, focusIndex, setFocusChild, isTyping]);
 
   const displayOptions = isTyping ? filteredOptions : optionElements;
 
@@ -281,10 +275,8 @@ const OptionWrapper = memo(({
   );
 });
 
-// OptionWrapper displayName 설정
 OptionWrapper.displayName = 'OptionWrapper';
 
-// Option 컴포넌트
 const Option = memo(({
   value,
   children,
@@ -296,27 +288,24 @@ const Option = memo(({
     selectedValue,
     setSelectedValue,
     setOpen,
-    onChange,
-    focusChild,
+    onValueChange,
+    getFocusedOption
   } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
 
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const isSelected = selectedValue === value;
 
   useEffect(() => {
-    let focused = false;
-    if (isValidElement(focusChild)) {
-      const optionElement = focusChild as ReactElement<OptionProps>;
-      focused = optionElement.props.value === value;
-    }
+    const focusedOption = getFocusedOption();
+    const focused = focusedOption?.props.value === value;
     setIsFocused(focused);
-  }, [focusChild, value]);
+  }, [getFocusedOption, value]);
 
   const handleOptionClick = useCallback(() => {
-    setSelectedValue(value);
-    onChange?.(value);
     setOpen(false);
-  }, [onChange, setOpen, setSelectedValue, value]);
+    onValueChange?.(value);
+    setSelectedValue(value);
+  }, [onValueChange, setOpen, setSelectedValue, value]);
 
   const optionProps = {
     ...(isFocused ? { "data-focused": "" } : {}),
@@ -339,10 +328,8 @@ const Option = memo(({
   );
 });
 
-// Option displayName 설정
 Option.displayName = 'Option';
 
-// Error 컴포넌트
 const Error = memo(({ children, className, ...props }: DefaultProps) => {
   const { validity } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
 
@@ -355,10 +342,8 @@ const Error = memo(({ children, className, ...props }: DefaultProps) => {
   );
 });
 
-// Error displayName 설정
 Error.displayName = 'Error';
 
-// 컴포넌트 등록
 ComboBox.Input = Input;
 ComboBox.OptionWrapper = OptionWrapper;
 ComboBox.Option = Option;
@@ -366,7 +351,6 @@ ComboBox.Error = Error;
 
 export default ComboBox;
 
-// 스타일 컴포넌트
 const ComboWrapper = styled.div``;
 
 const ComboInput = styled.input<{ open: boolean }>`

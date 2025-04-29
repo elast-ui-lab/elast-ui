@@ -1,4 +1,4 @@
-import React, { memo, useContext, useEffect } from "react";
+import React, { memo, useContext } from "react";
 import { SelectContext } from "./context";
 import { OptionWrapperProps, SelectContextType } from "./types";
 import { SelectOptionWrapper } from "./styles";
@@ -10,17 +10,8 @@ const OptionWrapper = memo(({
 }: OptionWrapperProps) => {
   const {
     open,
-    focusIndex,
-    setFocusChild,
     optionElements
   } = useContext(SelectContext) as SelectContextType;
-
-  // 포커스된 자식 요소 설정
-  useEffect(() => {
-    if (focusIndex >= 0 && focusIndex < optionElements.length) {
-      setFocusChild(optionElements[focusIndex]);
-    }
-  }, [optionElements, focusIndex, setFocusChild]);
 
   return (
     <SelectOptionWrapper
@@ -36,7 +27,6 @@ const OptionWrapper = memo(({
   );
 });
 
-// displayName 설정
 OptionWrapper.displayName = 'OptionWrapper';
 
 export default OptionWrapper;

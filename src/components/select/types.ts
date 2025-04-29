@@ -4,16 +4,15 @@ export interface SelectContextType<T = string | number> {
   validity: boolean;
   open: boolean;
   focusIndex: number;
-  focusChild: ReactNode;
   selectedValue: T | null;
   onValueChange: (value: T) => void;
   setOpen: Dispatch<SetStateAction<boolean>>;
   setFocusIndex: Dispatch<SetStateAction<number>>;
-  setFocusChild: Dispatch<SetStateAction<ReactNode>>;
   setSelectedValue: Dispatch<SetStateAction<T | null>>;
   required?: boolean;
   getSelectedLabel: () => ReactNode;
   optionElements: ReactElement[];
+  getFocusedOption: () => ReactElement | undefined;
 }
 
 export interface SelectProps<T = string | number> {

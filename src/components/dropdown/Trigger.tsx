@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useEffect, useRef, isValidElement } from "react";
+import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 import { DropdownContext } from "./context";
 import { DefaultProps, DropdownContextType } from "./types";
 import { DropdownBox } from "./styles";
@@ -9,16 +9,14 @@ const Trigger = memo(({ children, className, id, ...props }: DefaultProps) => {
     open,
     setOpen,
     setSelectedValue,
-    onChange,
-    focusChild,
+    onValueChange,
     setFocusIndex,
     getSelectedLabel,
+    getFocusedOption,
   } = useContext(DropdownContext) as DropdownContextType<any>;
 
-  // 선택된 라벨 가져오기
   const selectedLabel = getSelectedLabel();
 
-  // 키보드 이벤트 핸들러
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     const keyHandlers = {
       Enter: () => {
@@ -26,10 +24,11 @@ const Trigger = memo(({ children, className, id, ...props }: DefaultProps) => {
           setOpen(true);
           return;
         }
-        if (isValidElement(focusChild) && focusChild.props.value) {
-          const value = focusChild.props.value;
+        const focusedOption = getFocusedOption();
+        if (focusedOption?.props.value) {
+          const value = focusedOption.props.value;
           setSelectedValue(value);
-          onChange?.(value);
+          onValueChange?.(value);
           setOpen(false);
         }
       },
@@ -51,22 +50,19 @@ const Trigger = memo(({ children, className, id, ...props }: DefaultProps) => {
       e.preventDefault();
       keyHandlers[e.key as keyof typeof keyHandlers]();
     }
-  }, [open, focusChild, onChange, setOpen, setFocusIndex, setSelectedValue]);
+  }, [open, getFocusedOption, onValueChange, setOpen, setFocusIndex, setSelectedValue]);
 
-  // 외부 클릭 감지 핸들러
   const handleClickOutside = useCallback((e: MouseEvent) => {
     if (ref.current && !ref.current.contains(e.target as Node)) {
       setOpen(false);
     }
   }, [setOpen]);
 
-  // 외부 클릭 이벤트 리스너 등록
   useEffect(() => {
     window.addEventListener("click", handleClickOutside);
     return () => window.removeEventListener("click", handleClickOutside);
   }, [handleClickOutside]);
 
-  // 포커스 상태 관리 핸들러
   const handleFocus = () => ref.current?.setAttribute('data-focus', 'true');
   const handleBlur = () => ref.current?.setAttribute('data-focus', 'false');
 
@@ -91,7 +87,6 @@ const Trigger = memo(({ children, className, id, ...props }: DefaultProps) => {
   );
 });
 
-// displayName 설정
 Trigger.displayName = 'Trigger';
 
 export default Trigger;

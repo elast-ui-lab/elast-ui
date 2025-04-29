@@ -2,27 +2,26 @@ import { ReactElement, ReactNode, Dispatch, SetStateAction } from "react";
 
 export interface DropdownContextType<T = string | number> {
   selectedValue: T | null;
-  setSelectedValue: Dispatch<SetStateAction<T | null>>;
   open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  onChange?: (value: T) => void;
-  focusChild: ReactNode;
   focusIndex: number;
-  setFocusIndex: Dispatch<SetStateAction<number>>;
-  setFocusChild: Dispatch<SetStateAction<ReactNode>>;
-  getSelectedLabel: () => ReactNode;
   optionElements: ReactElement[];
   required?: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  onValueChange?: (value: T) => void;
+  setSelectedValue: Dispatch<SetStateAction<T | null>>;
+  getSelectedLabel: () => ReactNode;
+  setFocusIndex: Dispatch<SetStateAction<number>>;
+  getFocusedOption: () => ReactElement | undefined;
 }
 
 export interface DropdownProps<T = string | number> {
   id?: string;
   className?: string;
   value?: T;
-  onChange?: (value: T) => void;
   children?: ReactNode;
   required?: boolean;
   ariaLabel?: string;
+  onValueChange?: (value: T) => void;
 }
 
 export interface DefaultProps {

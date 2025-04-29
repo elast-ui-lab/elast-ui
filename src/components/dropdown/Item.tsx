@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useEffect, useState, isValidElement } from "react";
+import React, { memo, useCallback, useContext, useEffect, useState } from "react";
 import { DropdownContext } from "./context";
 import { ItemProps, DropdownContextType } from "./types";
 import { DropdownItem } from "./styles";
@@ -8,27 +8,25 @@ const Item = memo(({ value, children, className, id, ...props }: ItemProps) => {
     selectedValue,
     setSelectedValue,
     setOpen,
-    onChange,
-    focusChild,
+    onValueChange,
+    getFocusedOption,
   } = useContext(DropdownContext) as DropdownContextType<any>;
 
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const isSelected = selectedValue === value;
 
-  // 포커스 상태 업데이트
   useEffect(() => {
-    const focused = isValidElement(focusChild) && focusChild.props.value === value;
+    const focusedOption = getFocusedOption();
+    const focused = focusedOption?.props.value === value;
     setIsFocused(focused);
-  }, [focusChild, value]);
+  }, [getFocusedOption, value]);
 
-  // 옵션 클릭 핸들러
   const handleItemClick = useCallback(() => {
     setSelectedValue(value);
-    onChange?.(value);
+    onValueChange?.(value);
     setOpen(false);
-  }, [value, onChange, setSelectedValue, setOpen]);
+  }, [value, onValueChange, setSelectedValue, setOpen]);
 
-  // 접근성 및 상태 속성
   const optionProps = {
     ...(isFocused ? { "data-focused": "" } : {}),
     ...(isSelected ? { "data-selected": "" } : {}),
@@ -50,7 +48,6 @@ const Item = memo(({ value, children, className, id, ...props }: ItemProps) => {
   );
 });
 
-// displayName 설정
 Item.displayName = 'Item';
 
 export default Item;

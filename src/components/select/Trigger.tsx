@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useContext, useEffect, useRef, isValidElement } from "react";
+import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 import { SelectContext } from "./context";
 import { DefaultProps, SelectContextType } from "./types";
 import { SelectBox } from "./styles";
@@ -7,15 +7,14 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const {
     open,
-    focusChild,
     onValueChange,
     setOpen,
     setFocusIndex,
     setSelectedValue,
     getSelectedLabel,
+    getFocusedOption,
   } = useContext(SelectContext) as SelectContextType;
 
-  // 선택된 라벨 가져오기
   const selectedLabel = getSelectedLabel();
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -26,8 +25,9 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
           return;
         }
 
-        if (isValidElement(focusChild) && focusChild.props.value) {
-          const value = focusChild.props.value;
+        const focusedOption = getFocusedOption();
+        if (focusedOption?.props.value) {
+          const value = focusedOption.props.value;
           setSelectedValue(value);
           onValueChange?.(value);
         }
@@ -51,7 +51,7 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
       e.preventDefault();
       keyHandlers[e.key as keyof typeof keyHandlers]();
     }
-  }, [open, focusChild, onValueChange, setOpen, setFocusIndex, setSelectedValue]);
+  }, [open, getFocusedOption, onValueChange, setOpen, setFocusIndex, setSelectedValue]);
 
 
   const handleClickOutside = useCallback((e: MouseEvent) => {
