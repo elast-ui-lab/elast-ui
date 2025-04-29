@@ -504,7 +504,7 @@ const Example = () => {
 
   return (
     <>
-      <Switch checked={isChecked} onValueChange={handleChange}>
+      <Switch checked={isChecked} onCheckedChange={handleChange}>
         {isChecked ? "ON" : "OFF"}
       </Switch>
     </>
@@ -517,7 +517,7 @@ export default Example;
 ### 주요 속성
 
 - `checked`: 스위치의 현재 상태를 나타내며, `true`일 경우 스위치가 활성화된 상태입니다.
-- `onValueChange`: 스위치 상태가 변경될 때 호출되는 콜백 함수입니다. 새로운 상태값이 함수의 인수로 전달됩니다.
+- `onCheckedChange`: 스위치 상태가 변경될 때 호출되는 콜백 함수입니다. 새로운 상태값이 함수의 인수로 전달됩니다.
 - `id`: 스위치 컴포넌트에 고유한 식별자를 부여할 수 있습니다.
 - `className`: 스타일을 커스터마이징하기 위해 클래스명을 전달할 수 있습니다.
 
@@ -528,7 +528,7 @@ export default Example;
 ```tsx
 <Switch
   checked={isChecked}
-  onValueChange={handleChange}
+  onCheckedChange={handleChange}
   className="data-[checked]:bg-green-500 data-[checked]:text-white"
 >
   {isChecked ? "ON" : "OFF"}
@@ -539,4 +539,4 @@ export default Example;
 
 ### 클릭 이벤트
 
-스위치는 클릭 이벤트를 통해 상태가 변경됩니다. `onValueChange` 콜백 함수가 실행되며, 새로운 상태값이 전달됩니다. 이를 통해 사용자는 스위치의 상태를 제어할 수 있습니다.
+스위치는 클릭 이벤트를 통해 상태가 변경됩니다. `onCheckedChange` 콜백 함수가 실행되며, 새로운 상태값이 전달됩니다. 이를 통해 사용자는 스위치의 상태를 제어할 수 있습니다.
