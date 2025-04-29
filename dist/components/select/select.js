@@ -1,3 +1,25 @@
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Trigger from "./Trigger";
 import Option from "./Option";
@@ -6,13 +28,13 @@ import Error from "./Error";
 import { SelectContext } from "./context";
 import styles from "./select.module.css";
 import { findComponentWithDisplayName } from "../../utils/common";
-var Select = function (_a) {
-    var id = _a.id, className = _a.className, value = _a.value, children = _a.children, onValueChange = _a.onValueChange, required = _a.required, ariaLabel = _a.ariaLabel;
-    var _b = useState(false), open = _b[0], setOpen = _b[1];
-    var _c = useState(value || null), selectedValue = _c[0], setSelectedValue = _c[1];
-    var _d = useState(-1), focusIndex = _d[0], setFocusIndex = _d[1];
-    var _e = useState(false), validity = _e[0], setValidity = _e[1];
-    var _f = useState([]), optionElements = _f[0], setOptionElements = _f[1];
+var Select = function (props) {
+    var className = props.className, value = props.value, children = props.children, onValueChange = props.onValueChange, required = props.required, ariaLabel = props.ariaLabel, restProps = __rest(props, ["className", "value", "children", "onValueChange", "required", "ariaLabel"]);
+    var _a = useState(false), open = _a[0], setOpen = _a[1];
+    var _b = useState(value || null), selectedValue = _b[0], setSelectedValue = _b[1];
+    var _c = useState(-1), focusIndex = _c[0], setFocusIndex = _c[1];
+    var _d = useState(false), validity = _d[0], setValidity = _d[1];
+    var _e = useState([]), optionElements = _e[0], setOptionElements = _e[1];
     var selectRef = useRef(null);
     useEffect(function () {
         var _a;
@@ -73,7 +95,7 @@ var Select = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(SelectContext.Provider, { value: contextValue },
-        React.createElement("div", { id: id, className: "".concat(styles.selectBoxWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
+        React.createElement("div", __assign({ className: "".concat(styles.selectBoxWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-required": required, "aria-invalid": validity }, restProps), children),
         React.createElement("input", { type: "hidden", ref: selectRef, value: selectedValue !== null && selectedValue !== void 0 ? selectedValue : "", required: required, "aria-hidden": "true" })));
 };
 Select.Trigger = Trigger;

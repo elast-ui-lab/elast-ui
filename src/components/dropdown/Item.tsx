@@ -1,5 +1,5 @@
 import React, {
-  memo,
+  forwardRef,
   useCallback,
   useContext,
   useEffect,
@@ -9,50 +9,52 @@ import { DropdownContext } from "./context";
 import { ItemProps, DropdownContextType } from "./types";
 import styles from "./dropdown.module.css";
 
-const Item = memo(({ value, children, className, id, ...props }: ItemProps) => {
-  const {
-    selectedValue,
-    setSelectedValue,
-    setOpen,
-    onValueChange,
-    getFocusedOption,
-  } = useContext(DropdownContext) as DropdownContextType<any>;
+const Item = forwardRef<HTMLParagraphElement, ItemProps>(
+  (props: ItemProps, ref) => {
+    const { value, children, className, ...restProps } = props;
+    const [isFocused, setIsFocused] = useState<boolean>(false);
+    const {
+      selectedValue,
+      setSelectedValue,
+      setOpen,
+      onValueChange,
+      getFocusedOption,
+    } = useContext(DropdownContext) as DropdownContextType<any>;
+    const isSelected = selectedValue === value;
 
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const isSelected = selectedValue === value;
+    useEffect(() => {
+      const focusedOption = getFocusedOption();
+      const focused = focusedOption?.props.value === value;
+      setIsFocused(focused);
+    }, [getFocusedOption, value]);
 
-  useEffect(() => {
-    const focusedOption = getFocusedOption();
-    const focused = focusedOption?.props.value === value;
-    setIsFocused(focused);
-  }, [getFocusedOption, value]);
+    const handleItemClick = useCallback(() => {
+      setSelectedValue(value);
+      onValueChange?.(value);
+      setOpen(false);
+    }, [value, onValueChange, setSelectedValue, setOpen]);
 
-  const handleItemClick = useCallback(() => {
-    setSelectedValue(value);
-    onValueChange?.(value);
-    setOpen(false);
-  }, [value, onValueChange, setSelectedValue, setOpen]);
+    const optionProps = {
+      tabIndex: -1,
+      role: "option",
+      "aria-selected": isSelected,
+      ...(isFocused ? { "data-focused": "" } : {}),
+      ...(isSelected ? { "data-selected": "" } : {}),
+      ...restProps,
+    };
 
-  const optionProps = {
-    ...(isFocused ? { "data-focused": "" } : {}),
-    ...(isSelected ? { "data-selected": "" } : {}),
-    role: "option",
-    "aria-selected": isSelected,
-    tabIndex: -1,
-    id,
-    ...props,
-  };
-
-  return (
-    <p
-      className={`${styles.dropdownItem} ${className || ""}`}
-      onClick={handleItemClick}
-      {...optionProps}
-    >
-      {children}
-    </p>
-  );
-});
+    return (
+      <p
+        ref={ref}
+        className={`${styles.dropdownItem} ${className || ""}`}
+        onClick={handleItemClick}
+        {...optionProps}
+      >
+        {children}
+      </p>
+    );
+  }
+);
 
 Item.displayName = "Item";
 

@@ -1,4 +1,10 @@
-import { ReactElement, ReactNode, Dispatch, SetStateAction } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+  HTMLAttributes,
+} from "react";
 
 export type DataType = any;
 
@@ -23,9 +29,8 @@ export interface ComboBoxContextType<T = DataType> {
   getFocusedOption: () => ReactElement<OptionProps> | undefined;
 }
 
-export interface ComboBoxProps<T = DataType> {
-  id?: string;
-  className?: string;
+export interface ComboBoxProps<T = DataType>
+  extends HTMLAttributes<HTMLElement> {
   value?: T;
   children?: ReactNode;
   required?: boolean;
@@ -33,25 +38,18 @@ export interface ComboBoxProps<T = DataType> {
   onValueChange?: (value: T) => void;
 }
 
-export interface DefaultProps {
-  className?: string;
+export interface DefaultProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
-  [key: string]: unknown;
 }
 
 export interface InputProps extends DefaultProps {
   placeholder?: string;
 }
 
-export interface OptionWrapperProps extends DefaultProps {
-  children: ReactNode;
-}
+export interface OptionWrapperProps extends DefaultProps {}
 
-export interface OptionProps {
+export interface OptionProps extends HTMLAttributes<HTMLParagraphElement> {
   value: string | number;
-  id?: string;
-  className?: string;
   tabIndex?: number;
   children?: ReactNode;
-  [key: string]: unknown;
 }

@@ -1,5 +1,5 @@
 import React, {
-  memo,
+  forwardRef,
   useCallback,
   useContext,
   useEffect,
@@ -9,8 +9,9 @@ import { ComboBoxContext } from "./context";
 import { ComboBoxContextType, OptionProps } from "./types";
 import styles from "./combobox.module.css";
 
-const Option = memo(
-  ({ value, children, className, id, ...props }: OptionProps) => {
+const Option = forwardRef<HTMLParagraphElement, OptionProps>(
+  (props: OptionProps, ref) => {
+    const { value, children, className, ...restProps } = props;
     const {
       selectedValue,
       setSelectedValue,
@@ -35,17 +36,17 @@ const Option = memo(
     }, [onValueChange, setOpen, setSelectedValue, value]);
 
     const optionProps = {
-      ...(isFocused ? { "data-focused": "" } : {}),
-      ...(isSelected ? { "data-selected": "" } : {}),
+      tabIndex: -1,
       role: "option",
       "aria-selected": isSelected,
-      tabIndex: -1,
-      id,
-      ...props,
+      ...(isFocused ? { "data-focused": "" } : {}),
+      ...(isSelected ? { "data-selected": "" } : {}),
+      ...restProps,
     };
 
     return (
       <p
+        ref={ref}
         className={`${styles.comboOption} ${className || ""}`}
         onClick={handleOptionClick}
         {...optionProps}

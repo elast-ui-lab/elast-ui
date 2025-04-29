@@ -26,14 +26,14 @@ import TabsWrapper from "./TabsWrapper";
 import Tab from "./Tab";
 import ContentWrapper from "./ContentWrapper";
 import Content from "./Content";
-var Tabs = function (_a) {
-    var className = _a.className, defaultIndex = _a.defaultIndex, children = _a.children, onValueChange = _a.onValueChange, props = __rest(_a, ["className", "defaultIndex", "children", "onValueChange"]);
-    var _b = useState(defaultIndex || 0), tabIndex = _b[0], setTabIndex = _b[1];
+var Tabs = function (props) {
+    var defaultIndex = props.defaultIndex, children = props.children, onValueChange = props.onValueChange, restProps = __rest(props, ["defaultIndex", "children", "onValueChange"]);
+    var _a = useState(defaultIndex || 0), tabIndex = _a[0], setTabIndex = _a[1];
     useEffect(function () {
         onValueChange === null || onValueChange === void 0 ? void 0 : onValueChange(tabIndex);
     }, [onValueChange, tabIndex]);
     return (React.createElement(TabsContext.Provider, { value: { tabIndex: tabIndex, setTabIndex: setTabIndex } },
-        React.createElement("div", __assign({ className: className }, props), children)));
+        React.createElement("div", __assign({}, restProps), children)));
 };
 Tabs.TabsWrapper = TabsWrapper;
 Tabs.ContentWrapper = ContentWrapper;

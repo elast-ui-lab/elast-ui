@@ -1,11 +1,21 @@
-import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { ComboBoxContext } from "./context";
 import { ComboBoxContextType, InputProps } from "./types";
 import styles from "./combobox.module.css";
+import { combineRefs } from "../../utils/common";
 
-const Input = memo(
-  ({ className, children, placeholder, ...props }: InputProps) => {
-    const ref = useRef<HTMLInputElement>(null);
+const Input = forwardRef<HTMLInputElement, InputProps>(
+  (props: InputProps, ref) => {
+    const { children, className, placeholder, ...restProps } = props;
+    const inputRef = useRef<HTMLInputElement>();
+    const combineRef = combineRefs<HTMLInputElement>(inputRef, ref);
+
     const {
       isTyping,
       inputValue,
@@ -23,11 +33,11 @@ const Input = memo(
 
     const handleClickOutside = useCallback(
       (e?: MouseEvent) => {
-        if (!e || e.target !== ref.current) {
+        if (!e || e.target !== inputRef.current) {
           setOpen(false);
           setIsTyping(false);
           setFocusIndex(-1);
-          ref.current?.blur();
+          inputRef.current?.blur();
         }
       },
       [setFocusIndex, setIsTyping, setOpen]
@@ -91,13 +101,15 @@ const Input = memo(
       [setFocusIndex, setIsTyping, setInputValue]
     );
 
-    const handleFocus = () => ref.current?.setAttribute("data-focus", "true");
-    const handleBlur = () => ref.current?.setAttribute("data-focus", "false");
+    const handleFocus = () =>
+      inputRef.current?.setAttribute("data-focus", "true");
+    const handleBlur = () =>
+      inputRef.current?.setAttribute("data-focus", "false");
 
     return (
       <div>
         <input
-          ref={ref}
+          ref={combineRef}
           className={`${styles.comboInput} ${className || ""}`}
           onFocus={handleFocus}
           onBlur={handleBlur}
@@ -107,7 +119,7 @@ const Input = memo(
           onChange={handleInputChange}
           onClick={() => setOpen(true)}
           aria-autocomplete="list"
-          {...props}
+          {...restProps}
         />
         {children}
       </div>

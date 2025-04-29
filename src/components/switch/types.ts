@@ -1,10 +1,8 @@
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
 export type DataType = any;
 
-export interface SwitchProps {
-  id?: string;
-  className?: string;
+export interface SwitchProps extends HTMLAttributes<HTMLDivElement> {
   checked?: DataType;
   onCheckedChange?: (value: boolean) => void;
   children?: ReactNode;

@@ -8,15 +8,16 @@ import { SelectContext } from "./context";
 import styles from "./select.module.css";
 import { findComponentWithDisplayName } from "../../utils/common";
 
-const Select = <T extends string | number>({
-  id,
-  className,
-  value,
-  children,
-  onValueChange,
-  required,
-  ariaLabel,
-}: SelectProps<T>) => {
+const Select = <T extends string | number>(props: SelectProps<T>) => {
+  const {
+    className,
+    value,
+    children,
+    onValueChange,
+    required,
+    ariaLabel,
+    ...restProps
+  } = props;
   const [open, setOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<T | null>(
     (value as T) || null
@@ -103,15 +104,14 @@ const Select = <T extends string | number>({
   return (
     <SelectContext.Provider value={contextValue}>
       <div
-        id={id}
         className={`${styles.selectBoxWrapper} ${className || ""}`}
         role="combobox"
         aria-label={ariaLabel}
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-controls={`${id}-listbox`}
         aria-required={required}
         aria-invalid={validity}
+        {...restProps}
       >
         {children}
       </div>

@@ -1,28 +1,28 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { SwitchProps } from "./types";
 import styles from "./switch.module.css";
 
-const Switch = ({
-  id,
-  className,
-  checked,
-  children,
-  onCheckedChange,
-}: SwitchProps) => {
-  return (
-    <>
+const Switch = forwardRef<HTMLDivElement, SwitchProps>(
+  (props: SwitchProps, ref) => {
+    const { className, checked, children, onCheckedChange, ...restProps } =
+      props;
+
+    return (
       <div
-        id={id}
+        ref={ref}
         className={`${styles.switchBoxWrapper} ${className || ""}`}
-        {...(checked ? { "data-checked": true } : {})}
         onClick={() => {
           onCheckedChange?.(!checked);
         }}
+        {...(checked ? { "data-checked": true } : {})}
+        {...restProps}
       >
         {children}
       </div>
-    </>
-  );
-};
+    );
+  }
+);
+
+Switch.displayName = "Switch";
 
 export default Switch;

@@ -1,4 +1,10 @@
-import { ReactElement, ReactNode, Dispatch, SetStateAction } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+  HTMLAttributes,
+} from "react";
 
 export interface DropdownContextType<T = string | number> {
   selectedValue: T | null;
@@ -14,9 +20,8 @@ export interface DropdownContextType<T = string | number> {
   getFocusedOption: () => ReactElement | undefined;
 }
 
-export interface DropdownProps<T = string | number> {
-  id?: string;
-  className?: string;
+export interface DropdownProps<T = string | number>
+  extends HTMLAttributes<HTMLElement> {
   value?: T;
   children?: ReactNode;
   required?: boolean;
@@ -24,21 +29,13 @@ export interface DropdownProps<T = string | number> {
   onValueChange?: (value: T) => void;
 }
 
-export interface DefaultProps {
-  className?: string;
+export interface DefaultProps extends HTMLAttributes<HTMLDivElement> {
   children?: ReactNode;
-  id?: string;
-  [key: string]: unknown;
 }
 
-export interface ItemWrapperProps extends DefaultProps {
-  children: ReactNode;
-}
+export interface ItemWrapperProps extends DefaultProps {}
 
-export interface ItemProps {
+export interface ItemProps extends HTMLAttributes<HTMLParagraphElement> {
   value: string | number;
-  id?: string;
-  className?: string;
   children: ReactNode;
-  [key: string]: unknown;
 }

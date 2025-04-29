@@ -1,21 +1,28 @@
-import React, { memo, useContext } from "react";
+import React, { forwardRef, useContext } from "react";
 import { DropdownContext } from "./context";
 import { DefaultProps, DropdownContextType } from "./types";
 import styles from "./dropdown.module.css";
 
-const Error = memo(({ children, className, ...props }: DefaultProps) => {
-  const { required, selectedValue } = useContext(
-    DropdownContext
-  ) as DropdownContextType<any>;
+const Error = forwardRef<HTMLParagraphElement, DefaultProps>(
+  (props: DefaultProps, ref) => {
+    const { children, className, ...restProps } = props;
+    const { required, selectedValue } = useContext(
+      DropdownContext
+    ) as DropdownContextType<any>;
 
-  if (!required || selectedValue !== null) return null;
+    if (!required || selectedValue !== null) return null;
 
-  return (
-    <p {...props} className={`${styles.errorMessage} ${className || ""}`}>
-      {children}
-    </p>
-  );
-});
+    return (
+      <p
+        ref={ref}
+        className={`${styles.errorMessage} ${className || ""}`}
+        {...restProps}
+      >
+        {children}
+      </p>
+    );
+  }
+);
 
 Error.displayName = "Error";
 

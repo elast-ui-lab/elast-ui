@@ -1,3 +1,25 @@
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ComboBoxContext } from "./context";
 import styles from "./combobox.module.css";
@@ -7,17 +29,17 @@ import OptionWrapper from "./OptionWrapper";
 import Option from "./Option";
 import Error from "./Error";
 import { isValidElement } from "react";
-var ComboBox = function (_a) {
-    var id = _a.id, className = _a.className, value = _a.value, children = _a.children, required = _a.required, ariaLabel = _a.ariaLabel, onValueChange = _a.onValueChange;
-    var _b = useState(false), open = _b[0], setOpen = _b[1];
-    var _c = useState(false), isTyping = _c[0], setIsTyping = _c[1];
-    var _d = useState(""), inputValue = _d[0], setInputValue = _d[1];
-    var _e = useState(value || ""), selectedValue = _e[0], setSelectedValue = _e[1];
-    var _f = useState(false), validity = _f[0], setValidity = _f[1];
-    var _g = useState(-1), focusIndex = _g[0], setFocusIndex = _g[1];
-    var _h = useState([]), filteredOptions = _h[0], setFilteredOptions = _h[1];
-    var _j = useState([]), optionElements = _j[0], setOptionElements = _j[1];
+var ComboBox = function (props) {
+    var id = props.id, className = props.className, value = props.value, children = props.children, required = props.required, ariaLabel = props.ariaLabel, onValueChange = props.onValueChange, restProps = __rest(props, ["id", "className", "value", "children", "required", "ariaLabel", "onValueChange"]);
     var comboboxRef = useRef(null);
+    var _a = useState(false), open = _a[0], setOpen = _a[1];
+    var _b = useState(false), isTyping = _b[0], setIsTyping = _b[1];
+    var _c = useState(""), inputValue = _c[0], setInputValue = _c[1];
+    var _d = useState(value || ""), selectedValue = _d[0], setSelectedValue = _d[1];
+    var _e = useState(false), validity = _e[0], setValidity = _e[1];
+    var _f = useState(-1), focusIndex = _f[0], setFocusIndex = _f[1];
+    var _g = useState([]), filteredOptions = _g[0], setFilteredOptions = _g[1];
+    var _h = useState([]), optionElements = _h[0], setOptionElements = _h[1];
     useEffect(function () {
         var _a;
         var optionWrapper = findComponentWithDisplayName(children, "OptionWrapper");
@@ -96,7 +118,7 @@ var ComboBox = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(ComboBoxContext.Provider, { value: contextValue },
-        React.createElement("div", { id: id, className: "".concat(styles.comboWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
+        React.createElement("div", __assign({ id: id, className: "".concat(styles.comboWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, restProps), children),
         React.createElement("input", { type: "hidden", ref: comboboxRef, value: String(selectedValue), required: required, "aria-hidden": "true" })));
 };
 ComboBox.Input = Input;

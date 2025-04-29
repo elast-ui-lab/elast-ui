@@ -15,22 +15,24 @@ import Item from "./Item";
 import Error from "./Error";
 import { findComponentWithDisplayName } from "../../utils/common";
 
-const Dropdown = <T extends string | number>({
-  children,
-  className,
-  ariaLabel,
-  id,
-  value,
-  required,
-  onValueChange,
-}: DropdownProps<T>) => {
+const Dropdown = <T extends string | number>(props: DropdownProps<T>) => {
+  const {
+    children,
+    className,
+    ariaLabel,
+    id,
+    value,
+    required,
+    onValueChange,
+    ...restProps
+  } = props;
+  const dropdownRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [focusIndex, setFocusIndex] = useState<number>(-1);
+  const [optionElements, setOptionElements] = useState<ReactElement[]>([]);
   const [selectedValue, setSelectedValue] = useState<T | null>(
     (value as T) || null
   );
-  const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const [optionElements, setOptionElements] = useState<ReactElement[]>([]);
-  const dropdownRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const itemWrapper = findComponentWithDisplayName(children, "ItemWrapper");
@@ -92,6 +94,7 @@ const Dropdown = <T extends string | number>({
         aria-controls={`${id || ariaLabel}-listbox`}
         aria-required={required}
         id={id}
+        {...restProps}
       >
         {children}
       </div>

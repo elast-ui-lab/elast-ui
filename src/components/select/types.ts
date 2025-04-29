@@ -1,4 +1,10 @@
-import { ReactElement, ReactNode, Dispatch, SetStateAction } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+  HTMLAttributes,
+} from "react";
 
 export interface SelectContextType<T = string | number> {
   validity: boolean;
@@ -15,9 +21,8 @@ export interface SelectContextType<T = string | number> {
   getFocusedOption: () => ReactElement | undefined;
 }
 
-export interface SelectProps<T = string | number> {
-  id?: string;
-  className?: string;
+export interface SelectProps<T = string | number>
+  extends HTMLAttributes<HTMLElement> {
   value?: T;
   onValueChange?: (value: T) => void;
   children?: ReactNode;
@@ -25,20 +30,11 @@ export interface SelectProps<T = string | number> {
   ariaLabel?: string;
 }
 
-export interface DefaultProps {
-  className?: string;
+export interface DefaultProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
-  [key: string]: unknown;
 }
 
-export interface OptionWrapperProps extends DefaultProps {
-  children: ReactNode;
-}
-
-export interface OptionProps {
+export interface OptionProps extends HTMLAttributes<HTMLParagraphElement> {
   value: string | number;
-  id?: string;
-  className?: string;
   children: ReactNode;
-  [key: string]: unknown;
 }

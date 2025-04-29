@@ -1,10 +1,11 @@
-import React, { memo, useContext } from "react";
+import React, { forwardRef, useContext } from "react";
 import { ComboBoxContext } from "./context";
 import { ComboBoxContextType, OptionWrapperProps } from "./types";
 import styles from "./combobox.module.css";
 
-const OptionWrapper = memo(
-  ({ children, className, id, ...props }: OptionWrapperProps) => {
+const OptionWrapper = forwardRef<HTMLDivElement, OptionWrapperProps>(
+  (props: OptionWrapperProps, ref) => {
+    const { children, className, id, ...restProps } = props;
     const { open, filteredOptions } = useContext(
       ComboBoxContext
     ) as ComboBoxContextType<any>;
@@ -13,13 +14,14 @@ const OptionWrapper = memo(
 
     return (
       <div
+        ref={ref}
+        id={`${id}-listbox`}
+        role="listbox"
+        aria-orientation="vertical"
         className={`${styles.comboOptionWrapper} ${
           open ? styles.comboOptionWrapperOpen : styles.comboOptionWrapperClosed
         } ${className || ""}`}
-        role="listbox"
-        aria-orientation="vertical"
-        id={`${id}-listbox`}
-        {...props}
+        {...restProps}
       >
         {displayOptions}
       </div>

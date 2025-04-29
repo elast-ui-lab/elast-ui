@@ -1,3 +1,25 @@
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 import React, { useEffect, useRef, useState, isValidElement, useCallback, } from "react";
 import { DropdownContext } from "./context";
 import styles from "./dropdown.module.css";
@@ -6,13 +28,13 @@ import ItemWrapper from "./ItemWrapper";
 import Item from "./Item";
 import Error from "./Error";
 import { findComponentWithDisplayName } from "../../utils/common";
-var Dropdown = function (_a) {
-    var children = _a.children, className = _a.className, ariaLabel = _a.ariaLabel, id = _a.id, value = _a.value, required = _a.required, onValueChange = _a.onValueChange;
-    var _b = useState(false), open = _b[0], setOpen = _b[1];
-    var _c = useState(value || null), selectedValue = _c[0], setSelectedValue = _c[1];
-    var _d = useState(-1), focusIndex = _d[0], setFocusIndex = _d[1];
-    var _e = useState([]), optionElements = _e[0], setOptionElements = _e[1];
+var Dropdown = function (props) {
+    var children = props.children, className = props.className, ariaLabel = props.ariaLabel, id = props.id, value = props.value, required = props.required, onValueChange = props.onValueChange, restProps = __rest(props, ["children", "className", "ariaLabel", "id", "value", "required", "onValueChange"]);
     var dropdownRef = useRef(null);
+    var _a = useState(false), open = _a[0], setOpen = _a[1];
+    var _b = useState(-1), focusIndex = _b[0], setFocusIndex = _b[1];
+    var _c = useState([]), optionElements = _c[0], setOptionElements = _c[1];
+    var _d = useState(value || null), selectedValue = _d[0], setSelectedValue = _d[1];
     useEffect(function () {
         var _a;
         var itemWrapper = findComponentWithDisplayName(children, "ItemWrapper");
@@ -52,7 +74,7 @@ var Dropdown = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(DropdownContext.Provider, { value: contextValue },
-        React.createElement("div", { className: "".concat(styles.dropdownBoxWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id || ariaLabel, "-listbox"), "aria-required": required, id: id }, children),
+        React.createElement("div", __assign({ className: "".concat(styles.dropdownBoxWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id || ariaLabel, "-listbox"), "aria-required": required, id: id }, restProps), children),
         required && (React.createElement("input", { type: "hidden", ref: dropdownRef, value: selectedValue !== null && selectedValue !== void 0 ? selectedValue : "", required: required, "aria-hidden": "true" }))));
 };
 Dropdown.Trigger = Trigger;

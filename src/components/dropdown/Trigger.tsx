@@ -1,103 +1,118 @@
-import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+} from "react";
 import { DropdownContext } from "./context";
 import { DefaultProps, DropdownContextType } from "./types";
 import styles from "./dropdown.module.css";
+import { combineRefs } from "../../utils/common";
 
-const Trigger = memo(({ children, className, id, ...props }: DefaultProps) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const {
-    open,
-    setOpen,
-    setSelectedValue,
-    onValueChange,
-    setFocusIndex,
-    getSelectedLabel,
-    getFocusedOption,
-  } = useContext(DropdownContext) as DropdownContextType<any>;
-
-  const selectedLabel = getSelectedLabel();
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      const keyHandlers = {
-        Enter: () => {
-          if (!open) {
-            setOpen(true);
-            return;
-          }
-          const focusedOption = getFocusedOption();
-          if (focusedOption?.props.value) {
-            const value = focusedOption.props.value;
-            setSelectedValue(value);
-            onValueChange?.(value);
-            setOpen(false);
-          }
-        },
-        ArrowUp: () => {
-          if (!open) return;
-          setFocusIndex((prevIndex) => Math.max(prevIndex - 1, -1));
-        },
-        ArrowDown: () => {
-          if (!open) return;
-          setFocusIndex((prevIndex) => prevIndex + 1);
-        },
-        Escape: () => {
-          setOpen(false);
-          ref.current?.blur();
-        },
-      };
-
-      if (e.key in keyHandlers) {
-        e.preventDefault();
-        keyHandlers[e.key as keyof typeof keyHandlers]();
-      }
-    },
-    [
+const Trigger = forwardRef<HTMLDivElement, DefaultProps>(
+  (props: DefaultProps, ref) => {
+    const { children, className, ...restProps } = props;
+    const triggerRef = useRef<HTMLDivElement>(null);
+    const combineRef = combineRefs(triggerRef, ref);
+    const {
       open,
-      getFocusedOption,
-      onValueChange,
       setOpen,
-      setFocusIndex,
       setSelectedValue,
-    ]
-  );
+      onValueChange,
+      setFocusIndex,
+      getSelectedLabel,
+      getFocusedOption,
+    } = useContext(DropdownContext) as DropdownContextType<any>;
 
-  const handleClickOutside = useCallback(
-    (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    },
-    [setOpen]
-  );
+    const selectedLabel = getSelectedLabel();
 
-  useEffect(() => {
-    window.addEventListener("click", handleClickOutside);
-    return () => window.removeEventListener("click", handleClickOutside);
-  }, [handleClickOutside]);
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent) => {
+        const keyHandlers = {
+          Enter: () => {
+            if (!open) {
+              setOpen(true);
+              return;
+            }
+            const focusedOption = getFocusedOption();
+            if (focusedOption?.props.value) {
+              const value = focusedOption.props.value;
+              setSelectedValue(value);
+              onValueChange?.(value);
+              setOpen(false);
+            }
+          },
+          ArrowUp: () => {
+            if (!open) return;
+            setFocusIndex((prevIndex) => Math.max(prevIndex - 1, -1));
+          },
+          ArrowDown: () => {
+            if (!open) return;
+            setFocusIndex((prevIndex) => prevIndex + 1);
+          },
+          Escape: () => {
+            setOpen(false);
+            triggerRef.current?.blur();
+          },
+        };
 
-  const handleFocus = () => ref.current?.setAttribute("data-focus", "true");
-  const handleBlur = () => ref.current?.setAttribute("data-focus", "false");
+        if (e.key in keyHandlers) {
+          e.preventDefault();
+          keyHandlers[e.key as keyof typeof keyHandlers]();
+        }
+      },
+      [
+        open,
+        getFocusedOption,
+        onValueChange,
+        setOpen,
+        setFocusIndex,
+        setSelectedValue,
+      ]
+    );
 
-  return (
-    <div
-      ref={ref}
-      className={`${styles.dropdownBox} ${className || ""}`}
-      onClick={() => setOpen(!open)}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      role="combobox"
-      aria-expanded={open}
-      aria-haspopup="listbox"
-      aria-controls={`${id}-listbox`}
-      {...props}
-    >
-      {selectedLabel || children}
-    </div>
-  );
-});
+    const handleClickOutside = useCallback(
+      (e: MouseEvent) => {
+        if (
+          triggerRef.current &&
+          !triggerRef.current.contains(e.target as Node)
+        ) {
+          setOpen(false);
+        }
+      },
+      [setOpen]
+    );
+
+    useEffect(() => {
+      window.addEventListener("click", handleClickOutside);
+      return () => window.removeEventListener("click", handleClickOutside);
+    }, [handleClickOutside]);
+
+    const handleFocus = () =>
+      triggerRef.current?.setAttribute("data-focus", "true");
+    const handleBlur = () =>
+      triggerRef.current?.setAttribute("data-focus", "false");
+
+    return (
+      <div
+        ref={combineRef}
+        tabIndex={0}
+        role="combobox"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        onClick={() => setOpen(!open)}
+        className={`${styles.dropdownBox} ${className || ""}`}
+        {...restProps}
+      >
+        {selectedLabel || children}
+      </div>
+    );
+  }
+);
 
 Trigger.displayName = "Trigger";
 

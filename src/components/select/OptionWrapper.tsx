@@ -1,23 +1,24 @@
-import React, { memo, useContext } from "react";
+import React, { forwardRef, useContext } from "react";
 import { SelectContext } from "./context";
-import { OptionWrapperProps, SelectContextType } from "./types";
+import { DefaultProps, SelectContextType } from "./types";
 import styles from "./select.module.css";
 
-const OptionWrapper = memo(
-  ({ children, className, ...props }: OptionWrapperProps) => {
+const OptionWrapper = forwardRef<HTMLDivElement, DefaultProps>(
+  (props: DefaultProps, ref) => {
+    const { children, className, ...restProps } = props;
     const { open } = useContext(SelectContext) as SelectContextType;
 
     return (
       <div
-        {...props}
+        ref={ref}
+        role="listbox"
+        aria-orientation="vertical"
         className={`${styles.selectOptionWrapper} ${
           open
             ? styles.selectOptionWrapperOpen
             : styles.selectOptionWrapperClosed
         } ${className || ""}`}
-        role="listbox"
-        aria-orientation="vertical"
-        id={`${props.id}-listbox`}
+        {...restProps}
       >
         {children}
       </div>

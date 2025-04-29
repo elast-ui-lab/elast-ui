@@ -1,9 +1,8 @@
 import React from "react";
 import { ModalProps } from "./types";
-declare const Modal: {
-    ({ open, className, onClose, children }: ModalProps): React.JSX.Element;
-    Container: ({ className, children }: import("./types").CommonProps) => React.JSX.Element | null;
-    Title: ({ className, children }: import("./types").CommonProps) => React.JSX.Element | null;
-    Content: ({ className, children }: import("./types").CommonProps) => React.JSX.Element | null;
+declare const _default: React.ForwardRefExoticComponent<ModalProps & React.RefAttributes<HTMLDivElement>> & {
+    Container: React.ForwardRefExoticComponent<import("./types").CommonProps & React.RefAttributes<HTMLDivElement>>;
+    Title: React.ForwardRefExoticComponent<import("./types").CommonProps & React.RefAttributes<HTMLHeadingElement>>;
+    Content: React.ForwardRefExoticComponent<import("./types").CommonProps & React.RefAttributes<HTMLDivElement>>;
 };
-export default Modal;
+export default _default;

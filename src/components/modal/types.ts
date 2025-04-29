@@ -1,18 +1,16 @@
-import { ReactNode } from "react";
+import { HTMLAttributes, ReactNode } from "react";
 
 export interface ModalContextType {
   open: boolean;
 }
 
-export interface ModalProps {
+export interface ModalProps extends HTMLAttributes<HTMLElement> {
   open: boolean;
-  className?: string;
   onClose?: () => void;
   children?: ReactNode;
 }
 
-export interface CommonProps {
-  className?: string;
+export interface CommonProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
 }
 

@@ -10,15 +10,18 @@ import Error from "./Error";
 import { ReactElement, isValidElement } from "react";
 import { OptionProps } from "./types";
 
-const ComboBox = <T extends DataType>({
-  id,
-  className,
-  value,
-  children,
-  required,
-  ariaLabel,
-  onValueChange,
-}: ComboBoxProps<T>) => {
+const ComboBox = <T extends DataType>(props: ComboBoxProps<T>) => {
+  const {
+    id,
+    className,
+    value,
+    children,
+    required,
+    ariaLabel,
+    onValueChange,
+    ...restProps
+  } = props;
+  const comboboxRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
@@ -31,7 +34,6 @@ const ComboBox = <T extends DataType>({
   const [optionElements, setOptionElements] = useState<
     ReactElement<OptionProps>[]
   >([]);
-  const comboboxRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const optionWrapper = findComponentWithDisplayName(
@@ -146,6 +148,7 @@ const ComboBox = <T extends DataType>({
         aria-controls={`${id}-listbox`}
         aria-required={required}
         aria-invalid={validity}
+        {...restProps}
       >
         {children}
       </div>
