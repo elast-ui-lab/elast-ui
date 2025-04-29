@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Trigger from "./Trigger";
 import Option from "./Option";
 import OptionWrapper from "./OptionWrapper";
@@ -36,13 +36,13 @@ const Select = <T extends string | number>({
       }
   }, [children]);
 
-  const getSelectedLabel = React.useCallback((): React.ReactNode => {
+  const getSelectedLabel = useCallback((): React.ReactNode => {
       if (optionElements.length === 0 || selectedValue === null) return null;
       const selectedOption = optionElements.find(option => option.props.value === selectedValue);
       return selectedOption?.props.children || null;
   }, [selectedValue, optionElements]);
 
-  const validateRequiredField = React.useCallback((e: Event) => {
+  const validateRequiredField = useCallback((e: Event) => {
       e.preventDefault();
       const isValid = !(required && selectedValue === null);
       setValidity(!isValid);
