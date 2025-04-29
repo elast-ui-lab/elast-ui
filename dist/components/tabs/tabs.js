@@ -20,55 +20,20 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
-import React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
-var TabsContext = createContext(undefined);
+import React, { useState, useEffect } from "react";
+import { TabsContext } from "./context";
+import TabsWrapper from "./TabsWrapper";
+import Tab from "./Tab";
+import ContentWrapper from "./ContentWrapper";
+import Content from "./Content";
 var Tabs = function (_a) {
-    var className = _a.className, defaultIndex = _a.defaultIndex, children = _a.children, onChange = _a.onChange, props = __rest(_a, ["className", "defaultIndex", "children", "onChange"]);
+    var className = _a.className, defaultIndex = _a.defaultIndex, children = _a.children, onValueChange = _a.onValueChange, props = __rest(_a, ["className", "defaultIndex", "children", "onValueChange"]);
     var _b = useState(defaultIndex || 0), tabIndex = _b[0], setTabIndex = _b[1];
     useEffect(function () {
-        onChange === null || onChange === void 0 ? void 0 : onChange(tabIndex);
-    }, [onChange, tabIndex]);
+        onValueChange === null || onValueChange === void 0 ? void 0 : onValueChange(tabIndex);
+    }, [onValueChange, tabIndex]);
     return (React.createElement(TabsContext.Provider, { value: { tabIndex: tabIndex, setTabIndex: setTabIndex } },
         React.createElement("div", __assign({ className: className }, props), children)));
-};
-var TabsWrapper = function (_a) {
-    var children = _a.children, props = __rest(_a, ["children"]);
-    React.Children.toArray(children).forEach(function (child) {
-        if (React.isValidElement(child) && child.type !== Tab) {
-            throw Error("TabsWrapper 컴포넌트 내부에는 Tab 컴포넌트가 들어가야 합니다");
-        }
-    });
-    var setTabIndex = useContext(TabsContext).setTabIndex;
-    return (React.createElement("div", __assign({}, props), React.Children.map(children, function (child, index) {
-        // cloneElement => 리액트 요소를 재정의하기 위한 방법으로 사용되는 메서드
-        // 여기서는 onClick을 추가하기 위해 사용
-        return React.isValidElement(child)
-            ? React.cloneElement(child, {
-                onClick: function () { return setTabIndex(index); },
-                "data-tabindex": index,
-            })
-            : child;
-    })));
-};
-var Tab = function (_a) {
-    var children = _a.children, props = __rest(_a, ["children"]);
-    var tabIndex = useContext(TabsContext).tabIndex;
-    return (React.createElement("div", __assign({ tabIndex: -1 }, (tabIndex === props["data-tabindex"] ? { "data-selected": "" } : {}), props), children));
-};
-var ContentWrapper = function (_a) {
-    var children = _a.children, props = __rest(_a, ["children"]);
-    React.Children.toArray(children).forEach(function (child) {
-        if (React.isValidElement(child) && child.type !== Content) {
-            throw Error("ContentWrapper 컴포넌트 내부에는 Content 컴포넌트가 들어가야 합니다");
-        }
-    });
-    var tabIndex = useContext(TabsContext).tabIndex;
-    return React.createElement("div", __assign({}, props), React.Children.toArray(children)[tabIndex]);
-};
-var Content = function (_a) {
-    var children = _a.children, props = __rest(_a, ["children"]);
-    return React.createElement("div", __assign({}, props), children);
 };
 Tabs.TabsWrapper = TabsWrapper;
 Tabs.ContentWrapper = ContentWrapper;

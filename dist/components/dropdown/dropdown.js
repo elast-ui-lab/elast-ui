@@ -7,7 +7,7 @@ import Item from "./Item";
 import Error from "./Error";
 import { findComponentWithDisplayName } from "../../utils/common";
 var Dropdown = function (_a) {
-    var children = _a.children, className = _a.className, onValueChange = _a.onValueChange, ariaLabel = _a.ariaLabel, id = _a.id, value = _a.value, required = _a.required;
+    var children = _a.children, className = _a.className, ariaLabel = _a.ariaLabel, id = _a.id, value = _a.value, required = _a.required, onValueChange = _a.onValueChange;
     var _b = useState(false), open = _b[0], setOpen = _b[1];
     var _c = useState(value || null), selectedValue = _c[0], setSelectedValue = _c[1];
     var _d = useState(-1), focusIndex = _d[0], setFocusIndex = _d[1];

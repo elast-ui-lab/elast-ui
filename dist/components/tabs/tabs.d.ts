@@ -1,20 +1,10 @@
 import React from "react";
-interface CommonProps {
-    className?: string;
-    children?: React.ReactNode;
-}
+import { TabsProps } from "./types";
 declare const Tabs: {
-    ({ className, defaultIndex, children, onChange, ...props }: {
-        defaultIndex?: number | undefined;
-        onChange?: ((prop?: unknown) => void) | undefined;
-    } & CommonProps): React.JSX.Element;
-    TabsWrapper: ({ children, ...props }: {
-        children?: React.ReactNode;
-    } & CommonProps) => React.JSX.Element;
-    ContentWrapper: ({ children, ...props }: CommonProps) => React.JSX.Element;
-    Tab: ({ children, ...props }: CommonProps & {
-        "data-tabindex"?: number;
-    }) => React.JSX.Element;
-    Content: ({ children, ...props }: CommonProps) => React.JSX.Element;
+    ({ className, defaultIndex, children, onValueChange, ...props }: TabsProps): React.JSX.Element;
+    TabsWrapper: ({ children, ...props }: import("./types").TabsWrapperProps) => React.JSX.Element;
+    ContentWrapper: ({ children, ...props }: import("./types").ContentWrapperProps) => React.JSX.Element;
+    Tab: ({ children, ...props }: import("./types").TabProps) => React.JSX.Element;
+    Content: ({ children, ...props }: import("./types").ContentProps) => React.JSX.Element;
 };
 export default Tabs;

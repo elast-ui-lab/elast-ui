@@ -1,22 +1,9 @@
 import React from "react";
+import { ModalProps } from "./types";
 declare const Modal: {
-    ({ open, className, onClose, children, }: {
-        open: boolean;
-        className?: string | undefined;
-        onClose?: (() => void) | undefined;
-        children?: React.ReactNode;
-    }): React.JSX.Element;
-    Container: ({ className, children, }: {
-        className?: string | undefined;
-        children?: React.ReactNode;
-    }) => any;
-    Title: ({ className, children, }: {
-        className?: string | undefined;
-        children?: React.ReactNode;
-    }) => any;
-    Content: ({ className, children, }: {
-        className?: string | undefined;
-        children?: React.ReactNode;
-    }) => any;
+    ({ open, className, onClose, children }: ModalProps): React.JSX.Element;
+    Container: ({ className, children }: import("./types").CommonProps) => React.JSX.Element | null;
+    Title: ({ className, children }: import("./types").CommonProps) => React.JSX.Element | null;
+    Content: ({ className, children }: import("./types").CommonProps) => React.JSX.Element | null;
 };
 export default Modal;

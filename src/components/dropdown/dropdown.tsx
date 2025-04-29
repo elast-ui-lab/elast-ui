@@ -11,11 +11,11 @@ import { findComponentWithDisplayName } from "../../utils/common";
 const Dropdown = <T extends string | number>({
   children,
   className,
-  onValueChange,
   ariaLabel,
   id,
   value,
   required,
+  onValueChange,
 }: DropdownProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
   const [selectedValue, setSelectedValue] = useState<T | null>(value as T || null);

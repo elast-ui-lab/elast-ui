@@ -1,22 +1,13 @@
 import React from "react";
-import styled from "styled-components";
-
-type DataType = any;
-
-type SwitchProps = {
-  id?: string;
-  className?: string;
-  checked?: DataType;
-  onChange?: any;
-  children?: React.ReactNode;
-};
+import { SwitchProps } from "./types";
+import { SwitchBoxWrapper } from "./styles";
 
 const Switch = ({
   id,
   className,
   checked,
   children,
-  onChange,
+  onValueChange,
 }: SwitchProps) => {
   return (
     <>
@@ -25,7 +16,7 @@ const Switch = ({
         className={className}
         {...(checked ? { "data-checked": true } : {})}
         onClick={() => {
-          onChange(!checked);
+          onValueChange && onValueChange(!checked);
         }}
       >
         {children}
@@ -33,8 +24,5 @@ const Switch = ({
     </>
   );
 };
-export default Switch;
 
-const SwitchBoxWrapper = styled.div`
-  cursor: pointer;
-`;
+export default Switch;

@@ -129,7 +129,7 @@ function App() {
         <h3 className="text-xl font-medium">Switch</h3>
         <Switch
           checked={enabled}
-          onChange={setEnabled}
+          onValueChange={setEnabled}
           className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition data-[checked]:bg-blue-600"
         >
           <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-[checked]:translate-x-6" />
@@ -137,7 +137,7 @@ function App() {
         <h3 className="text-xl font-medium">Dropdown</h3>
         <p>현재값: {dropdownSelectedValue}</p>
         <Dropdown
-          onChange={setDropdownSelectedValue}
+          onValueChange={setDropdownSelectedValue}
           className="mb-3"
         >
           <Dropdown.Trigger className="hover:bg-[white] focus:bg-[white] hover:text-[black] focus:text-[black] bg-[#f4f4f4] text-[black] rounded border py-3 px-4 h-[3rem]">

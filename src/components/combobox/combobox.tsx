@@ -101,17 +101,17 @@ const ComboBox = <T extends DataType>({
     selectedValue,
     validity,
     required,
+    optionElements,
+    filteredOptions,
     onValueChange: onValueChange as ((value: T) => void) | undefined,
     setOpen,
     setIsTyping,
     setFocusIndex,
     setTypedKeyword,
     setSelectedValue,
-    filteredOptions,
     getFilteredOptions,
     getSelectedLabel,
     getFocusedOption,
-    optionElements,
   };
 
   return (

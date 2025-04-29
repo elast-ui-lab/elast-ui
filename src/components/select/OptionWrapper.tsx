@@ -8,10 +8,7 @@ const OptionWrapper = memo(({
   className,
   ...props
 }: OptionWrapperProps) => {
-  const {
-    open,
-    optionElements
-  } = useContext(SelectContext) as SelectContextType;
+  const { open } = useContext(SelectContext) as SelectContextType;
 
   return (
     <SelectOptionWrapper

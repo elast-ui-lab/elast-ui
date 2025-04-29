@@ -13,6 +13,7 @@ const Input = memo(({
   const {
     open,
     isTyping,
+    typedKeyword,
     onValueChange,
     setOpen,
     setIsTyping,
@@ -22,7 +23,6 @@ const Input = memo(({
     getSelectedLabel,
     getFocusedOption,
   } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
-  const [inputValue, setInputValue] = useState("");
 
   const selectedLabel = getSelectedLabel();
 
@@ -36,7 +36,6 @@ const Input = memo(({
   }, [setFocusIndex, setIsTyping, setOpen]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!open) setOpen(true)
 
     const keyHandlers: Record<string, () => void> = {
       Enter: () => {
@@ -61,11 +60,14 @@ const Input = memo(({
       },
     };
 
+    if (e.key !== 'Tab') setOpen(true)
+    else setOpen(false)
+
     if (e.key in keyHandlers) {
       e.preventDefault();
       keyHandlers[e.key]();
     }
-  }, [handleClickOutside, onValueChange, open, setFocusIndex, setOpen, setSelectedValue, getFocusedOption]);
+  }, [handleClickOutside, onValueChange, setFocusIndex, setOpen, setSelectedValue, getFocusedOption]);
 
   useEffect(() => {
     window.addEventListener("click", handleClickOutside);
@@ -75,7 +77,6 @@ const Input = memo(({
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setIsTyping(true);
     setFocusIndex(-1);
-    setInputValue(e.target.value);
     setTypedKeyword(e.target.value);
   }, [setFocusIndex, setIsTyping, setTypedKeyword]);
 
@@ -93,7 +94,7 @@ const Input = memo(({
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        value={isTyping ? inputValue : selectedLabel as string || ""}
+        value={isTyping ? typedKeyword : selectedLabel as string || ""}
         onChange={handleInputChange}
         onClick={() => setOpen(true)}
         aria-autocomplete="list"

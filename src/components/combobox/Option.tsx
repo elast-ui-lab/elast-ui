@@ -14,7 +14,7 @@ const Option = memo(({
     selectedValue,
     setSelectedValue,
     setOpen,
-    onChange,
+    onValueChange,
     getFocusedOption
   } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
 
@@ -29,9 +29,9 @@ const Option = memo(({
 
   const handleOptionClick = useCallback(() => {
     setSelectedValue(value);
-    onChange?.(value);
+    onValueChange?.(value);
     setOpen(false);
-  }, [onChange, setOpen, setSelectedValue, value]);
+  }, [onValueChange, setOpen, setSelectedValue, value]);
 
   const optionProps = {
     ...(isFocused ? { "data-focused": "" } : {}),

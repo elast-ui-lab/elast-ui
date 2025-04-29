@@ -1,32 +1,17 @@
-import React from "react";
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { TabsContext } from "./context";
+import { TabsProps } from "./types";
+import TabsWrapper from "./TabsWrapper";
+import Tab from "./Tab";
+import ContentWrapper from "./ContentWrapper";
+import Content from "./Content";
 
-interface ChildProps {
-  onClick?: React.Dispatch<React.SetStateAction<number>>;
-  "data-tabindex"?: number;
-}
-interface CommonProps {
-  className?: string;
-  children?: React.ReactNode;
-}
-
-const TabsContext = createContext<any>(undefined);
-
-const Tabs = ({
-  className,
-  defaultIndex,
-  children,
-  onChange,
-  ...props
-}: {
-  defaultIndex?: number;
-  onChange?: (prop?: unknown) => void;
-} & CommonProps) => {
+const Tabs = ({ className, defaultIndex, children, onValueChange, ...props }: TabsProps) => {
   const [tabIndex, setTabIndex] = useState<number>(defaultIndex || 0);
 
   useEffect(() => {
-    onChange?.(tabIndex);
-  }, [onChange, tabIndex]);
+    onValueChange?.(tabIndex);
+  }, [onValueChange, tabIndex]);
 
   return (
     <TabsContext.Provider value={{ tabIndex, setTabIndex }}>
@@ -35,72 +20,6 @@ const Tabs = ({
       </div>
     </TabsContext.Provider>
   );
-};
-
-const TabsWrapper = ({
-  children,
-  ...props
-}: {
-  children?: React.ReactNode;
-} & CommonProps) => {
-  React.Children.toArray(children).forEach((child) => {
-    if (React.isValidElement(child) && child.type !== Tab) {
-      throw Error(
-        "TabsWrapper 컴포넌트 내부에는 Tab 컴포넌트가 들어가야 합니다"
-      );
-    }
-  });
-
-  const { setTabIndex } = useContext(TabsContext);
-
-  return (
-    <div {...props}>
-      {React.Children.map(children, (child, index) =>
-        // cloneElement => 리액트 요소를 재정의하기 위한 방법으로 사용되는 메서드
-        // 여기서는 onClick을 추가하기 위해 사용
-        React.isValidElement<ChildProps>(child)
-          ? React.cloneElement(child, {
-              onClick: () => setTabIndex(index),
-              "data-tabindex": index,
-            })
-          : child
-      )}
-    </div>
-  );
-};
-
-const Tab = ({
-  children,
-  ...props
-}: CommonProps & { "data-tabindex"?: number }) => {
-  const { tabIndex } = useContext(TabsContext);
-  return (
-    <div
-      tabIndex={-1}
-      {...(tabIndex === props["data-tabindex"] ? { "data-selected": "" } : {})}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-};
-
-const ContentWrapper = ({ children, ...props }: CommonProps) => {
-  React.Children.toArray(children).forEach((child) => {
-    if (React.isValidElement(child) && child.type !== Content) {
-      throw Error(
-        "ContentWrapper 컴포넌트 내부에는 Content 컴포넌트가 들어가야 합니다"
-      );
-    }
-  });
-
-  const { tabIndex } = useContext(TabsContext);
-
-  return <div {...props}>{React.Children.toArray(children)[tabIndex]}</div>;
-};
-
-const Content = ({ children, ...props }: CommonProps) => {
-  return <div {...props}>{children}</div>;
 };
 
 Tabs.TabsWrapper = TabsWrapper;
