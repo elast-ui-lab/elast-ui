@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Trigger from "./Trigger";
 import Option from "./Option";
 import OptionWrapper from "./OptionWrapper";
@@ -23,13 +23,13 @@ var Select = function (_a) {
             setOptionElements(validOptions);
         }
     }, [children]);
-    var getSelectedLabel = React.useCallback(function () {
+    var getSelectedLabel = useCallback(function () {
         if (optionElements.length === 0 || selectedValue === null)
             return null;
         var selectedOption = optionElements.find(function (option) { return option.props.value === selectedValue; });
         return (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.props.children) || null;
     }, [selectedValue, optionElements]);
-    var validateRequiredField = React.useCallback(function (e) {
+    var validateRequiredField = useCallback(function (e) {
         e.preventDefault();
         var isValid = !(required && selectedValue === null);
         setValidity(!isValid);
