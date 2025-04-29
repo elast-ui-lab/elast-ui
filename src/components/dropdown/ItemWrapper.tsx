@@ -1,25 +1,30 @@
 import React, { memo, useContext } from "react";
 import { DropdownContext } from "./context";
 import { ItemWrapperProps, DropdownContextType } from "./types";
-import { DropdownItemWrapper } from "./styles";
+import styles from "./dropdown.module.css";
 
-const ItemWrapper = memo(({ children, className, id, ...props }: ItemWrapperProps) => {
-  const { open } = useContext(DropdownContext) as DropdownContextType<any>;
+const ItemWrapper = memo(
+  ({ children, className, id, ...props }: ItemWrapperProps) => {
+    const { open } = useContext(DropdownContext) as DropdownContextType<any>;
 
-  return (
-    <DropdownItemWrapper
-      open={open}
-      className={className}
-      role="listbox"
-      aria-orientation="vertical"
-      id={`${id}-listbox`}
-      {...props}
-    >
-      {children}
-    </DropdownItemWrapper>
-  );
-});
+    return (
+      <div
+        className={`${styles.dropdownItemWrapper} ${
+          open
+            ? styles.dropdownItemWrapperOpen
+            : styles.dropdownItemWrapperClosed
+        } ${className || ""}`}
+        role="listbox"
+        aria-orientation="vertical"
+        id={`${id}-listbox`}
+        {...props}
+      >
+        {children}
+      </div>
+    );
+  }
+);
 
-ItemWrapper.displayName = 'ItemWrapper';
+ItemWrapper.displayName = "ItemWrapper";
 
 export default ItemWrapper;

@@ -1,0 +1,32 @@
+.comboWrapper {}
+
+.comboInput {
+  width: 100%;
+  height: 100%;
+  outline: none;
+}
+
+.comboInput[data-focus="true"] {
+  outline: 2px solid #000;
+}
+
+.comboOptionWrapper {
+  position: absolute;
+  transition: all 0.1s;
+}
+
+.comboOptionWrapperOpen {
+  visibility: visible;
+  opacity: 1;
+}
+
+.comboOptionWrapperClosed {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.comboOption {
+}
+
+.errorMessage {
+}

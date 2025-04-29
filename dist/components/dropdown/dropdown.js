@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, isValidElement, useCallback } from "react";
 import { DropdownContext } from "./context";
-import { DropdownBoxWrapper } from "./styles";
+import styles from "./dropdown.module.css";
 import Trigger from "./Trigger";
 import ItemWrapper from "./ItemWrapper";
 import Item from "./Item";
@@ -56,7 +56,7 @@ var Dropdown = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(DropdownContext.Provider, { value: contextValue },
-        React.createElement(DropdownBoxWrapper, { className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id || ariaLabel, "-listbox"), "aria-required": required, id: id }, children),
+        React.createElement("div", { className: "".concat(styles.dropdownBoxWrapper, " ").concat(className || ''), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id || ariaLabel, "-listbox"), "aria-required": required, id: id }, children),
         required && (React.createElement("input", { type: "hidden", ref: dropdownRef, value: selectedValue !== null && selectedValue !== void 0 ? selectedValue : "", required: required, "aria-hidden": "true" }))));
 };
 Dropdown.Trigger = Trigger;

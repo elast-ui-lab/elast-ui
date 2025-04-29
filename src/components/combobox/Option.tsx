@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useContext, useEffect, useState } from "react";
 import { ComboBoxContext } from "./context";
 import { ComboBoxContextType, OptionProps } from "./types";
-import { ComboOption } from "./styles";
+import styles from "./combobox.module.css";
 
 const Option = memo(({
   value,
@@ -36,7 +36,6 @@ const Option = memo(({
   const optionProps = {
     ...(isFocused ? { "data-focused": "" } : {}),
     ...(isSelected ? { "data-selected": "" } : {}),
-    className,
     role: "option",
     "aria-selected": isSelected,
     tabIndex: -1,
@@ -45,12 +44,13 @@ const Option = memo(({
   };
 
   return (
-    <ComboOption
+    <p
+      className={`${styles.comboOption} ${className || ''}`}
       onClick={handleOptionClick}
       {...optionProps}
     >
       {children}
-    </ComboOption>
+    </p>
   );
 });
 

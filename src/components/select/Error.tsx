@@ -1,7 +1,7 @@
 import React, { memo, useContext } from "react";
 import { SelectContext } from "./context";
 import { DefaultProps, SelectContextType } from "./types";
-import { ErrorMessage } from "./styles";
+import styles from "./select.module.css";
 
 const Error = memo(({ children, className, ...props }: DefaultProps) => {
   const { validity } = useContext(SelectContext) as SelectContextType;
@@ -9,9 +9,9 @@ const Error = memo(({ children, className, ...props }: DefaultProps) => {
   if (!validity) return null;
   
   return (
-    <ErrorMessage {...props} className={className}>
+    <p {...props} className={`${styles.errorMessage} ${className || ''}`}>
       {children}
-    </ErrorMessage>
+    </p>
   );
 });
 

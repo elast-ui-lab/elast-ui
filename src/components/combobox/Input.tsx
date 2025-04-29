@@ -1,7 +1,7 @@
-import React, { memo, useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 import { ComboBoxContext } from "./context";
 import { ComboBoxContextType, InputProps } from "./types";
-import { ComboInput } from "./styles";
+import styles from "./combobox.module.css";
 
 const Input = memo(({
   className,
@@ -11,7 +11,6 @@ const Input = memo(({
 }: InputProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const {
-    open,
     isTyping,
     inputValue,
     onValueChange,
@@ -86,10 +85,9 @@ const Input = memo(({
 
   return (
     <div>
-      <ComboInput
+      <input
         ref={ref}
-        className={className}
-        open={open}
+        className={`${styles.comboInput} ${className || ''}`}
         onFocus={handleFocus}
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}

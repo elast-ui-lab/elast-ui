@@ -4,7 +4,7 @@ import Option from "./Option";
 import OptionWrapper from "./OptionWrapper";
 import Error from "./Error";
 import { SelectContext } from "./context";
-import { SelectBoxWrapper } from "./styles";
+import styles from "./select.module.css";
 import { findComponentWithDisplayName } from "../../utils/common";
 var Select = function (_a) {
     var id = _a.id, className = _a.className, value = _a.value, children = _a.children, onValueChange = _a.onValueChange, required = _a.required, ariaLabel = _a.ariaLabel;
@@ -69,7 +69,7 @@ var Select = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(SelectContext.Provider, { value: contextValue },
-        React.createElement(SelectBoxWrapper, { id: id, className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
+        React.createElement("div", { id: id, className: "".concat(styles.selectBoxWrapper, " ").concat(className || ''), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
         React.createElement("input", { type: "hidden", ref: selectRef, value: selectedValue !== null && selectedValue !== void 0 ? selectedValue : "", required: required, "aria-hidden": "true" })));
 };
 Select.Trigger = Trigger;

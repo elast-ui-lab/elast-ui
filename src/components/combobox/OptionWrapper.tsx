@@ -1,7 +1,7 @@
 import React, { memo, useContext } from "react";
 import { ComboBoxContext } from "./context";
 import { ComboBoxContextType, OptionWrapperProps } from "./types";
-import { ComboOptionWrapper } from "./styles";
+import styles from "./combobox.module.css";
 
 const OptionWrapper = memo(({
   children,
@@ -17,16 +17,15 @@ const OptionWrapper = memo(({
   const displayOptions = filteredOptions;
 
   return (
-    <ComboOptionWrapper
-      open={open}
-      className={className}
+    <div
+      className={`${styles.comboOptionWrapper} ${open ? styles.comboOptionWrapperOpen : styles.comboOptionWrapperClosed} ${className || ''}`}
       role="listbox"
       aria-orientation="vertical"
       id={`${id}-listbox`}
       {...props}
     >
       {displayOptions}
-    </ComboOptionWrapper>
+    </div>
   );
 });
 

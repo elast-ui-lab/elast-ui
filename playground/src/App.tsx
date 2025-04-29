@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 import { Select } from "elast-ui";
 import { ComboBox } from "elast-ui";
@@ -34,7 +34,9 @@ const tabList = [
 function App() {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [enabled, setEnabled] = useState(false);
-  const [dropdownSelectedValue, setDropdownSelectedValue] = useState<string | number>("");
+  const [dropdownSelectedValue, setDropdownSelectedValue] = useState<
+    string | number
+  >("");
   return (
     <div className="App">
       <h1 className="text-4xl font-medium my-10">elast UI Library</h1>
@@ -69,10 +71,10 @@ function App() {
             <ComboBox.OptionWrapper className="bg-[white] text-[black] rounded border z-50">
               {selectList.map((option: any, index: number) => (
                 <ComboBox.Option
-                className="hover:bg-[#ededed] py-3 px-4 data-[focused]:bg-[#ededed]"
-                key={index}
-                tabIndex={index}
-                value={option.value}
+                  className="hover:bg-[#ededed] py-3 px-4 data-[focused]:bg-[#ededed]"
+                  key={index}
+                  tabIndex={index}
+                  value={option.value}
                 >
                   {option.name}
                 </ComboBox.Option>
@@ -116,7 +118,10 @@ function App() {
         <Tabs className="mt-4">
           <Tabs.TabsWrapper className="flex flex-row">
             {tabList.map((tab, index) => (
-              <Tabs.Tab key={index} className="rounded data-[selected]:bg-black/10 cursor-pointer px-2 py-1 mb-2">
+              <Tabs.Tab
+                key={index}
+                className="rounded data-[selected]:bg-black/10 cursor-pointer px-2 py-1 mb-2"
+              >
                 {tab.name}
               </Tabs.Tab>
             ))}
@@ -140,10 +145,7 @@ function App() {
         </Switch>
         <h3 className="text-xl font-medium">Dropdown</h3>
         <p>현재값: {dropdownSelectedValue}</p>
-        <Dropdown
-          onValueChange={setDropdownSelectedValue}
-          className="mb-3"
-        >
+        <Dropdown onValueChange={setDropdownSelectedValue} className="mb-3">
           <Dropdown.Trigger className="hover:bg-[white] focus:bg-[white] hover:text-[black] focus:text-[black] bg-[#f4f4f4] text-[black] rounded border py-3 px-4 h-[3rem]">
             버튼
           </Dropdown.Trigger>

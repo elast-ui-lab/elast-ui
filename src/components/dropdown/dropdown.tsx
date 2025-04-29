@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, isValidElement, useCallback, ReactElement } from "react";
 import { DropdownContext } from "./context";
 import { DropdownProps, DropdownContextType } from "./types";
-import { DropdownBoxWrapper } from "./styles";
+import styles from "./dropdown.module.css";
 import Trigger from "./Trigger";
 import ItemWrapper from "./ItemWrapper";
 import Item from "./Item";
@@ -73,8 +73,8 @@ const Dropdown = <T extends string | number>({
 
   return (
     <DropdownContext.Provider value={contextValue}>
-      <DropdownBoxWrapper
-        className={className}
+      <div
+        className={`${styles.dropdownBoxWrapper} ${className || ''}`}
         role="combobox"
         aria-label={ariaLabel}
         aria-expanded={open}
@@ -84,7 +84,7 @@ const Dropdown = <T extends string | number>({
         id={id}
       >
         {children}
-      </DropdownBoxWrapper>
+      </div>
       {required && (
         <input
           type="hidden"

@@ -1,6 +1,6 @@
 import React from "react";
 import { SwitchProps } from "./types";
-import { SwitchBoxWrapper } from "./styles";
+import styles from "./switch.module.css";
 
 const Switch = ({
   id,
@@ -11,16 +11,16 @@ const Switch = ({
 }: SwitchProps) => {
   return (
     <>
-      <SwitchBoxWrapper
+      <div
         id={id}
-        className={className}
+        className={`${styles.switchBoxWrapper} ${className || ''}`}
         {...(checked ? { "data-checked": true } : {})}
         onClick={() => {
           onCheckedChange?.(!checked);
         }}
       >
         {children}
-      </SwitchBoxWrapper>
+      </div>
     </>
   );
 };

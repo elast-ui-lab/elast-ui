@@ -1,0 +1,34 @@
+.dropdownBoxWrapper {
+  /* 원래 스타일이 비어 있음 */
+}
+
+.dropdownBox {
+  outline: none;
+}
+
+.dropdownBox[data-focus="true"] {
+  outline: 2px solid #000;
+}
+
+.dropdownItemWrapper {
+  position: absolute;
+  transition: all 0.1s;
+}
+
+.dropdownItemWrapperOpen {
+  visibility: visible;
+  opacity: 1;
+}
+
+.dropdownItemWrapperClosed {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.dropdownItem {
+  /* 원래 스타일이 비어 있음 */
+}
+
+.errorMessage {
+  /* 원래 스타일이 비어 있음 */
+}

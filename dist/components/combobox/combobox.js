@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ComboBoxContext } from "./context";
-import { ComboWrapper } from "./styles";
+import styles from "./combobox.module.css";
 import { findComponentWithDisplayName } from "../../utils/common";
 import Input from "./Input";
 import OptionWrapper from "./OptionWrapper";
@@ -96,7 +96,7 @@ var ComboBox = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(ComboBoxContext.Provider, { value: contextValue },
-        React.createElement(ComboWrapper, { id: id, className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
+        React.createElement("div", { id: id, className: "".concat(styles.comboWrapper, " ").concat(className || ''), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
         React.createElement("input", { type: "hidden", ref: comboboxRef, value: String(selectedValue), required: required, "aria-hidden": "true" })));
 };
 ComboBox.Input = Input;

@@ -1,7 +1,7 @@
 import React, { memo, useContext } from "react";
 import { ComboBoxContext } from "./context";
 import { ComboBoxContextType, DefaultProps } from "./types";
-import { ErrorMessage } from "./styles";
+import styles from "./combobox.module.css";
 
 const Error = memo(({ children, className, ...props }: DefaultProps) => {
   const { validity } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
@@ -9,9 +9,9 @@ const Error = memo(({ children, className, ...props }: DefaultProps) => {
   if (!validity) return null;
 
   return (
-    <ErrorMessage {...props} className={className}>
+    <p {...props} className={`${styles.errorMessage} ${className || ''}`}>
       {children}
-    </ErrorMessage>
+    </p>
   );
 });
 

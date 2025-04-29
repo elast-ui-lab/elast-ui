@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 import { DropdownContext } from "./context";
 import { DefaultProps, DropdownContextType } from "./types";
-import { DropdownBox } from "./styles";
+import styles from "./dropdown.module.css";
 
 const Trigger = memo(({ children, className, id, ...props }: DefaultProps) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,10 +67,9 @@ const Trigger = memo(({ children, className, id, ...props }: DefaultProps) => {
   const handleBlur = () => ref.current?.setAttribute('data-focus', 'false');
 
   return (
-    <DropdownBox
+    <div
       ref={ref}
-      open={open}
-      className={className}
+      className={`${styles.dropdownBox} ${className || ''}`}
       onClick={() => setOpen(!open)}
       tabIndex={0}
       onKeyDown={handleKeyDown}
@@ -83,7 +82,7 @@ const Trigger = memo(({ children, className, id, ...props }: DefaultProps) => {
       {...props}
     >
       {selectedLabel || children}
-    </DropdownBox>
+    </div>
   );
 });
 

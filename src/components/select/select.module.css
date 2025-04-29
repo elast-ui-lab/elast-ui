@@ -1,0 +1,34 @@
+.selectBoxWrapper {
+  /* 원래 스타일이 비어 있음 */
+}
+
+.selectBox {
+  outline: none;
+}
+
+.selectBox[data-focus="true"] {
+  outline: 2px solid #000;
+}
+
+.selectOptionWrapper {
+  position: absolute;
+  transition: all 0.1s;
+}
+
+.selectOptionWrapperOpen {
+  visibility: visible;
+  opacity: 1;
+}
+
+.selectOptionWrapperClosed {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.selectOption {
+  /* 원래 스타일이 비어 있음 */
+}
+
+.errorMessage {
+  /* 원래 스타일이 비어 있음 */
+}

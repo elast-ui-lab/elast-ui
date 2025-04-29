@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ComboBoxContext } from "./context";
 import { ComboBoxProps, ComboBoxContextType, DataType } from "./types";
-import { ComboWrapper } from "./styles";
+import styles from "./combobox.module.css";
 import { findComponentWithDisplayName } from "../../utils/common";
 import Input from "./Input";
 import OptionWrapper from "./OptionWrapper";
@@ -116,9 +116,9 @@ const ComboBox = <T extends DataType>({
 
   return (
     <ComboBoxContext.Provider value={contextValue}>
-      <ComboWrapper
+      <div
         id={id}
-        className={className}
+        className={`${styles.comboWrapper} ${className || ''}`}
         role="combobox"
         aria-label={ariaLabel}
         aria-expanded={open}
@@ -128,7 +128,7 @@ const ComboBox = <T extends DataType>({
         aria-invalid={validity}
       >
         {children}
-      </ComboWrapper>
+      </div>
       <input
         type="hidden"
         ref={comboboxRef}

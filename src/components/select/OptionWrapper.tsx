@@ -1,7 +1,7 @@
 import React, { memo, useContext } from "react";
 import { SelectContext } from "./context";
 import { OptionWrapperProps, SelectContextType } from "./types";
-import { SelectOptionWrapper } from "./styles";
+import styles from "./select.module.css";
 
 const OptionWrapper = memo(({
   children,
@@ -11,16 +11,15 @@ const OptionWrapper = memo(({
   const { open } = useContext(SelectContext) as SelectContextType;
 
   return (
-    <SelectOptionWrapper
+    <div
       {...props}
-      open={open}
-      className={className}
+      className={`${styles.selectOptionWrapper} ${open ? styles.selectOptionWrapperOpen : styles.selectOptionWrapperClosed} ${className || ''}`}
       role="listbox"
       aria-orientation="vertical"
       id={`${props.id}-listbox`}
     >
       {children}
-    </SelectOptionWrapper>
+    </div>
   );
 });
 

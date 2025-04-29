@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useContext, useEffect, useState } from "react";
 import { DropdownContext } from "./context";
 import { ItemProps, DropdownContextType } from "./types";
-import { DropdownItem } from "./styles";
+import styles from "./dropdown.module.css";
 
 const Item = memo(({ value, children, className, id, ...props }: ItemProps) => {
   const {
@@ -30,7 +30,6 @@ const Item = memo(({ value, children, className, id, ...props }: ItemProps) => {
   const optionProps = {
     ...(isFocused ? { "data-focused": "" } : {}),
     ...(isSelected ? { "data-selected": "" } : {}),
-    className,
     role: "option",
     "aria-selected": isSelected,
     tabIndex: -1,
@@ -39,12 +38,13 @@ const Item = memo(({ value, children, className, id, ...props }: ItemProps) => {
   };
 
   return (
-    <DropdownItem
+    <p
+      className={`${styles.dropdownItem} ${className || ''}`}
       onClick={handleItemClick}
       {...optionProps}
     >
       {children}
-    </DropdownItem>
+    </p>
   );
 });
 

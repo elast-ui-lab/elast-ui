@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import Portal from "./portal";
 import { ModalContext } from "./context";
 import { ModalProps } from "./types";
-import { ModalWrapper } from "./styles";
+import styles from "./modal.module.css";
 import Container from "./Container";
 import Title from "./Title";
 import Content from "./Content";
@@ -26,9 +26,9 @@ const Modal = ({ open, className, onClose, children }: ModalProps) => {
     <ModalContext.Provider value={{ open }}>
       <Portal>
         {open && (
-          <ModalWrapper ref={ref} className={className} tabIndex={0}>
+          <div ref={ref} className={`${styles.modalWrapper} ${className || ''}`} tabIndex={0}>
             {children}
-          </ModalWrapper>
+          </div>
         )}
       </Portal>
     </ModalContext.Provider>

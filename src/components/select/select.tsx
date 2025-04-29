@@ -5,7 +5,7 @@ import OptionWrapper from "./OptionWrapper";
 import Error from "./Error";
 import { SelectProps, SelectContextType } from "./types";
 import { SelectContext } from "./context";
-import { SelectBoxWrapper } from "./styles";
+import styles from "./select.module.css";
 import { findComponentWithDisplayName } from "../../utils/common";
 
 
@@ -87,9 +87,9 @@ const Select = <T extends string | number>({
 
   return (
       <SelectContext.Provider value={contextValue}>
-          <SelectBoxWrapper
+          <div
               id={id}
-              className={className}
+              className={`${styles.selectBoxWrapper} ${className || ''}`}
               role="combobox"
               aria-label={ariaLabel}
               aria-expanded={open}
@@ -99,7 +99,7 @@ const Select = <T extends string | number>({
               aria-invalid={validity}
           >
               {children}
-          </SelectBoxWrapper>
+          </div>
           <input
               type="hidden"
               ref={selectRef}

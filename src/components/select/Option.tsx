@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useContext, useEffect, useState } from "react";
 import { SelectContext } from "./context";
 import { OptionProps, SelectContextType } from "./types";
-import { SelectOption } from "./styles";
+import styles from "./select.module.css";
 
 const Option = memo(({ value, children, className, ...props }: OptionProps) => {
   const {
@@ -30,7 +30,6 @@ const Option = memo(({ value, children, className, ...props }: OptionProps) => {
   const optionProps = {
     ...(isFocused ? { "data-focused": "" } : {}),
     ...(isSelected ? { "data-selected": "" } : {}),
-    className,
     role: "option",
     "aria-selected": isSelected,
     tabIndex: -1,
@@ -38,12 +37,13 @@ const Option = memo(({ value, children, className, ...props }: OptionProps) => {
   };
 
   return (
-    <SelectOption
+    <p
+      className={`${styles.selectOption} ${className || ''}`}
       onClick={handleOptionClick}
       {...optionProps}
     >
       {children}
-    </SelectOption>
+    </p>
   );
 });
 

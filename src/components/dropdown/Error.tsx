@@ -1,7 +1,7 @@
 import React, { memo, useContext } from "react";
 import { DropdownContext } from "./context";
 import { DefaultProps, DropdownContextType } from "./types";
-import { ErrorMessage } from "./styles";
+import styles from "./dropdown.module.css";
 
 const Error = memo(({ children, className, ...props }: DefaultProps) => {
   const { required, selectedValue } = useContext(DropdownContext) as DropdownContextType<any>;
@@ -9,9 +9,9 @@ const Error = memo(({ children, className, ...props }: DefaultProps) => {
   if (!required || selectedValue !== null) return null;
 
   return (
-    <ErrorMessage {...props} className={className}>
+    <p {...props} className={`${styles.errorMessage} ${className || ''}`}>
       {children}
-    </ErrorMessage>
+    </p>
   );
 });
 
