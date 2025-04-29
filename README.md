@@ -95,7 +95,7 @@ const Example = () => {
 
   return (
     <form>
-      <Select value={selectedValue} onChange={handleChange} required>
+      <Select value={selectedValue} onValueChange={handleChange} required>
         <Select.Trigger>옵션을 선택하세요</Select.Trigger>
         <Select.OptionWrapper>
           <Select.Option value="option1">옵션 1</Select.Option>
@@ -115,7 +115,7 @@ export default Example;
 ### 주요 속성
 
 - `value`: 기본으로 선택된 값을 지정합니다.
-- `onChange`: 선택된 값이 변경될 때 호출되는 콜백 함수입니다. 옵션을 선택하거나 변경하면 `onChange` 함수가 호출되며, 콜백 함수의 인수로 선택된 값이 전달됩니다.
+- `onValueChange`: 선택된 값이 변경될 때 호출되는 콜백 함수입니다. 옵션을 선택하거나 변경하면 `onValueChange` 함수가 호출되며, 콜백 함수의 인수로 선택된 값이 전달됩니다.
 - `required`: 선택 필드를 필수로 설정할 때 사용합니다. `required` 속성이 설정된 경우, 옵션을 선택하지 않으면 `Select.Error`에 에러 메시지가 표시됩니다
 
 ### Keyboard Navigation
@@ -207,7 +207,7 @@ const Example = () => {
 
   return (
     <form>
-      <ComboBox value={selectedValue} onChange={handleChange} required>
+      <ComboBox value={selectedValue} onValueChange={handleChange} required>
         <ComboBox.Input placeholder="옵션을 입력하거나 선택하세요" />
         <ComboBox.OptionWrapper>
           <ComboBox.Option value="option1">옵션 1</ComboBox.Option>
@@ -227,7 +227,7 @@ export default Example;
 ### 주요 속성
 
 - `value`: 선택된 값을 저장합니다.
-- `onChange`: 옵션이 변경될 때 호출되는 콜백 함수입니다. 선택된 값이 `onChange`의 인수로 전달됩니다.
+- `onValueChange`: 옵션이 변경될 때 호출되는 콜백 함수입니다. 선택된 값이 `onValueChange`의 인수로 전달됩니다.
 - `required`: 필수 입력 필드로 설정하면, 값이 없을 때 `ComboBox.Error`에 에러 메시지가 표시됩니다.
 
 ### Keyboard Navigation
@@ -291,7 +291,7 @@ const Example = () => {
   };
 
   return (
-    <Dropdown onChange={handleChange}>
+    <Dropdown onValueChange={handleChange}>
       <Dropdown.Trigger>옵션 선택</Dropdown.Trigger>
       <Dropdown.ItemWrapper>
         <Dropdown.Item value="option1">옵션 1</Dropdown.Item>
@@ -307,7 +307,7 @@ export default Example;
 
 ### 주요 속성
 
-- `onChange`: 선택한 값이 변경될 때 호출되는 콜백 함수입니다. 선택된 값이 `onChange`의 인수로 전달됩니다.
+- `onValueChange`: 선택한 값이 변경될 때 호출되는 콜백 함수입니다. 선택된 값이 `onValueChange`의 인수로 전달됩니다.
 - `className`: 스타일을 커스터마이징할 수 있는 클래스 네임을 전달할 수 있습니다.
 
 ### Keyboard Navigation
@@ -368,7 +368,7 @@ const Example = () => {
   };
 
   return (
-    <Tabs defaultIndex={activeTab} onChange={handleTabChange}>
+    <Tabs defaultIndex={activeTab} onValueChange={handleTabChange}>
       <Tabs.TabsWrapper>
         <Tabs.Tab>탭 1</Tabs.Tab>
         <Tabs.Tab>탭 2</Tabs.Tab>
@@ -389,7 +389,7 @@ export default Example;
 ### 주요 속성
 
 - `defaultIndex`: 처음에 활성화될 탭의 인덱스를 설정합니다. 기본값은 `0`입니다.
-- `onChange`: 탭이 변경될 때 호출되는 콜백 함수입니다. 선택된 탭의 인덱스가 인수로 전달됩니다.
+- `onValueChange`: 탭이 변경될 때 호출되는 콜백 함수입니다. 선택된 탭의 인덱스가 인수로 전달됩니다.
 
 ### 데이터 속성 및 상태 스타일링
 
@@ -504,7 +504,7 @@ const Example = () => {
 
   return (
     <>
-      <Switch checked={isChecked} onChange={handleChange}>
+      <Switch checked={isChecked} onValueChange={handleChange}>
         {isChecked ? "ON" : "OFF"}
       </Switch>
     </>
@@ -517,7 +517,7 @@ export default Example;
 ### 주요 속성
 
 - `checked`: 스위치의 현재 상태를 나타내며, `true`일 경우 스위치가 활성화된 상태입니다.
-- `onChange`: 스위치 상태가 변경될 때 호출되는 콜백 함수입니다. 새로운 상태값이 함수의 인수로 전달됩니다.
+- `onValueChange`: 스위치 상태가 변경될 때 호출되는 콜백 함수입니다. 새로운 상태값이 함수의 인수로 전달됩니다.
 - `id`: 스위치 컴포넌트에 고유한 식별자를 부여할 수 있습니다.
 - `className`: 스타일을 커스터마이징하기 위해 클래스명을 전달할 수 있습니다.
 
@@ -528,7 +528,7 @@ export default Example;
 ```tsx
 <Switch
   checked={isChecked}
-  onChange={handleChange}
+  onValueChange={handleChange}
   className="data-[checked]:bg-green-500 data-[checked]:text-white"
 >
   {isChecked ? "ON" : "OFF"}
@@ -539,4 +539,4 @@ export default Example;
 
 ### 클릭 이벤트
 
-스위치는 클릭 이벤트를 통해 상태가 변경됩니다. `onChange` 콜백 함수가 실행되며, 새로운 상태값이 전달됩니다. 이를 통해 사용자는 스위치의 상태를 제어할 수 있습니다.
+스위치는 클릭 이벤트를 통해 상태가 변경됩니다. `onValueChange` 콜백 함수가 실행되며, 새로운 상태값이 전달됩니다. 이를 통해 사용자는 스위치의 상태를 제어할 수 있습니다.
