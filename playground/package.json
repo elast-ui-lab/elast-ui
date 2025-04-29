@@ -21,7 +21,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "cd ../ && yarn prepare && yarn link && cd playground && yarn link elast-ui && react-scripts start",
+    "start": "concurrently \"yarn watch\" \"yarn prepare\"",
+    "prepare": "cd ../ && yarn prepare && yarn link && cd playground && yarn link elast-ui && react-scripts start",
     "watch": "cd ../ && yarn watch",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -49,6 +50,7 @@
     "@babel/core": "^7.23.3",
     "@babel/plugin-syntax-flow": "^7.23.3",
     "@babel/plugin-transform-react-jsx": "^7.23.4",
+    "concurrently": "^9.1.2",
     "tailwindcss": "^3.4.11"
   }
 }
