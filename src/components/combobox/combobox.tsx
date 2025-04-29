@@ -27,7 +27,7 @@ const ComboBox = <T extends DataType>({
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const [filteredOptions, setFilteredOptions] = useState<ReactElement<OptionProps>[]>([]);
   const [optionElements, setOptionElements] = useState<ReactElement<OptionProps>[]>([]);
-  const selectRef = useRef<HTMLInputElement>(null);
+  const comboboxRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
@@ -77,8 +77,8 @@ const ComboBox = <T extends DataType>({
   }, [required, selectedValue]);
 
   useEffect(() => {
-    if (selectRef.current) {
-      const form = selectRef.current.closest("form");
+    if (comboboxRef.current) {
+      const form = comboboxRef.current.closest("form");
       if (form) {
         form.addEventListener("submit", validateRequiredField);
         return () => form.removeEventListener("submit", validateRequiredField);
@@ -131,7 +131,7 @@ const ComboBox = <T extends DataType>({
       </ComboWrapper>
       <input
         type="hidden"
-        ref={selectRef}
+        ref={comboboxRef}
         value={String(selectedValue)}
         required={required}
         aria-hidden="true"

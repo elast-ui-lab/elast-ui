@@ -17,7 +17,7 @@ var ComboBox = function (_a) {
     var _g = useState(-1), focusIndex = _g[0], setFocusIndex = _g[1];
     var _h = useState([]), filteredOptions = _h[0], setFilteredOptions = _h[1];
     var _j = useState([]), optionElements = _j[0], setOptionElements = _j[1];
-    var selectRef = useRef(null);
+    var comboboxRef = useRef(null);
     useEffect(function () {
         var _a;
         var optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
@@ -61,8 +61,8 @@ var ComboBox = function (_a) {
         return isValid;
     }, [required, selectedValue]);
     useEffect(function () {
-        if (selectRef.current) {
-            var form_1 = selectRef.current.closest("form");
+        if (comboboxRef.current) {
+            var form_1 = comboboxRef.current.closest("form");
             if (form_1) {
                 form_1.addEventListener("submit", validateRequiredField);
                 return function () { return form_1.removeEventListener("submit", validateRequiredField); };
@@ -97,7 +97,7 @@ var ComboBox = function (_a) {
     };
     return (React.createElement(ComboBoxContext.Provider, { value: contextValue },
         React.createElement(ComboWrapper, { id: id, className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
-        React.createElement("input", { type: "hidden", ref: selectRef, value: String(selectedValue), required: required, "aria-hidden": "true" })));
+        React.createElement("input", { type: "hidden", ref: comboboxRef, value: String(selectedValue), required: required, "aria-hidden": "true" })));
 };
 ComboBox.Input = Input;
 ComboBox.OptionWrapper = OptionWrapper;
