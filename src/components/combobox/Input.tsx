@@ -96,10 +96,7 @@ const Input = memo(({
         placeholder={placeholder}
         value={isTyping ? inputValue : selectedLabel as string || ""}
         onChange={handleInputChange}
-        onClick={() => {
-          setOpen(true)
-          console.log("clicked")
-        }}
+        onClick={() => setOpen(true)}
         aria-autocomplete="list"
         {...props}
       />
