@@ -36,11 +36,10 @@ var ComboBox = function (_a) {
     var _c = useState(false), isTyping = _c[0], setIsTyping = _c[1];
     var _d = useState(""), typedKeyword = _d[0], setTypedKeyword = _d[1];
     var _e = useState(value || ""), selectedValue = _e[0], setSelectedValue = _e[1];
-    var _f = useState(""), selectedLabel = _f[0], setSelectedLabel = _f[1];
-    var _g = useState(false), validity = _g[0], setValidity = _g[1];
-    var _h = useState(-1), focusIndex = _h[0], setFocusIndex = _h[1];
-    var _j = useState(), focusChild = _j[0], setFocusChild = _j[1];
-    var _k = useState([]), filteredOptions = _k[0], setFilteredOptions = _k[1];
+    var _f = useState(false), validity = _f[0], setValidity = _f[1];
+    var _g = useState(-1), focusIndex = _g[0], setFocusIndex = _g[1];
+    var _h = useState(), focusChild = _h[0], setFocusChild = _h[1];
+    var _j = useState([]), filteredOptions = _j[0], setFilteredOptions = _j[1];
     var selectRef = useRef(null);
     // 필터링된 옵션 가져오기
     var getFilteredOptions = useCallback(function (keyword) {
@@ -65,6 +64,28 @@ var ComboBox = function (_a) {
         }
         return allOptions;
     }, [children]);
+    // 선택된 라벨 표시를 위한 함수 추가
+    var getSelectedLabel = useCallback(function () {
+        var _a;
+        if (!selectedValue)
+            return null;
+        // 모든 옵션에서 선택된 값과 일치하는 옵션 찾기
+        var optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
+        if (!((_a = optionWrapper === null || optionWrapper === void 0 ? void 0 : optionWrapper.props) === null || _a === void 0 ? void 0 : _a.children))
+            return null;
+        var selectedOption;
+        React.Children.forEach(optionWrapper.props.children, function (option) {
+            var _a;
+            if (isValidElement(option) &&
+                ((_a = option.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Option') {
+                var optionElement = option;
+                if (optionElement.props.value === selectedValue) {
+                    selectedOption = optionElement;
+                }
+            }
+        });
+        return (selectedOption === null || selectedOption === void 0 ? void 0 : selectedOption.props.children) || null;
+    }, [selectedValue, children]);
     // 필터링된 옵션 업데이트
     useEffect(function () {
         setFilteredOptions(getFilteredOptions(typedKeyword));
@@ -101,7 +122,6 @@ var ComboBox = function (_a) {
         focusChild: focusChild,
         typedKeyword: typedKeyword,
         selectedValue: selectedValue,
-        selectedLabel: selectedLabel,
         validity: validity,
         required: required,
         onChange: onChange,
@@ -111,9 +131,9 @@ var ComboBox = function (_a) {
         setFocusChild: setFocusChild,
         setTypedKeyword: setTypedKeyword,
         setSelectedValue: setSelectedValue,
-        setSelectedLabel: setSelectedLabel,
         filteredOptions: filteredOptions,
         getFilteredOptions: getFilteredOptions,
+        getSelectedLabel: getSelectedLabel,
     };
     return (React.createElement(ComboBoxContext.Provider, { value: contextValue },
         React.createElement(ComboWrapper, { id: id, className: className, role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
@@ -123,10 +143,24 @@ var ComboBox = function (_a) {
 var Input = memo(function (_a) {
     var className = _a.className, children = _a.children, placeholder = _a.placeholder, props = __rest(_a, ["className", "children", "placeholder"]);
     var ref = useRef(null);
-    var _b = useContext(ComboBoxContext), open = _b.open, isTyping = _b.isTyping, focusIndex = _b.focusIndex, selectedLabel = _b.selectedLabel, focusChild = _b.focusChild, onChange = _b.onChange, setOpen = _b.setOpen, setIsTyping = _b.setIsTyping, setFocusIndex = _b.setFocusIndex, setSelectedValue = _b.setSelectedValue, setTypedKeyword = _b.setTypedKeyword;
+    var _b = useContext(ComboBoxContext), open = _b.open, isTyping = _b.isTyping, focusChild = _b.focusChild, onChange = _b.onChange, setOpen = _b.setOpen, setIsTyping = _b.setIsTyping, setFocusIndex = _b.setFocusIndex, setSelectedValue = _b.setSelectedValue, setTypedKeyword = _b.setTypedKeyword, getSelectedLabel = _b.getSelectedLabel;
     var _c = useState(""), inputValue = _c[0], setInputValue = _c[1];
+    // 선택된 라벨 가져오기
+    var selectedLabel = getSelectedLabel();
+    // 외부 클릭 핸들러
+    var handleClickOutside = useCallback(function (e) {
+        var _a;
+        if (!e || e.target !== ref.current) {
+            setOpen(false);
+            setIsTyping(false);
+            setFocusIndex(-1);
+            (_a = ref.current) === null || _a === void 0 ? void 0 : _a.blur();
+        }
+    }, [setFocusIndex, setIsTyping, setOpen]);
     // 키보드 이벤트 핸들러
     var handleKeyDown = useCallback(function (e) {
+        if (!open)
+            setOpen(true);
         var keyHandlers = {
             Enter: function () {
                 if (isValidElement(focusChild)) {
@@ -152,17 +186,7 @@ var Input = memo(function (_a) {
             e.preventDefault();
             keyHandlers[e.key]();
         }
-    }, [focusChild, focusIndex, onChange, setFocusIndex, setSelectedValue]);
-    // 외부 클릭 핸들러
-    var handleClickOutside = useCallback(function (e) {
-        var _a;
-        if (!e || e.target !== ref.current) {
-            setOpen(false);
-            setIsTyping(false);
-            setFocusIndex(-1);
-            (_a = ref.current) === null || _a === void 0 ? void 0 : _a.blur();
-        }
-    }, [setFocusIndex, setIsTyping, setOpen]);
+    }, [focusChild, handleClickOutside, onChange, open, setFocusIndex, setOpen, setSelectedValue]);
     // 외부 클릭 이벤트 리스너 등록
     useEffect(function () {
         window.addEventListener("click", handleClickOutside);
@@ -175,8 +199,11 @@ var Input = memo(function (_a) {
         setInputValue(e.target.value);
         setTypedKeyword(e.target.value);
     }, [setFocusIndex, setIsTyping, setTypedKeyword]);
+    // 포커스 상태 관리 핸들러
+    var handleFocus = function () { var _a; return (_a = ref.current) === null || _a === void 0 ? void 0 : _a.setAttribute('data-focus', 'true'); };
+    var handleBlur = function () { var _a; return (_a = ref.current) === null || _a === void 0 ? void 0 : _a.setAttribute('data-focus', 'false'); };
     return (React.createElement("div", null,
-        React.createElement(ComboInput, __assign({ ref: ref, className: className, open: open, onFocus: function () { return setOpen(true); }, onKeyDown: handleKeyDown, placeholder: placeholder, value: isTyping ? inputValue : selectedLabel || "", onChange: handleInputChange, onClick: function () { return setOpen(true); }, "aria-autocomplete": "list" }, props)),
+        React.createElement(ComboInput, __assign({ ref: ref, className: className, open: open, onFocus: handleFocus, onBlur: handleBlur, onKeyDown: handleKeyDown, placeholder: placeholder, value: isTyping ? inputValue : selectedLabel || "", onChange: handleInputChange, onClick: function () { return setOpen(true); }, "aria-autocomplete": "list" }, props)),
         children));
 });
 // Input displayName 설정
@@ -184,46 +211,13 @@ Input.displayName = 'Input';
 // OptionWrapper 컴포넌트
 var OptionWrapper = memo(function (_a) {
     var children = _a.children, className = _a.className, id = _a.id, props = __rest(_a, ["children", "className", "id"]);
-    var _b = useContext(ComboBoxContext), open = _b.open, selectedValue = _b.selectedValue, setSelectedLabel = _b.setSelectedLabel, focusIndex = _b.focusIndex, setFocusChild = _b.setFocusChild, filteredOptions = _b.filteredOptions;
+    var _b = useContext(ComboBoxContext), open = _b.open, focusIndex = _b.focusIndex, setFocusChild = _b.setFocusChild, filteredOptions = _b.filteredOptions;
     // 포커스된 옵션 업데이트
     useEffect(function () {
         if (focusIndex >= 0 && focusIndex < filteredOptions.length) {
             setFocusChild(filteredOptions[focusIndex]);
         }
     }, [filteredOptions, focusIndex, setFocusChild]);
-    // 선택된 값의 라벨 업데이트
-    useEffect(function () {
-        if (selectedValue) {
-            var selectedOption_1;
-            React.Children.forEach(children, function (child) {
-                var _a;
-                if (isValidElement(child)) {
-                    if (((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Option') {
-                        var optionElement = child;
-                        if (optionElement.props.value === selectedValue) {
-                            selectedOption_1 = optionElement;
-                        }
-                    }
-                    else {
-                        // Wrapper 내부의 Option을 확인
-                        React.Children.forEach(child.props.children, function (option) {
-                            var _a;
-                            if (isValidElement(option)) {
-                                var optionElement = option;
-                                if (((_a = option.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Option' &&
-                                    optionElement.props.value === selectedValue) {
-                                    selectedOption_1 = optionElement;
-                                }
-                            }
-                        });
-                    }
-                }
-            });
-            if (selectedOption_1) {
-                setSelectedLabel(selectedOption_1.props.children);
-            }
-        }
-    }, [children, selectedValue, setSelectedLabel]);
     return (React.createElement(ComboOptionWrapper, __assign({ open: open, className: className, role: "listbox", "aria-orientation": "vertical", id: "".concat(id, "-listbox") }, props), filteredOptions));
 });
 // OptionWrapper displayName 설정
@@ -273,7 +267,7 @@ ComboBox.Error = Error;
 export default ComboBox;
 // 스타일 컴포넌트
 var ComboWrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject([""], [""])));
-var ComboInput = styled.input(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  cursor: pointer;\n"], ["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  cursor: pointer;\n"])));
+var ComboInput = styled.input(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  &[data-focus=\"true\"] {\n    outline: 2px solid #000;\n  }\n"], ["\n  width: 100%;\n  height: 100%;\n  outline: none;\n  &[data-focus=\"true\"] {\n    outline: 2px solid #000;\n  }\n"])));
 var ComboOptionWrapper = styled.div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n  position: absolute;\n"], ["\n  visibility: ", ";\n  opacity: ", ";\n  transition: all 0.1s;\n  position: absolute;\n"])), function (props) { return (props.open ? "visible" : "hidden"); }, function (props) { return (props.open ? "1" : "0"); });
 var ComboOption = styled.p(templateObject_4 || (templateObject_4 = __makeTemplateObject([""], [""])));
 var ErrorMessage = styled.p(templateObject_5 || (templateObject_5 = __makeTemplateObject([""], [""])));

@@ -26,18 +26,17 @@ interface ComboBoxContextType<T = DataType> {
   focusChild: ReactNode;
   onChange?: (value: T) => void;
   selectedValue: T;
-  selectedLabel: ReactNode;
   setOpen: Dispatch<SetStateAction<boolean>>;
   setIsTyping: Dispatch<SetStateAction<boolean>>;
   setFocusIndex: Dispatch<SetStateAction<number>>;
   setFocusChild: Dispatch<SetStateAction<ReactNode>>;
   setTypedKeyword: Dispatch<SetStateAction<string>>;
   setSelectedValue: Dispatch<SetStateAction<T>>;
-  setSelectedLabel: Dispatch<SetStateAction<ReactNode>>;
   validity: boolean;
   required?: boolean;
   filteredOptions: ReactElement<OptionProps>[];
   getFilteredOptions: (keyword: string) => ReactElement<OptionProps>[];
+  getSelectedLabel: () => ReactNode;
 }
 
 interface ComboBoxProps<T = DataType> {
@@ -90,7 +89,6 @@ const ComboBox = <T extends DataType>({
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [typedKeyword, setTypedKeyword] = useState<string>("");
   const [selectedValue, setSelectedValue] = useState<T>(value || "" as T);
-  const [selectedLabel, setSelectedLabel] = useState<ReactNode>("");
   const [validity, setValidity] = useState<boolean>(false);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const [focusChild, setFocusChild] = useState<ReactNode>();
@@ -119,6 +117,30 @@ const ComboBox = <T extends DataType>({
 
     return allOptions;
   }, [children]);
+
+  // 선택된 라벨 표시를 위한 함수 추가
+  const getSelectedLabel = useCallback((): React.ReactNode => {
+    if (!selectedValue) return null;
+    
+    // 모든 옵션에서 선택된 값과 일치하는 옵션 찾기
+    const optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
+    
+    if (!optionWrapper?.props?.children) return null;
+    
+    let selectedOption: ReactElement<OptionProps> | undefined;
+    
+    React.Children.forEach(optionWrapper.props.children, (option) => {
+      if (isValidElement(option) && 
+          (option.type as React.FunctionComponent)?.displayName === 'Option') {
+        const optionElement = option as ReactElement<OptionProps>;
+        if (optionElement.props.value === selectedValue) {
+          selectedOption = optionElement;
+        }
+      }
+    });
+    
+    return selectedOption?.props.children || null;
+  }, [selectedValue, children]);
 
   // 필터링된 옵션 업데이트
   useEffect(() => {
@@ -160,7 +182,6 @@ const ComboBox = <T extends DataType>({
     focusChild,
     typedKeyword,
     selectedValue,
-    selectedLabel,
     validity,
     required,
     onChange: onChange as ((value: T) => void) | undefined,
@@ -170,9 +191,9 @@ const ComboBox = <T extends DataType>({
     setFocusChild,
     setTypedKeyword,
     setSelectedValue,
-    setSelectedLabel,
     filteredOptions,
     getFilteredOptions,
+    getSelectedLabel,
   };
 
   return (
@@ -212,8 +233,6 @@ const Input = memo(({
   const {
     open,
     isTyping,
-    focusIndex,
-    selectedLabel,
     focusChild,
     onChange,
     setOpen,
@@ -221,11 +240,27 @@ const Input = memo(({
     setFocusIndex,
     setSelectedValue,
     setTypedKeyword,
+    getSelectedLabel,
   } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
   const [inputValue, setInputValue] = useState("");
 
+  // 선택된 라벨 가져오기
+  const selectedLabel = getSelectedLabel();
+
+  // 외부 클릭 핸들러
+  const handleClickOutside = useCallback((e?: MouseEvent) => {
+    if (!e || e.target !== ref.current) {
+      setOpen(false);
+      setIsTyping(false);
+      setFocusIndex(-1);
+      ref.current?.blur();
+    }
+  }, [setFocusIndex, setIsTyping, setOpen]);
+
   // 키보드 이벤트 핸들러
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!open) setOpen(true)
+
     const keyHandlers: Record<string, () => void> = {
       Enter: () => {
         if (isValidElement(focusChild)) {
@@ -252,17 +287,7 @@ const Input = memo(({
       e.preventDefault();
       keyHandlers[e.key]();
     }
-  }, [focusChild, focusIndex, onChange, setFocusIndex, setSelectedValue]);
-
-  // 외부 클릭 핸들러
-  const handleClickOutside = useCallback((e?: MouseEvent) => {
-    if (!e || e.target !== ref.current) {
-      setOpen(false);
-      setIsTyping(false);
-      setFocusIndex(-1);
-      ref.current?.blur();
-    }
-  }, [setFocusIndex, setIsTyping, setOpen]);
+  }, [focusChild, handleClickOutside, onChange, open, setFocusIndex, setOpen, setSelectedValue]);
 
   // 외부 클릭 이벤트 리스너 등록
   useEffect(() => {
@@ -278,13 +303,19 @@ const Input = memo(({
     setTypedKeyword(e.target.value);
   }, [setFocusIndex, setIsTyping, setTypedKeyword]);
 
+
+  // 포커스 상태 관리 핸들러
+  const handleFocus = () => ref.current?.setAttribute('data-focus', 'true');
+  const handleBlur = () => ref.current?.setAttribute('data-focus', 'false');
+
   return (
     <div>
       <ComboInput
         ref={ref}
         className={className}
         open={open}
-        onFocus={() => setOpen(true)}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         value={isTyping ? inputValue : selectedLabel as string || ""}
@@ -310,8 +341,6 @@ const OptionWrapper = memo(({
 }: OptionWrapperProps) => {
   const {
     open,
-    selectedValue,
-    setSelectedLabel,
     focusIndex,
     setFocusChild,
     filteredOptions
@@ -323,41 +352,6 @@ const OptionWrapper = memo(({
       setFocusChild(filteredOptions[focusIndex]);
     }
   }, [filteredOptions, focusIndex, setFocusChild]);
-
-  // 선택된 값의 라벨 업데이트
-  useEffect(() => {
-    if (selectedValue) {
-      let selectedOption: ReactElement<OptionProps> | undefined;
-
-      React.Children.forEach(children, (child) => {
-        if (isValidElement(child)) {
-          if ((child.type as any)?.displayName === 'Option') {
-            const optionElement = child as ReactElement<OptionProps>;
-            if (optionElement.props.value === selectedValue) {
-              selectedOption = optionElement;
-            }
-          } else {
-            // Wrapper 내부의 Option을 확인
-            React.Children.forEach(child.props.children, (option) => {
-              if (isValidElement(option)) {
-                const optionElement = option as ReactElement<OptionProps>;
-                if (
-                  (option.type as any)?.displayName === 'Option' &&
-                  optionElement.props.value === selectedValue
-                ) {
-                  selectedOption = optionElement;
-                }
-              }
-            });
-          }
-        }
-      });
-
-      if (selectedOption) {
-        setSelectedLabel(selectedOption.props.children);
-      }
-    }
-  }, [children, selectedValue, setSelectedLabel]);
 
   return (
     <ComboOptionWrapper
@@ -468,7 +462,9 @@ const ComboInput = styled.input<{ open: boolean }>`
   width: 100%;
   height: 100%;
   outline: none;
-  cursor: pointer;
+  &[data-focus="true"] {
+    outline: 2px solid #000;
+  }
 `;
 
 const ComboOptionWrapper = styled.div<{ open: boolean }>`
