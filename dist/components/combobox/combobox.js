@@ -11,7 +11,7 @@ var ComboBox = function (_a) {
     var id = _a.id, className = _a.className, value = _a.value, children = _a.children, required = _a.required, ariaLabel = _a.ariaLabel, onValueChange = _a.onValueChange;
     var _b = useState(false), open = _b[0], setOpen = _b[1];
     var _c = useState(false), isTyping = _c[0], setIsTyping = _c[1];
-    var _d = useState(""), typedKeyword = _d[0], setTypedKeyword = _d[1];
+    var _d = useState(""), inputValue = _d[0], setInputValue = _d[1];
     var _e = useState(value || ""), selectedValue = _e[0], setSelectedValue = _e[1];
     var _f = useState(false), validity = _f[0], setValidity = _f[1];
     var _g = useState(-1), focusIndex = _g[0], setFocusIndex = _g[1];
@@ -52,8 +52,8 @@ var ComboBox = function (_a) {
         return undefined;
     }, [focusIndex, filteredOptions, optionElements, isTyping]);
     useEffect(function () {
-        setFilteredOptions(getFilteredOptions(typedKeyword));
-    }, [typedKeyword, getFilteredOptions, optionElements]);
+        setFilteredOptions(getFilteredOptions(inputValue));
+    }, [inputValue, getFilteredOptions, optionElements]);
     var validateRequiredField = useCallback(function (e) {
         e.preventDefault();
         var isValid = !(required && (!selectedValue || selectedValue === ""));
@@ -79,7 +79,7 @@ var ComboBox = function (_a) {
         open: open,
         isTyping: isTyping,
         focusIndex: focusIndex,
-        typedKeyword: typedKeyword,
+        inputValue: inputValue,
         selectedValue: selectedValue,
         validity: validity,
         required: required,
@@ -89,7 +89,7 @@ var ComboBox = function (_a) {
         setOpen: setOpen,
         setIsTyping: setIsTyping,
         setFocusIndex: setFocusIndex,
-        setTypedKeyword: setTypedKeyword,
+        setInputValue: setInputValue,
         setSelectedValue: setSelectedValue,
         getFilteredOptions: getFilteredOptions,
         getSelectedLabel: getSelectedLabel,

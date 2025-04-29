@@ -12,11 +12,9 @@ const OptionWrapper = memo(({
   const {
     open,
     filteredOptions,
-    isTyping,
-    optionElements
   } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
 
-  const displayOptions = isTyping ? filteredOptions : optionElements;
+  const displayOptions = filteredOptions;
 
   return (
     <ComboOptionWrapper

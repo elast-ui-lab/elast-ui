@@ -21,7 +21,7 @@ const ComboBox = <T extends DataType>({
 }: ComboBoxProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
-  const [typedKeyword, setTypedKeyword] = useState<string>("");
+  const [inputValue, setInputValue] = useState<string>("");
   const [selectedValue, setSelectedValue] = useState<T>(value || "" as T);
   const [validity, setValidity] = useState<boolean>(false);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
@@ -66,8 +66,8 @@ const ComboBox = <T extends DataType>({
   }, [focusIndex, filteredOptions, optionElements, isTyping]);
 
   useEffect(() => {
-    setFilteredOptions(getFilteredOptions(typedKeyword));
-  }, [typedKeyword, getFilteredOptions, optionElements]);
+    setFilteredOptions(getFilteredOptions(inputValue));
+  }, [inputValue, getFilteredOptions, optionElements]);
 
   const validateRequiredField = useCallback((e: Event) => {
     e.preventDefault();
@@ -97,7 +97,7 @@ const ComboBox = <T extends DataType>({
     open,
     isTyping,
     focusIndex,
-    typedKeyword,
+    inputValue,
     selectedValue,
     validity,
     required,
@@ -107,7 +107,7 @@ const ComboBox = <T extends DataType>({
     setOpen,
     setIsTyping,
     setFocusIndex,
-    setTypedKeyword,
+    setInputValue,
     setSelectedValue,
     getFilteredOptions,
     getSelectedLabel,

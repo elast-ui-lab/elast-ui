@@ -5,7 +5,7 @@ export type DataType = any;
 export interface ComboBoxContextType<T = DataType> {
   open: boolean;
   isTyping: boolean;
-  typedKeyword: string;
+  inputValue: string;
   focusIndex: number;
   selectedValue: T;
   validity: boolean;
@@ -16,7 +16,7 @@ export interface ComboBoxContextType<T = DataType> {
   setOpen: Dispatch<SetStateAction<boolean>>;
   setIsTyping: Dispatch<SetStateAction<boolean>>;
   setFocusIndex: Dispatch<SetStateAction<number>>;
-  setTypedKeyword: Dispatch<SetStateAction<string>>;
+  setInputValue: Dispatch<SetStateAction<string>>;
   setSelectedValue: Dispatch<SetStateAction<T>>;
   getFilteredOptions: (keyword: string) => ReactElement<OptionProps>[];
   getSelectedLabel: () => ReactNode;
