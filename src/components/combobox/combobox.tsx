@@ -5,61 +5,79 @@ import React, {
   useContext,
   createContext,
   ReactElement,
+  ReactNode,
   memo,
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  isValidElement,
 } from "react";
 import styled from "styled-components";
+import { findComponentWithDisplayName } from "../../utils/common";
 
+// 타입 정의
 type DataType = any;
 
-type ComboBoxContextType = {
+interface ComboBoxContextType<T = DataType> {
   open: boolean;
   isTyping: boolean;
   typedKeyword: string;
   focusIndex: number;
-  focusChild: React.ReactNode;
-  onChange?: (value: DataType) => void;
-  selectedValue: DataType;
-  selectedLabel: DataType;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsTyping: React.Dispatch<React.SetStateAction<boolean>>;
-  setFocusIndex: React.Dispatch<React.SetStateAction<number>>;
-  setFocusChild: React.Dispatch<React.SetStateAction<React.ReactNode>>;
-  setTypedKeyword: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedValue: React.Dispatch<React.SetStateAction<DataType>>;
-  setSelectedLabel: React.Dispatch<React.SetStateAction<DataType>>;
+  focusChild: ReactNode;
+  onChange?: (value: T) => void;
+  selectedValue: T;
+  selectedLabel: ReactNode;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  setIsTyping: Dispatch<SetStateAction<boolean>>;
+  setFocusIndex: Dispatch<SetStateAction<number>>;
+  setFocusChild: Dispatch<SetStateAction<ReactNode>>;
+  setTypedKeyword: Dispatch<SetStateAction<string>>;
+  setSelectedValue: Dispatch<SetStateAction<T>>;
+  setSelectedLabel: Dispatch<SetStateAction<ReactNode>>;
   validity: boolean;
   required?: boolean;
-};
+  filteredOptions: ReactElement<OptionProps>[];
+  getFilteredOptions: (keyword: string) => ReactElement<OptionProps>[];
+}
 
-type ComboBoxProps = {
+interface ComboBoxProps<T = DataType> {
   id?: string;
   className?: string;
-  value?: DataType;
-  onChange?: (value: DataType) => void;
-  children?: React.ReactNode;
+  value?: T;
+  onChange?: (value: T) => void;
+  children?: ReactNode;
   required?: boolean;
   ariaLabel?: string;
-};
+}
 
-type DefaultProps = {
+interface DefaultProps {
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   [key: string]: unknown;
-};
+}
 
-type OptionProps = {
+interface InputProps extends DefaultProps {
+  placeholder?: string;
+}
+
+interface OptionWrapperProps extends DefaultProps {
+  children: ReactNode;
+}
+
+interface OptionProps {
   value: string | number;
   id?: string;
   className?: string;
   tabIndex?: number;
-  children?: React.ReactNode;
-};
+  children?: ReactNode;
+  [key: string]: unknown;
+}
 
-const ComboBoxContext = createContext<ComboBoxContextType | undefined>(
-  undefined
-);
+// 컨텍스트 생성
+const ComboBoxContext = createContext<ComboBoxContextType<any> | undefined>(undefined);
 
-const ComboBox = ({
+// ComboBox 메인 컴포넌트
+const ComboBox = <T extends DataType>({
   id,
   className,
   value,
@@ -67,54 +85,98 @@ const ComboBox = ({
   onChange,
   required,
   ariaLabel
-}: ComboBoxProps) => {
+}: ComboBoxProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [typedKeyword, setTypedKeyword] = useState<string>("");
-  const [selectedValue, setSelectedValue] = useState<DataType>(value || "");
-  const [selectedLabel, setSelectedLabel] = useState<DataType>("");
+  const [selectedValue, setSelectedValue] = useState<T>(value || "" as T);
+  const [selectedLabel, setSelectedLabel] = useState<ReactNode>("");
   const [validity, setValidity] = useState<boolean>(false);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const [focusChild, setFocusChild] = useState<any>();
+  const [focusChild, setFocusChild] = useState<ReactNode>();
+  const [filteredOptions, setFilteredOptions] = useState<ReactElement<OptionProps>[]>([]);
   const selectRef = useRef<HTMLInputElement>(null);
 
-  const validateRequiredField = (e: Event) => {
-    // required가 true인 경우, submit시 이를 만족하는지 검사 => 폼 제출 시 필드 유효성 검사용
-    e.preventDefault();
-    if (required && selectedValue === "") setValidity(true);
-    else setValidity(false);
-  };
+  // 필터링된 옵션 가져오기
+  const getFilteredOptions = useCallback((keyword: string): ReactElement<OptionProps>[] => {
+    const allOptions: ReactElement<OptionProps>[] = [];
+    const optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper')
 
+    if (optionWrapper?.props?.children) {
+      React.Children.forEach(optionWrapper.props.children, (option) => {
+        if (isValidElement(option)) {
+          const optionElement = option as ReactElement<OptionProps>;
+          if ((option.type as React.FunctionComponent)?.displayName !== 'Option') return
+          if (!optionElement.props.children) return
+
+          const children = optionElement.props.children;
+          if (String(children).toLowerCase().includes(keyword.toLowerCase())) {
+            allOptions.push(optionElement);
+          }
+        }
+      });
+    }
+
+    return allOptions;
+  }, [children]);
+
+  // 필터링된 옵션 업데이트
+  useEffect(() => {
+    setFilteredOptions(getFilteredOptions(typedKeyword));
+  }, [typedKeyword, getFilteredOptions]);
+
+  // 폼 제출 시 유효성 검사
+  const validateRequiredField = useCallback((e: Event) => {
+    e.preventDefault();
+    const isValid = !(required && (!selectedValue || selectedValue === ""));
+    setValidity(!isValid);
+    return isValid;
+  }, [required, selectedValue]);
+
+  // 폼 제출 이벤트 리스너 등록
   useEffect(() => {
     if (selectRef.current) {
       const form = selectRef.current.closest("form");
-      form?.addEventListener("submit", validateRequiredField);
-      return () => form?.removeEventListener("submit", validateRequiredField);
+      if (form) {
+        form.addEventListener("submit", validateRequiredField);
+        return () => form.removeEventListener("submit", validateRequiredField);
+      }
     }
-  }, [selectedValue]);
+    return undefined;
+  }, [validateRequiredField]);
+
+  // value prop 변경 감지
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedValue(value);
+    }
+  }, [value]);
+
+  // 컨텍스트 값 설정
+  const contextValue: ComboBoxContextType<T> = {
+    open,
+    isTyping,
+    focusIndex,
+    focusChild,
+    typedKeyword,
+    selectedValue,
+    selectedLabel,
+    validity,
+    required,
+    onChange: onChange as ((value: T) => void) | undefined,
+    setOpen,
+    setIsTyping,
+    setFocusIndex,
+    setFocusChild,
+    setTypedKeyword,
+    setSelectedValue,
+    setSelectedLabel,
+    filteredOptions,
+    getFilteredOptions,
+  };
 
   return (
-    <ComboBoxContext.Provider
-      value={{
-        open,
-        isTyping,
-        focusIndex,
-        focusChild,
-        typedKeyword,
-        selectedValue,
-        selectedLabel,
-        validity,
-        required,
-        onChange,
-        setOpen,
-        setIsTyping,
-        setFocusIndex,
-        setFocusChild,
-        setTypedKeyword,
-        setSelectedValue,
-        setSelectedLabel,
-      }}
-    >
+    <ComboBoxContext.Provider value={contextValue}>
       <ComboWrapper
         id={id}
         className={className}
@@ -131,7 +193,7 @@ const ComboBox = ({
       <input
         type="hidden"
         ref={selectRef}
-        value={selectedValue}
+        value={String(selectedValue)}
         required={required}
         aria-hidden="true"
       />
@@ -139,12 +201,13 @@ const ComboBox = ({
   );
 };
 
+// Input 컴포넌트
 const Input = memo(({
   className,
   children,
   placeholder,
   ...props
-}: { placeholder?: string } & DefaultProps) => {
+}: InputProps) => {
   const ref = useRef<HTMLInputElement>(null);
   const {
     open,
@@ -158,46 +221,62 @@ const Input = memo(({
     setFocusIndex,
     setSelectedValue,
     setTypedKeyword,
-  } = useContext(ComboBoxContext) as ComboBoxContextType;
+  } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
   const [inputValue, setInputValue] = useState("");
 
-  const KeyEvent: { [key: string]: () => void } = {
-    Enter: () => {
-      const value = React.isValidElement(focusChild) && focusChild.props.value;
-      onClickOutside();
-      setSelectedValue(value);
-      onChange?.(value);
-    },
-    ArrowUp: () => {
-      setFocusIndex(() => Math.max(focusIndex - 1, -1));
-    },
-    ArrowDown: () => {
-      setFocusIndex(focusIndex + 1);
-    },
-    Escape: () => {
-      onClickOutside();
-    },
-  };
+  // 키보드 이벤트 핸들러
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const keyHandlers: Record<string, () => void> = {
+      Enter: () => {
+        if (isValidElement(focusChild)) {
+          const optionElement = focusChild as ReactElement<OptionProps>;
+          if (optionElement.props.value) {
+            handleClickOutside();
+            setSelectedValue(optionElement.props.value);
+            onChange?.(optionElement.props.value);
+          }
+        }
+      },
+      ArrowUp: () => {
+        setFocusIndex((prev) => Math.max(prev - 1, -1));
+      },
+      ArrowDown: () => {
+        setFocusIndex((prev) => prev + 1);
+      },
+      Escape: () => {
+        handleClickOutside();
+      },
+    };
 
-  const onClickOutside = (e?: MouseEvent) => {
+    if (e.key in keyHandlers) {
+      e.preventDefault();
+      keyHandlers[e.key]();
+    }
+  }, [focusChild, focusIndex, onChange, setFocusIndex, setSelectedValue]);
+
+  // 외부 클릭 핸들러
+  const handleClickOutside = useCallback((e?: MouseEvent) => {
     if (!e || e.target !== ref.current) {
       setOpen(false);
       setIsTyping(false);
       setFocusIndex(-1);
       ref.current?.blur();
     }
-  };
+  }, [setFocusIndex, setIsTyping, setOpen]);
 
+  // 외부 클릭 이벤트 리스너 등록
   useEffect(() => {
-    window.addEventListener("click", onClickOutside);
-    return () => window.removeEventListener("click", onClickOutside);
-  });
+    window.addEventListener("click", handleClickOutside);
+    return () => window.removeEventListener("click", handleClickOutside);
+  }, [handleClickOutside]);
 
-  const handleKeyUp = (e: React.KeyboardEvent) => {
-    if (!(e.key in KeyEvent)) return;
-    else if (focusIndex < -1) return;
-    else KeyEvent[e.key]();
-  };
+  // 입력 변경 핸들러
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsTyping(true);
+    setFocusIndex(-1);
+    setInputValue(e.target.value);
+    setTypedKeyword(e.target.value);
+  }, [setFocusIndex, setIsTyping, setTypedKeyword]);
 
   return (
     <div>
@@ -206,18 +285,12 @@ const Input = memo(({
         className={className}
         open={open}
         onFocus={() => setOpen(true)}
-        onKeyUp={handleKeyUp}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        value={isTyping ? inputValue : selectedLabel}
-        onChange={(e) => {
-          setIsTyping(true);
-          setFocusIndex(-1);
-          setInputValue(e.target.value);
-          setTypedKeyword(e.target.value);
-        }}
-        onClick={(e) => {
-          setOpen(true);
-        }}
+        value={isTyping ? inputValue : selectedLabel as string || ""}
+        onChange={handleInputChange}
+        onClick={() => setOpen(true)}
+        aria-autocomplete="list"
         {...props}
       />
       {children}
@@ -225,111 +298,162 @@ const Input = memo(({
   );
 });
 
-const OptionWrapper = ({
+// Input displayName 설정
+Input.displayName = 'Input';
+
+// OptionWrapper 컴포넌트
+const OptionWrapper = memo(({
   children,
   className,
+  id,
   ...props
-}: {
-  children: React.ReactNode;
-} & DefaultProps) => {
+}: OptionWrapperProps) => {
   const {
     open,
-    typedKeyword,
     selectedValue,
     setSelectedLabel,
     focusIndex,
     setFocusChild,
-  } = useContext(ComboBoxContext) as ComboBoxContextType;
+    filteredOptions
+  } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
 
-  const filteredChildren = React.Children.toArray(children).filter(
-    (child) =>
-      React.isValidElement(child) &&
-      child.props.children
-        .toString()
-        .toLowerCase()
-        .includes(typedKeyword.toLowerCase())
-  );
-
+  // 포커스된 옵션 업데이트
   useEffect(() => {
-    setFocusChild(filteredChildren[focusIndex]);
-  }, [focusIndex]);
+    if (focusIndex >= 0 && focusIndex < filteredOptions.length) {
+      setFocusChild(filteredOptions[focusIndex]);
+    }
+  }, [filteredOptions, focusIndex, setFocusChild]);
 
+  // 선택된 값의 라벨 업데이트
   useEffect(() => {
     if (selectedValue) {
-      const selectedChild = React.Children.toArray(children).find(
-        (child) =>
-          React.isValidElement(child) && child.props.value === selectedValue
-      ) as ReactElement<OptionProps> | undefined;
+      let selectedOption: ReactElement<OptionProps> | undefined;
 
-      if (selectedChild) {
-        setSelectedLabel(selectedChild.props.children as string);
+      React.Children.forEach(children, (child) => {
+        if (isValidElement(child)) {
+          if ((child.type as any)?.displayName === 'Option') {
+            const optionElement = child as ReactElement<OptionProps>;
+            if (optionElement.props.value === selectedValue) {
+              selectedOption = optionElement;
+            }
+          } else {
+            // Wrapper 내부의 Option을 확인
+            React.Children.forEach(child.props.children, (option) => {
+              if (isValidElement(option)) {
+                const optionElement = option as ReactElement<OptionProps>;
+                if (
+                  (option.type as any)?.displayName === 'Option' &&
+                  optionElement.props.value === selectedValue
+                ) {
+                  selectedOption = optionElement;
+                }
+              }
+            });
+          }
+        }
+      });
+
+      if (selectedOption) {
+        setSelectedLabel(selectedOption.props.children);
       }
     }
   }, [children, selectedValue, setSelectedLabel]);
 
   return (
-    <ComboOptionWrapper open={open} className={className} {...props}>
-      {filteredChildren}
+    <ComboOptionWrapper
+      open={open}
+      className={className}
+      role="listbox"
+      aria-orientation="vertical"
+      id={`${id}-listbox`}
+      {...props}
+    >
+      {filteredOptions}
     </ComboOptionWrapper>
   );
-};
+});
 
-const Option = ({ value, children, ...props }: OptionProps) => {
+// OptionWrapper displayName 설정
+OptionWrapper.displayName = 'OptionWrapper';
+
+// Option 컴포넌트
+const Option = memo(({
+  value,
+  children,
+  className,
+  id,
+  ...props
+}: OptionProps) => {
   const {
     selectedValue,
-    selectedLabel,
     setSelectedValue,
     setOpen,
     onChange,
     focusChild,
-  } = useContext(ComboBoxContext) as ComboBoxContextType;
+  } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
 
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [isSelected, setIsSelected] = useState<boolean>(false);
+  const isSelected = selectedValue === value;
 
-  const onClickOption = () => {
+  // 포커스 상태 업데이트
+  useEffect(() => {
+    let focused = false;
+    if (isValidElement(focusChild)) {
+      const optionElement = focusChild as ReactElement<OptionProps>;
+      focused = optionElement.props.value === value;
+    }
+    setIsFocused(focused);
+  }, [focusChild, value]);
+
+  // 옵션 클릭 핸들러
+  const handleOptionClick = useCallback(() => {
     setSelectedValue(value);
     onChange?.(value);
     setOpen(false);
+  }, [onChange, setOpen, setSelectedValue, value]);
+
+  // 접근성 및 상태 속성
+  const optionProps = {
+    ...(isFocused ? { "data-focused": "" } : {}),
+    ...(isSelected ? { "data-selected": "" } : {}),
+    className,
+    role: "option",
+    "aria-selected": isSelected,
+    tabIndex: -1,
+    id,
+    ...props
   };
-
-  useEffect(() => {
-    if (React.isValidElement(focusChild) && focusChild.props.value === value)
-      setIsFocused(true);
-    else setIsFocused(false);
-  }, [focusChild, value]);
-
-  useEffect(() => {
-    if (selectedValue === value && selectedLabel === children)
-      setIsSelected(true);
-    else setIsSelected(false);
-  }, [selectedValue, selectedLabel, value, children]);
 
   return (
     <ComboOption
-      onClick={onClickOption}
-      {...(isFocused ? { "data-focused": "" } : {})}
-      {...(isSelected ? { "data-selected": "" } : {})}
-      {...props}
+      onClick={handleOptionClick}
+      {...optionProps}
     >
       {children}
     </ComboOption>
   );
-};
+});
 
-const Error = ({ children, className, ...props }: DefaultProps) => {
-  const { validity } = useContext(ComboBoxContext) as ComboBoxContextType;
+// Option displayName 설정
+Option.displayName = 'Option';
+
+// Error 컴포넌트
+const Error = memo(({ children, className, ...props }: DefaultProps) => {
+  const { validity } = useContext(ComboBoxContext) as ComboBoxContextType<any>;
+
+  if (!validity) return null;
+
   return (
-    <>
-      {validity && (
-        <ErrorMessage {...props} className={className}>
-          {children}
-        </ErrorMessage>
-      )}
-    </>
+    <ErrorMessage {...props} className={className}>
+      {children}
+    </ErrorMessage>
   );
-};
+});
 
+// Error displayName 설정
+Error.displayName = 'Error';
+
+// 컴포넌트 등록
 ComboBox.Input = Input;
 ComboBox.OptionWrapper = OptionWrapper;
 ComboBox.Option = Option;
@@ -337,7 +461,9 @@ ComboBox.Error = Error;
 
 export default ComboBox;
 
+// 스타일 컴포넌트
 const ComboWrapper = styled.div``;
+
 const ComboInput = styled.input<{ open: boolean }>`
   width: 100%;
   height: 100%;

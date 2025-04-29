@@ -6,6 +6,7 @@ import Trigger from "./Trigger";
 import ItemWrapper from "./ItemWrapper";
 import Item from "./Item";
 import Error from "./Error";
+import { findComponentWithDisplayName } from "../../utils/common";
 
 const Dropdown = <T extends string | number>({
   children,
@@ -25,16 +26,12 @@ const Dropdown = <T extends string | number>({
 
   // 자식 옵션 요소들을 찾아서 저장
   useEffect(() => {
-    const itemWrapper = React.Children.toArray(children).find(
-      (child): child is ReactElement => 
-        isValidElement(child) && 
-        (child.type as any)?.displayName === 'ItemWrapper'
-    ) as ReactElement | undefined;
-    
+    const itemWrapper = findComponentWithDisplayName(children, 'ItemWrapper')
+
     if (itemWrapper?.props?.children) {
       const validOptions = React.Children.toArray(itemWrapper.props.children).filter(
-        (child): child is ReactElement => 
-          isValidElement(child) && 
+        (child): child is ReactElement =>
+          isValidElement(child) &&
           (child.type as any)?.displayName === 'Item'
       );
       setOptionElements(validOptions as ReactElement[]);

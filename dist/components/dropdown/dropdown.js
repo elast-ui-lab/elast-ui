@@ -5,6 +5,7 @@ import Trigger from "./Trigger";
 import ItemWrapper from "./ItemWrapper";
 import Item from "./Item";
 import Error from "./Error";
+import { findComponentWithDisplayName } from "../../utils/common";
 var Dropdown = function (_a) {
     var children = _a.children, className = _a.className, onChange = _a.onChange, ariaLabel = _a.ariaLabel, id = _a.id, value = _a.value, required = _a.required;
     var _b = useState(false), open = _b[0], setOpen = _b[1];
@@ -16,11 +17,7 @@ var Dropdown = function (_a) {
     // 자식 옵션 요소들을 찾아서 저장
     useEffect(function () {
         var _a;
-        var itemWrapper = React.Children.toArray(children).find(function (child) {
-            var _a;
-            return isValidElement(child) &&
-                ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'ItemWrapper';
-        });
+        var itemWrapper = findComponentWithDisplayName(children, 'ItemWrapper');
         if ((_a = itemWrapper === null || itemWrapper === void 0 ? void 0 : itemWrapper.props) === null || _a === void 0 ? void 0 : _a.children) {
             var validOptions = React.Children.toArray(itemWrapper.props.children).filter(function (child) {
                 var _a;
