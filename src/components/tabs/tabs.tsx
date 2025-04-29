@@ -6,7 +6,13 @@ import Tab from "./Tab";
 import ContentWrapper from "./ContentWrapper";
 import Content from "./Content";
 
-const Tabs = ({ className, defaultIndex, children, onValueChange, ...props }: TabsProps) => {
+const Tabs = ({
+  className,
+  defaultIndex,
+  children,
+  onValueChange,
+  ...props
+}: TabsProps) => {
   const [tabIndex, setTabIndex] = useState<number>(defaultIndex || 0);
 
   useEffect(() => {

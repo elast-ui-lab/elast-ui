@@ -15,7 +15,7 @@ const Tab = ({ children, ...props }: TabProps) => {
     <div
       tabIndex={0}
       role="button"
-      aria-label={typeof children === 'string' ? children : "tab"}
+      aria-label={typeof children === "string" ? children : "tab"}
       {...(tabIndex === props["data-tabindex"] ? { "data-selected": "" } : {})}
       {...props}
     >

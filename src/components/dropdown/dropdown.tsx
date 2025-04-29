@@ -1,4 +1,11 @@
-import React, { useEffect, useRef, useState, isValidElement, useCallback, ReactElement } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  isValidElement,
+  useCallback,
+  ReactElement,
+} from "react";
 import { DropdownContext } from "./context";
 import { DropdownProps, DropdownContextType } from "./types";
 import styles from "./dropdown.module.css";
@@ -18,19 +25,22 @@ const Dropdown = <T extends string | number>({
   onValueChange,
 }: DropdownProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [selectedValue, setSelectedValue] = useState<T | null>(value as T || null);
+  const [selectedValue, setSelectedValue] = useState<T | null>(
+    (value as T) || null
+  );
   const [focusIndex, setFocusIndex] = useState<number>(-1);
   const [optionElements, setOptionElements] = useState<ReactElement[]>([]);
   const dropdownRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const itemWrapper = findComponentWithDisplayName(children, 'ItemWrapper')
+    const itemWrapper = findComponentWithDisplayName(children, "ItemWrapper");
 
     if (itemWrapper?.props?.children) {
-      const validOptions = React.Children.toArray(itemWrapper.props.children).filter(
+      const validOptions = React.Children.toArray(
+        itemWrapper.props.children
+      ).filter(
         (child): child is ReactElement =>
-          isValidElement(child) &&
-          (child.type as any)?.displayName === 'Item'
+          isValidElement(child) && (child.type as any)?.displayName === "Item"
       );
       setOptionElements(validOptions as ReactElement[]);
     }
@@ -39,7 +49,7 @@ const Dropdown = <T extends string | number>({
   const getSelectedLabel = useCallback((): React.ReactNode => {
     if (optionElements.length === 0 || selectedValue === null) return null;
     const selectedOption = optionElements.find(
-      option => option.props.value === selectedValue
+      (option) => option.props.value === selectedValue
     );
     return selectedOption?.props.children || null;
   }, [selectedValue, optionElements]);
@@ -74,7 +84,7 @@ const Dropdown = <T extends string | number>({
   return (
     <DropdownContext.Provider value={contextValue}>
       <div
-        className={`${styles.dropdownBoxWrapper} ${className || ''}`}
+        className={`${styles.dropdownBoxWrapper} ${className || ""}`}
         role="combobox"
         aria-label={ariaLabel}
         aria-expanded={open}

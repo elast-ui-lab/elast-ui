@@ -1,4 +1,10 @@
-import React, { memo, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { DropdownContext } from "./context";
 import { ItemProps, DropdownContextType } from "./types";
 import styles from "./dropdown.module.css";
@@ -34,12 +40,12 @@ const Item = memo(({ value, children, className, id, ...props }: ItemProps) => {
     "aria-selected": isSelected,
     tabIndex: -1,
     id,
-    ...props
+    ...props,
   };
 
   return (
     <p
-      className={`${styles.dropdownItem} ${className || ''}`}
+      className={`${styles.dropdownItem} ${className || ""}`}
       onClick={handleItemClick}
       {...optionProps}
     >
@@ -48,6 +54,6 @@ const Item = memo(({ value, children, className, id, ...props }: ItemProps) => {
   );
 });
 
-Item.displayName = 'Item';
+Item.displayName = "Item";
 
 export default Item;

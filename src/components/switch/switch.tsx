@@ -13,7 +13,7 @@ const Switch = ({
     <>
       <div
         id={id}
-        className={`${styles.switchBoxWrapper} ${className || ''}`}
+        className={`${styles.switchBoxWrapper} ${className || ""}`}
         {...(checked ? { "data-checked": true } : {})}
         onClick={() => {
           onCheckedChange?.(!checked);

@@ -1,3 +1,3 @@
-export { default } from './tabs';
-export * from './types';
-export { TabsContext } from './context';
+export * from "./types";
+export { default } from "./tabs";
+export { TabsContext } from "./context";

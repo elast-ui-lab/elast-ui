@@ -26,7 +26,11 @@ const Modal = ({ open, className, onClose, children }: ModalProps) => {
     <ModalContext.Provider value={{ open }}>
       <Portal>
         {open && (
-          <div ref={ref} className={`${styles.modalWrapper} ${className || ''}`} tabIndex={0}>
+          <div
+            ref={ref}
+            className={`${styles.modalWrapper} ${className || ""}`}
+            tabIndex={0}
+          >
             {children}
           </div>
         )}

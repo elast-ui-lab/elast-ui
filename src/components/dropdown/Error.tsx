@@ -4,17 +4,19 @@ import { DefaultProps, DropdownContextType } from "./types";
 import styles from "./dropdown.module.css";
 
 const Error = memo(({ children, className, ...props }: DefaultProps) => {
-  const { required, selectedValue } = useContext(DropdownContext) as DropdownContextType<any>;
+  const { required, selectedValue } = useContext(
+    DropdownContext
+  ) as DropdownContextType<any>;
 
   if (!required || selectedValue !== null) return null;
 
   return (
-    <p {...props} className={`${styles.errorMessage} ${className || ''}`}>
+    <p {...props} className={`${styles.errorMessage} ${className || ""}`}>
       {children}
     </p>
   );
 });
 
-Error.displayName = 'Error';
+Error.displayName = "Error";
 
 export default Error;

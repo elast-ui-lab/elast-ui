@@ -17,61 +17,73 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
 
   const selectedLabel = getSelectedLabel();
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    const keyHandlers = {
-      Enter: () => {
-        if (!open) {
-          setOpen(true);
-          return;
-        }
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const keyHandlers = {
+        Enter: () => {
+          if (!open) {
+            setOpen(true);
+            return;
+          }
 
-        const focusedOption = getFocusedOption();
-        if (focusedOption?.props.value) {
-          const value = focusedOption.props.value;
-          setSelectedValue(value);
-          onValueChange?.(value);
-        }
+          const focusedOption = getFocusedOption();
+          if (focusedOption?.props.value) {
+            const value = focusedOption.props.value;
+            setSelectedValue(value);
+            onValueChange?.(value);
+          }
+          setOpen(false);
+        },
+        ArrowUp: () => {
+          if (!open) return;
+          setFocusIndex((prev) => Math.max(prev - 1, -1));
+        },
+        ArrowDown: () => {
+          if (!open) return;
+          setFocusIndex((prev) => prev + 1);
+        },
+        Escape: () => {
+          setOpen(false);
+          ref.current?.blur();
+        },
+      };
+
+      if (e.key in keyHandlers) {
+        e.preventDefault();
+        keyHandlers[e.key as keyof typeof keyHandlers]();
+      }
+    },
+    [
+      open,
+      getFocusedOption,
+      onValueChange,
+      setOpen,
+      setFocusIndex,
+      setSelectedValue,
+    ]
+  );
+
+  const handleClickOutside = useCallback(
+    (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
-      },
-      ArrowUp: () => {
-        if (!open) return;
-        setFocusIndex((prev) => Math.max(prev - 1, -1));
-      },
-      ArrowDown: () => {
-        if (!open) return;
-        setFocusIndex((prev) => prev + 1);
-      },
-      Escape: () => {
-        setOpen(false);
-        ref.current?.blur();
-      },
-    };
-
-    if (e.key in keyHandlers) {
-      e.preventDefault();
-      keyHandlers[e.key as keyof typeof keyHandlers]();
-    }
-  }, [open, getFocusedOption, onValueChange, setOpen, setFocusIndex, setSelectedValue]);
-
-
-  const handleClickOutside = useCallback((e: MouseEvent) => {
-    if (ref.current && !ref.current.contains(e.target as Node)) {
-      setOpen(false);
-    }
-  }, [setOpen]);
+      }
+    },
+    [setOpen]
+  );
 
   useEffect(() => {
     window.addEventListener("click", handleClickOutside);
     return () => window.removeEventListener("click", handleClickOutside);
   }, [handleClickOutside]);
 
-  const handleFocus = () => ref.current?.setAttribute('data-focus', 'true');
-  const handleBlur = () => ref.current?.setAttribute('data-focus', 'false');
+  const handleFocus = () => ref.current?.setAttribute("data-focus", "true");
+  const handleBlur = () => ref.current?.setAttribute("data-focus", "false");
 
   return (
     <div
       ref={ref}
-      className={`${styles.selectBox} ${className || ''}`}
+      className={`${styles.selectBox} ${className || ""}`}
       onClick={() => setOpen(!open)}
       tabIndex={0}
       onKeyDown={handleKeyDown}
@@ -88,6 +100,6 @@ const Trigger = memo(({ className, children, ...props }: DefaultProps) => {
   );
 });
 
-Trigger.displayName = 'Trigger';
+Trigger.displayName = "Trigger";
 
 export default Trigger;

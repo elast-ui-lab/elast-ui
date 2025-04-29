@@ -22,42 +22,59 @@ const ComboBox = <T extends DataType>({
   const [open, setOpen] = useState<boolean>(false);
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
-  const [selectedValue, setSelectedValue] = useState<T>(value || "" as T);
+  const [selectedValue, setSelectedValue] = useState<T>(value || ("" as T));
   const [validity, setValidity] = useState<boolean>(false);
   const [focusIndex, setFocusIndex] = useState<number>(-1);
-  const [filteredOptions, setFilteredOptions] = useState<ReactElement<OptionProps>[]>([]);
-  const [optionElements, setOptionElements] = useState<ReactElement<OptionProps>[]>([]);
+  const [filteredOptions, setFilteredOptions] = useState<
+    ReactElement<OptionProps>[]
+  >([]);
+  const [optionElements, setOptionElements] = useState<
+    ReactElement<OptionProps>[]
+  >([]);
   const comboboxRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
+    const optionWrapper = findComponentWithDisplayName(
+      children,
+      "OptionWrapper"
+    );
     if (optionWrapper?.props?.children) {
-      const validOptions = React.Children.toArray(optionWrapper.props.children).filter(
-        (child): child is ReactElement => isValidElement(child) &&
-        (child.type as React.FunctionComponent)?.displayName === 'Option'
+      const validOptions = React.Children.toArray(
+        optionWrapper.props.children
+      ).filter(
+        (child): child is ReactElement =>
+          isValidElement(child) &&
+          (child.type as React.FunctionComponent)?.displayName === "Option"
       ) as ReactElement<OptionProps>[];
       setOptionElements(validOptions);
     }
   }, [children]);
 
-  const getFilteredOptions = useCallback((keyword: string): ReactElement<OptionProps>[] => {
-    if (!keyword) return optionElements;
+  const getFilteredOptions = useCallback(
+    (keyword: string): ReactElement<OptionProps>[] => {
+      if (!keyword) return optionElements;
 
-    return optionElements.filter(optionElement => {
-      const children = optionElement.props.children;
-      return String(children).toLowerCase().includes(keyword.toLowerCase());
-    });
-  }, [optionElements]);
+      return optionElements.filter((optionElement) => {
+        const children = optionElement.props.children;
+        return String(children).toLowerCase().includes(keyword.toLowerCase());
+      });
+    },
+    [optionElements]
+  );
 
   const getSelectedLabel = useCallback((): React.ReactNode => {
     if (!selectedValue) return null;
 
-    const selectedOption = optionElements.find(option => option.props.value === selectedValue);
+    const selectedOption = optionElements.find(
+      (option) => option.props.value === selectedValue
+    );
 
     return selectedOption?.props.children || null;
   }, [selectedValue, optionElements]);
 
-  const getFocusedOption = useCallback((): ReactElement<OptionProps> | undefined => {
+  const getFocusedOption = useCallback(():
+    | ReactElement<OptionProps>
+    | undefined => {
     const options = isTyping ? filteredOptions : optionElements;
     if (focusIndex >= 0 && focusIndex < options.length) {
       return options[focusIndex];
@@ -69,12 +86,15 @@ const ComboBox = <T extends DataType>({
     setFilteredOptions(getFilteredOptions(inputValue));
   }, [inputValue, getFilteredOptions, optionElements]);
 
-  const validateRequiredField = useCallback((e: Event) => {
-    e.preventDefault();
-    const isValid = !(required && (!selectedValue || selectedValue === ""));
-    setValidity(!isValid);
-    return isValid;
-  }, [required, selectedValue]);
+  const validateRequiredField = useCallback(
+    (e: Event) => {
+      e.preventDefault();
+      const isValid = !(required && (!selectedValue || selectedValue === ""));
+      setValidity(!isValid);
+      return isValid;
+    },
+    [required, selectedValue]
+  );
 
   useEffect(() => {
     if (comboboxRef.current) {
@@ -118,7 +138,7 @@ const ComboBox = <T extends DataType>({
     <ComboBoxContext.Provider value={contextValue}>
       <div
         id={id}
-        className={`${styles.comboWrapper} ${className || ''}`}
+        className={`${styles.comboWrapper} ${className || ""}`}
         role="combobox"
         aria-label={ariaLabel}
         aria-expanded={open}

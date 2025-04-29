@@ -20,7 +20,7 @@ var Modal = function (_a) {
         return function () { return document.removeEventListener("keydown", handleKeyboard); };
     });
     return (React.createElement(ModalContext.Provider, { value: { open: open } },
-        React.createElement(Portal, null, open && (React.createElement("div", { ref: ref, className: "".concat(styles.modalWrapper, " ").concat(className || ''), tabIndex: 0 }, children)))));
+        React.createElement(Portal, null, open && (React.createElement("div", { ref: ref, className: "".concat(styles.modalWrapper, " ").concat(className || ""), tabIndex: 0 }, children)))));
 };
 Modal.Container = Container;
 Modal.Title = Title;

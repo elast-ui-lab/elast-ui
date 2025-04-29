@@ -1,3 +1,3 @@
-export { default } from './modal';
-export * from './types';
-export { ModalContext } from './context';
+export * from "./types";
+export { default } from "./modal";
+export { ModalContext } from "./context";

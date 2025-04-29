@@ -16,9 +16,13 @@ var Select = function (_a) {
     var selectRef = useRef(null);
     useEffect(function () {
         var _a;
-        var optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
+        var optionWrapper = findComponentWithDisplayName(children, "OptionWrapper");
         if ((_a = optionWrapper === null || optionWrapper === void 0 ? void 0 : optionWrapper.props) === null || _a === void 0 ? void 0 : _a.children) {
-            var validOptions = React.Children.toArray(optionWrapper.props.children).filter(function (child) { var _a; return React.isValidElement(child) && ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Option'; });
+            var validOptions = React.Children.toArray(optionWrapper.props.children).filter(function (child) {
+                var _a;
+                return React.isValidElement(child) &&
+                    ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === "Option";
+            });
             setOptionElements(validOptions);
         }
     }, [children]);
@@ -69,7 +73,7 @@ var Select = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(SelectContext.Provider, { value: contextValue },
-        React.createElement("div", { id: id, className: "".concat(styles.selectBoxWrapper, " ").concat(className || ''), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
+        React.createElement("div", { id: id, className: "".concat(styles.selectBoxWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
         React.createElement("input", { type: "hidden", ref: selectRef, value: selectedValue !== null && selectedValue !== void 0 ? selectedValue : "", required: required, "aria-hidden": "true" })));
 };
 Select.Trigger = Trigger;

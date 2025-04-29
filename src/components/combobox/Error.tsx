@@ -9,12 +9,12 @@ const Error = memo(({ children, className, ...props }: DefaultProps) => {
   if (!validity) return null;
 
   return (
-    <p {...props} className={`${styles.errorMessage} ${className || ''}`}>
+    <p {...props} className={`${styles.errorMessage} ${className || ""}`}>
       {children}
     </p>
   );
 });
 
-Error.displayName = 'Error';
+Error.displayName = "Error";
 
 export default Error;

@@ -1,4 +1,10 @@
-import React, { memo, useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { SelectContext } from "./context";
 import { OptionProps, SelectContextType } from "./types";
 import styles from "./select.module.css";
@@ -33,12 +39,12 @@ const Option = memo(({ value, children, className, ...props }: OptionProps) => {
     role: "option",
     "aria-selected": isSelected,
     tabIndex: -1,
-    ...props
+    ...props,
   };
 
   return (
     <p
-      className={`${styles.selectOption} ${className || ''}`}
+      className={`${styles.selectOption} ${className || ""}`}
       onClick={handleOptionClick}
       {...optionProps}
     >
@@ -47,6 +53,6 @@ const Option = memo(({ value, children, className, ...props }: OptionProps) => {
   );
 });
 
-Option.displayName = 'Option';
+Option.displayName = "Option";
 
 export default Option;

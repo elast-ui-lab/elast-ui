@@ -13,11 +13,11 @@ const TabsWrapper = ({ children, ...props }: TabsWrapperProps) => {
   });
 
   const context = useContext(TabsContext);
-  
+
   if (!context) {
     throw Error("TabsWrapper must be used within a Tabs component");
   }
-  
+
   const { setTabIndex } = context;
 
   return (

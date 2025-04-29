@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, isValidElement, useCallback } from "react";
+import React, { useEffect, useRef, useState, isValidElement, useCallback, } from "react";
 import { DropdownContext } from "./context";
 import styles from "./dropdown.module.css";
 import Trigger from "./Trigger";
@@ -15,13 +15,9 @@ var Dropdown = function (_a) {
     var dropdownRef = useRef(null);
     useEffect(function () {
         var _a;
-        var itemWrapper = findComponentWithDisplayName(children, 'ItemWrapper');
+        var itemWrapper = findComponentWithDisplayName(children, "ItemWrapper");
         if ((_a = itemWrapper === null || itemWrapper === void 0 ? void 0 : itemWrapper.props) === null || _a === void 0 ? void 0 : _a.children) {
-            var validOptions = React.Children.toArray(itemWrapper.props.children).filter(function (child) {
-                var _a;
-                return isValidElement(child) &&
-                    ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Item';
-            });
+            var validOptions = React.Children.toArray(itemWrapper.props.children).filter(function (child) { var _a; return isValidElement(child) && ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === "Item"; });
             setOptionElements(validOptions);
         }
     }, [children]);
@@ -56,7 +52,7 @@ var Dropdown = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(DropdownContext.Provider, { value: contextValue },
-        React.createElement("div", { className: "".concat(styles.dropdownBoxWrapper, " ").concat(className || ''), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id || ariaLabel, "-listbox"), "aria-required": required, id: id }, children),
+        React.createElement("div", { className: "".concat(styles.dropdownBoxWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id || ariaLabel, "-listbox"), "aria-required": required, id: id }, children),
         required && (React.createElement("input", { type: "hidden", ref: dropdownRef, value: selectedValue !== null && selectedValue !== void 0 ? selectedValue : "", required: required, "aria-hidden": "true" }))));
 };
 Dropdown.Trigger = Trigger;

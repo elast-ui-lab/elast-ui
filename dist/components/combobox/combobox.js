@@ -20,12 +20,12 @@ var ComboBox = function (_a) {
     var comboboxRef = useRef(null);
     useEffect(function () {
         var _a;
-        var optionWrapper = findComponentWithDisplayName(children, 'OptionWrapper');
+        var optionWrapper = findComponentWithDisplayName(children, "OptionWrapper");
         if ((_a = optionWrapper === null || optionWrapper === void 0 ? void 0 : optionWrapper.props) === null || _a === void 0 ? void 0 : _a.children) {
             var validOptions = React.Children.toArray(optionWrapper.props.children).filter(function (child) {
                 var _a;
                 return isValidElement(child) &&
-                    ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === 'Option';
+                    ((_a = child.type) === null || _a === void 0 ? void 0 : _a.displayName) === "Option";
             });
             setOptionElements(validOptions);
         }
@@ -96,7 +96,7 @@ var ComboBox = function (_a) {
         getFocusedOption: getFocusedOption,
     };
     return (React.createElement(ComboBoxContext.Provider, { value: contextValue },
-        React.createElement("div", { id: id, className: "".concat(styles.comboWrapper, " ").concat(className || ''), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
+        React.createElement("div", { id: id, className: "".concat(styles.comboWrapper, " ").concat(className || ""), role: "combobox", "aria-label": ariaLabel, "aria-expanded": open, "aria-haspopup": "listbox", "aria-controls": "".concat(id, "-listbox"), "aria-required": required, "aria-invalid": validity }, children),
         React.createElement("input", { type: "hidden", ref: comboboxRef, value: String(selectedValue), required: required, "aria-hidden": "true" })));
 };
 ComboBox.Input = Input;

@@ -13,11 +13,11 @@ const ContentWrapper = ({ children, ...props }: ContentWrapperProps) => {
   });
 
   const context = useContext(TabsContext);
-  
+
   if (!context) {
     throw Error("ContentWrapper must be used within a Tabs component");
   }
-  
+
   const { tabIndex } = context;
 
   return <div {...props}>{React.Children.toArray(children)[tabIndex]}</div>;

@@ -14,7 +14,7 @@ import styles from "./switch.module.css";
 var Switch = function (_a) {
     var id = _a.id, className = _a.className, checked = _a.checked, children = _a.children, onCheckedChange = _a.onCheckedChange;
     return (React.createElement(React.Fragment, null,
-        React.createElement("div", __assign({ id: id, className: "".concat(styles.switchBoxWrapper, " ").concat(className || '') }, (checked ? { "data-checked": true } : {}), { onClick: function () {
+        React.createElement("div", __assign({ id: id, className: "".concat(styles.switchBoxWrapper, " ").concat(className || "") }, (checked ? { "data-checked": true } : {}), { onClick: function () {
                 onCheckedChange === null || onCheckedChange === void 0 ? void 0 : onCheckedChange(!checked);
             } }), children)));
 };
