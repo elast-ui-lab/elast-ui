@@ -6,10 +6,6 @@
     "jsx": "react-jsx",
     "composite": true
   },
-  "include": [
-    "src"
-  ],
-  "references": [
-    { "path": "../core" }
-  ]
+  "include": ["src"],
+  "references": [{ "path": "../core" }]
 }

@@ -62,10 +62,10 @@ npm install elast-ui
 
 이 프로젝트는 pnpm 기반의 모노레포로 구성되어 있습니다. 다음 단계를 따라 개발 환경을 설정하세요.
 
-### 필수 요구사항
+### 요구사양
 
-- Node.js 16.x 이상
-- pnpm 8.x 이상
+- Node.js >= 16.14.0 (pnpm의 최소 요구사양)
+- pnpm >= 8.0.0
 
 ### 프로젝트 설치 및 실행
 
@@ -128,11 +128,11 @@ pnpm dev
 ### 기본 예제
 
 ```tsx
-import React, { useState } from "react";
-import { Select } from "elast-ui";
+import React, { useState } from 'react';
+import { Select } from 'elast-ui';
 
 const Example = () => {
-  const [selectedValue, setSelectedValue] = useState<string>("");
+  const [selectedValue, setSelectedValue] = useState<string>('');
 
   const handleChange = (value: string) => {
     setSelectedValue(value);
@@ -240,11 +240,11 @@ form사용 시 form태그를 참조하지 않아도 required 옵션만 지정하
 ### 기본 예제
 
 ```tsx
-import React, { useState } from "react";
-import { ComboBox } from "elast-ui";
+import React, { useState } from 'react';
+import { ComboBox } from 'elast-ui';
 
 const Example = () => {
-  const [selectedValue, setSelectedValue] = useState<string>("");
+  const [selectedValue, setSelectedValue] = useState<string>('');
 
   const handleChange = (value: string) => {
     setSelectedValue(value);
@@ -325,11 +325,11 @@ export default Example;
 ### 기본 예제
 
 ```tsx
-import React, { useState } from "react";
-import { Dropdown } from "elast-ui";
+import React, { useState } from 'react';
+import { Dropdown } from 'elast-ui';
 
 const Example = () => {
-  const [selectedValue, setSelectedValue] = useState<string>("");
+  const [selectedValue, setSelectedValue] = useState<string>('');
 
   const handleChange = (value: string) => {
     setSelectedValue(value);
@@ -402,8 +402,8 @@ export default Example;
 ### 기본 예제
 
 ```tsx
-import React, { useState } from "react";
-import { Tabs } from "elast-ui";
+import React, { useState } from 'react';
+import { Tabs } from 'elast-ui';
 
 const Example = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -476,8 +476,8 @@ export default Example;
 ### 기본 예제
 
 ```tsx
-import React, { useState } from "react";
-import { Modal } from "elast-ui";
+import React, { useState } from 'react';
+import { Modal } from 'elast-ui';
 
 const Example = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -537,8 +537,8 @@ export default Example;
 ### 기본 예제
 
 ```tsx
-import React, { useState } from "react";
-import { Switch } from "elast-ui";
+import React, { useState } from 'react';
+import { Switch } from 'elast-ui';
 
 const Example = () => {
   const [isChecked, setIsChecked] = useState(false);
@@ -550,7 +550,7 @@ const Example = () => {
   return (
     <>
       <Switch checked={isChecked} onCheckedChange={handleChange}>
-        {isChecked ? "ON" : "OFF"}
+        {isChecked ? 'ON' : 'OFF'}
       </Switch>
     </>
   );
@@ -576,7 +576,7 @@ export default Example;
   onCheckedChange={handleChange}
   className="data-[checked]:bg-green-500 data-[checked]:text-white"
 >
-  {isChecked ? "ON" : "OFF"}
+  {isChecked ? 'ON' : 'OFF'}
 </Switch>
 ```
 

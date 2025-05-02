@@ -9,6 +9,7 @@
     "react",
     "elast",
     "component",
+    "headless",
     "ui",
     "compound"
   ],
