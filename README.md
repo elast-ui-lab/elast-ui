@@ -40,6 +40,12 @@ elast-ui는 코드를 간결하고 읽기 쉽게 설계하여, 유지보수와 �
 
 elast-ui의 더 직관적이고 유연한 UI를 통해 생산성과 가독성을 높여보세요.
 
+### pnpm
+
+```bash
+pnpm add elast-ui
+```
+
 ### yarn
 
 ```bash
@@ -51,6 +57,45 @@ yarn add elast-ui
 ```bash
 npm install elast-ui
 ```
+
+# :wrench: 개발 환경 설정
+
+이 프로젝트는 pnpm 기반의 모노레포로 구성되어 있습니다. 다음 단계를 따라 개발 환경을 설정하세요.
+
+### 필수 요구사항
+
+- Node.js 16.x 이상
+- pnpm 8.x 이상
+
+### 프로젝트 설치 및 실행
+
+1. 저장소 복제하기
+
+```bash
+git clone https://github.com/your-username/elast-ui.git
+cd elast-ui
+```
+
+2. 의존성 설치하기
+
+```bash
+pnpm install
+```
+
+3. 개발 서버 시작하기
+
+```bash
+# 코어 라이브러리 빌드 및 준비
+pnpm prepare
+
+# 개발 서버 시작 (playground 패키지)
+pnpm dev
+```
+
+### 패키지 구조
+
+- `packages/core`: 핵심 UI 컴포넌트 라이브러리
+- `packages/playground`: 컴포넌트 테스트 및 개발을 위한 데모 앱
 
 ---
 
@@ -196,7 +241,7 @@ form사용 시 form태그를 참조하지 않아도 required 옵션만 지정하
 
 ```tsx
 import React, { useState } from "react";
-import ComboBox from "elast-ui";
+import { ComboBox } from "elast-ui";
 
 const Example = () => {
   const [selectedValue, setSelectedValue] = useState<string>("");
@@ -281,7 +326,7 @@ export default Example;
 
 ```tsx
 import React, { useState } from "react";
-import Dropdown from "elast-ui";
+import { Dropdown } from "elast-ui";
 
 const Example = () => {
   const [selectedValue, setSelectedValue] = useState<string>("");
@@ -358,7 +403,7 @@ export default Example;
 
 ```tsx
 import React, { useState } from "react";
-import Tabs from "elast-ui";
+import { Tabs } from "elast-ui";
 
 const Example = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
@@ -432,7 +477,7 @@ export default Example;
 
 ```tsx
 import React, { useState } from "react";
-import Modal from "elast-ui";
+import { Modal } from "elast-ui";
 
 const Example = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -493,7 +538,7 @@ export default Example;
 
 ```tsx
 import React, { useState } from "react";
-import Switch from "elast-ui";
+import { Switch } from "elast-ui";
 
 const Example = () => {
   const [isChecked, setIsChecked] = useState(false);
