@@ -19,7 +19,7 @@
       "elast-ui": ["packages/core/src"],
       "elast-ui/*": ["packages/core/src/*"]
     },
-    "composite": true,
+    "composite": false,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true
