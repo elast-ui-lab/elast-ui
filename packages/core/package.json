@@ -28,7 +28,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && mkdir dist && tsc && node copy-css.mjs",
-    "watch": "tsc --watch",
+    "watch": "node copy-css.mjs && tsc --watch",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "clean": "rm -rf dist node_modules"
