@@ -1,10 +1,10 @@
-import React, { forwardRef, useContext } from 'react';
-import { TabsContext } from './context';
 import Tab from './Tab';
+import { TabsContext } from './context';
 import { TabsWrapperProps, ChildProps } from './types';
+import React, { forwardRef, MouseEvent, useContext } from 'react';
 
 const TabsWrapper = forwardRef<HTMLDivElement, TabsWrapperProps>((props: TabsWrapperProps, ref) => {
-  const { children, ...restProps } = props;
+  const { children, onClick: _, ...restProps } = props;
   React.Children.toArray(children).forEach(child => {
     if (React.isValidElement(child) && child.type !== Tab) {
       throw Error('TabsWrapper 컴포넌트 내부에는 Tab 컴포넌트가 들어가야 합니다');
@@ -19,12 +19,20 @@ const TabsWrapper = forwardRef<HTMLDivElement, TabsWrapperProps>((props: TabsWra
 
   const { setTabIndex } = context;
 
+  const handleTabClick = (e: MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLDivElement;
+    const tabElement = target.closest('[data-tabindex]');
+    if (!tabElement) return;
+
+    const tabIndex = tabElement.getAttribute('data-tabindex') as string;
+    setTabIndex(Number(tabIndex));
+  };
+
   return (
-    <div ref={ref} {...restProps}>
+    <div ref={ref} onClick={handleTabClick} {...restProps}>
       {React.Children.map(children, (child, index) =>
         React.isValidElement<ChildProps>(child)
           ? React.cloneElement(child, {
-              onClick: () => setTabIndex(index),
               'data-tabindex': index,
             })
           : child

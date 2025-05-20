@@ -1,11 +1,11 @@
-import { ReactNode, Dispatch, SetStateAction } from 'react';
+import { ReactNode, Dispatch, SetStateAction, HTMLAttributes } from 'react';
 
 export interface TabsContextType {
   tabIndex: number;
   setTabIndex: Dispatch<SetStateAction<number>>;
 }
 
-export interface CommonProps {
+export interface CommonProps extends HTMLAttributes<HTMLElement> {
   className?: string;
   children?: ReactNode;
 }
