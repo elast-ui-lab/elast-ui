@@ -23,7 +23,7 @@
     "Yoonmi Kim"
   ],
   "scripts": {
-    "dev": "pnpm --filter playground start",
+    "dev": "concurrently \"pnpm dev:core\" \"pnpm --filter playground start\"",
     "dev:core": "pnpm --filter elast-ui watch",
     "build": "pnpm build:core && pnpm build:playground",
     "build:core": "pnpm --filter elast-ui build",
@@ -41,6 +41,7 @@
     "@types/react-dom": "18.2.19",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
+    "concurrently": "^9.1.2",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^4.3.4",

@@ -85,10 +85,7 @@ pnpm install
 3. 개발 서버 시작하기
 
 ```bash
-# 터미널 1: core 패키지 감시 모드 실행
-pnpm dev:core
-
-# 터미널 2: playground 개발 서버 시작
+# Core 패키지 감시 모드 및 Playground 실행
 pnpm dev
 ```
 
