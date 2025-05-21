@@ -1,3 +1,5 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/elast-ui-lab/elast-ui)
+
 # :six_pointed_star: elast-ui
 
 <br/>
